@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Menu Dashboard + Header · Mobile Friendly</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(165deg, #eef2f6 0%, #d9e3eb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.75rem;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            padding: 1.25rem 1rem;
+            box-shadow: 0 30px 55px -20px #1d3f55;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        /* ------- HEADER RESPONSIF ------- */
+        .main-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px dashed rgba(45, 112, 142, 0.3);
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex: 1 1 auto;
+        }
+
+        .logo-area {
+            background: #1b6b93;
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 12px 18px -8px #105072;
+            transition: 0.2s;
+        }
+
+        .greeting {
+            flex: 1;
+        }
+
+        .greeting h2 {
+            font-size: 1.4rem;
+            font-weight: 650;
+            letter-spacing: -0.02em;
+            color: #0b3445;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .greeting p {
+            color: #2a5f79;
+            font-weight: 500;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.6);
+            padding: 0.2rem 0.8rem 0.2rem 0.6rem;
+            border-radius: 30px;
+            width: fit-content;
+            backdrop-filter: blur(2px);
+            white-space: nowrap;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        .stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: white;
+            padding: 0.35rem 0.9rem;
+            border-radius: 40px;
+            box-shadow: 0 6px 14px rgba(0, 45, 60, 0.08);
+            border: 1px solid rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .stat-item i {
+            font-size: 1rem;
+            color: #1a6f96;
+        }
+
+        .stat-item span {
+            font-weight: 650;
+            color: #0a3342;
+        }
+
+        .stat-item small {
+            color: #3b6f89;
+            font-size: 0.7rem;
+            font-weight: 400;
+            margin-left: 2px;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 40px;
+            padding: 0.2rem 0.2rem 0.2rem 1rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 8px 18px -10px #1c4d66;
+            border: 1px solid rgba(255,255,255,0.9);
+            flex: 1 1 200px;
+            min-width: 180px;
+        }
+
+        .search-box i {
+            color: #2980a5;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            padding: 0.5rem 0.3rem;
+            font-size: 0.85rem;
+            width: 100%;
+            outline: none;
+            color: #1c495e;
+        }
+
+        .search-box input:focus {
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: #79a7bf;
+        }
+
+        .search-box button {
+            background: #1e6d94;
+            border: none;
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: 1px solid #a3d0e9;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .search-box button:hover {
+            background: #0f4f70;
+        }
+
+        .search-box button:active {
+            transform: scale(0.95);
+        }
+
+        /* grid card */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0 1.2rem;
+        }
+
+        .card {
+            background: #ffffffdd;
+            backdrop-filter: blur(4px);
+            border-radius: 24px;
+            padding: 1.2rem 0.8rem 1rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.9);
+            box-shadow: 0 15px 25px -12px rgba(18, 52, 77, 0.15);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            background: rgba(72, 157, 202, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #175873;
+            transition: 0.2s;
+            border: 2px solid rgba(255,255,255,0.7);
+        }
+
+        .card:hover .icon-circle {
+            background: #1f6e93;
+            color: white;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0e3a4f;
+            letter-spacing: -0.2px;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .card p {
+            font-size: 0.7rem;
+            color: #3b6579;
+            background: #d9eaf3c9;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-weight: 500;
+            backdrop-filter: blur(2px);
+            border: 1px solid #bcd8e7;
+            white-space: nowrap;
+        }
+
+        /* warna ikon */
+        .card:nth-child(1) .icon-circle { background: #d4eaf7; color: #0a4b6e; }
+        .card:nth-child(2) .icon-circle { background: #f0e0d6; color: #9b4e2d; }
+        .card:nth-child(3) .icon-circle { background: #ddeeda; color: #2f7d4f; }
+        .card:nth-child(4) .icon-circle { background: #fcf0ce; color: #b17f3b; }
+        .card:nth-child(5) .icon-circle { background: #dcd0f5; color: #5f4b8b; }
+
+        .card:nth-child(1):hover .icon-circle { background: #0a4b6e; color: white; }
+        .card:nth-child(2):hover .icon-circle { background: #9b4e2d; color: white; }
+        .card:nth-child(3):hover .icon-circle { background: #2f7d4f; color: white; }
+        .card:nth-child(4):hover .icon-circle { background: #b17f3b; color: white; }
+        .card:nth-child(5):hover .icon-circle { background: #5f4b8b; color: white; }
+
+        .repo-footer {
+            margin-top: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            padding: 0.7rem 1rem;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.7);
+            color: #16546b;
+            font-size: 0.8rem;
+        }
+
+        .footer-files {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .footer-files i {
+            color: #226480;
+        }
+
+        .footer-note {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* BREAKPOINT MOBILE */
+        @media (max-width: 500px) {
+            body {
+                padding: 0.5rem;
+                align-items: flex-start;
+            }
+            
+            .dashboard-container {
+                padding: 1rem 0.75rem;
+                border-radius: 1.5rem;
+            }
+
+            .main-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+
+            .header-left {
+                width: 100%;
+            }
+
+            .greeting h2 {
+                font-size: 1.2rem;
+                white-space: normal;
+            }
+
+            .greeting p {
+                font-size: 0.7rem;
+                white-space: normal;
+            }
+
+            .header-right {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.7rem;
+            }
+
+            .stat-badge {
+                justify-content: space-between;
+            }
+
+            .stat-item {
+                flex: 1;
+                justify-content: center;
+                font-size: 0.75rem;
+            }
+
+            .search-box {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.7rem;
+            }
+
+            .card {
+                padding: 1rem 0.4rem 0.8rem;
+                border-radius: 20px;
+            }
+
+            .icon-circle {
+                width: 50px;
+                height: 50px;
+                font-size: 1.7rem;
+            }
+
+            .card h3 {
+                font-size: 0.95rem;
+            }
+
+            .card p {
+                font-size: 0.6rem;
+                white-space: normal;
+            }
+
+            .repo-footer {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- HEADER DENGAN SEARCHBOX YANG BISA DIKLIK -->
+        <div class="main-header">
+            <div class="header-left">
+                <div class="logo-area">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <div class="greeting">
+                    <h2>Halo, Tim! 👋</h2>
+                    <p>
+                        <i class="fas fa-map-pin"></i> 
+                        5 halaman · siap pakai
+                    </p>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="stat-badge">
+                    <div class="stat-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>5 <small>file</small></span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-link"></i>
+                        <span>1 <small>repo</small></span>
+                    </div>
+                </div>
+                
+                <!-- SEARCHBOX YANG BISA DIKLIK DAN BERFUNGSI -->
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Cari halaman..." id="searchInput" value="">
+                    <button onclick="performSearch()" id="searchButton"><i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRID CARD 5 ITEM -->
+        <div class="card-grid">
+            <a href="./dashboard-agent.html" class="card" target="_blank" rel="noopener">
+                <div class="icon-circle"><i class="fas fa-user-tie"></i></div>
+                <h3>Dashboard Agent</h3>
+                <p>agen / mitra</p>
+            </a>
+
+            <a href="./dashboard-admin.html" class="card" target="_blank" rel="noopener">
+                <div class="icon-circle"><i class="fas fa-user-cog"></i></div>
+                <h3>Dashboard Admin</h3>
+                <p>superuser</p>
+            </a>
+
+            <a href="./dashboard-cs.html" class="card" target="_blank" rel="noopener">
+                <div class="icon-circle"><i class="fas fa-headset"></i></div>
+                <h3>Dashboard CS</h3>
+                <p>customer service</p>
+            </a>
+
+            <a href="./form-order.html" class="card" target="_blank" rel="noopener">
+                <div class="icon-circle"><i class="fas fa-clipboard-list"></i></div>
+                <h3>Form Order</h3>
+                <p>isi pemesanan</p>
+            </a>
+
+            <a href="./website-suruhboy.html" class="card" target="_blank" rel="noopener">
+                <div class="icon-circle"><i class="fas fa-globe"></i></div>
+                <h3>Website Suruhboy</h3>
+                <p>landing page</p>
+            </a>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="repo-footer">
+            <div class="footer-files">
+                <i class="fas fa-folder-tree"></i> 
+                <span>agent · admin · cs · order · suruhboy</span>
+            </div>
+            <div class="footer-note">
+                <i class="fas fa-mouse-pointer"></i> klik card atau search
+            </div>
+        </div>
+    </div>
+
+    <!-- FUNGSI SEARCH JAVASCRIPT -->
+    <script>
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (searchTerm === '') {
+                alert('Silakan masukkan kata kunci pencarian');
+                return;
+            }
+            
+            // Daftar halaman yang tersedia
+            const pages = [
+                { name: 'dashboard agent', url: './dashboard-agent.html' },
+                { name: 'dashboard admin', url: './dashboard-admin.html' },
+                { name: 'dashboard cs', url: './dashboard-cs.html' },
+                { name: 'form order', url: './form-order.html' },
+                { name: 'website suruhboy', url: './website-suruhboy.html' },
+                { name: 'agent', url: './dashboard-agent.html' },
+                { name: 'admin', url: './dashboard-admin.html' },
+                { name: 'cs', url: './dashboard-cs.html' },
+                { name: 'order', url: './form-order.html' },
+                { name: 'suruhboy', url: './website-suruhboy.html' }
+            ];
+            
+            // Cari halaman yang cocok
+            const matchedPage = pages.find(page => 
+                page.name.includes(searchTerm) || searchTerm.includes(page.name.split(' ')[0])
+            );
+            
+            if (matchedPage) {
+                window.open(matchedPage.url, '_blank');
+            } else {
+                alert('Halaman tidak ditemukan. Coba: agent, admin, cs, order, atau suruhboy');
+            }
+            
+            // Kosongkan search setelah mencari (opsional)
+            // searchInput.value = '';
+        }
+
+        // Tambahkan event listener untuk enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
+</body>
+</html>

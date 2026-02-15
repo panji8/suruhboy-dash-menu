@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database CS - Mirror Sheet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== CSS SAMA ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(145deg, #2c3e50, #1e2a36);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-weight: 500;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sheet-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 13px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .control-bar {
+            background: white;
+            padding: 18px 25px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filter-group select {
+            padding: 12px 20px;
+            border: 1.5px solid #e0e7ef;
+            border-radius: 10px;
+            font-size: 14px;
+            min-width: 170px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 20px 14px 50px;
+            border: 1.5px solid #e0e7ef;
+            border-radius: 50px;
+            font-size: 15px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2c3e50;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #2c3e50;
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            cursor: pointer;
+            display: none;
+        }
+
+        .search-input:not(:placeholder-shown) ~ .clear-search {
+            display: block;
+        }
+
+        .btn-refresh {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px 20px;
+            border-radius: 16px;
+            border-left: 5px solid #2c3e50;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e2a36;
+            margin-top: 8px;
+        }
+
+        .table-wrapper {
+            background: white;
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+
+        .table-header {
+            padding: 15px 25px;
+            border-bottom: 1px solid #e9eef3;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .result-count {
+            background: #e9eef3;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 13px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th {
+            background: #f8fafd;
+            padding: 18px 15px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            text-transform: uppercase;
+            border-bottom: 2px solid #e0e7ef;
+            text-align: left;
+        }
+
+        td {
+            padding: 16px 15px;
+            border-bottom: 1px solid #f0f4f9;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        tr:hover td {
+            background-color: #eef2ff !important;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 550px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            background: linear-gradient(145deg, #2c3e50, #1e2a36);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 24px 24px 0 0;
+            position: relative;
+        }
+
+        .id-display {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #e0e7ef;
+        }
+
+        .detail-icon {
+            width: 40px;
+            color: #2c3e50;
+            font-size: 20px;
+        }
+
+        .detail-content {
+            flex: 1;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            color: #1e2a36;
+            font-weight: 500;
+            white-space: pre-line; /* PENTING: handle line break */
+        }
+
+        .location-box, .description-box {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 5px;
+            border-left: 3px solid #2c3e50;
+            white-space: pre-line; /* PENTING: handle line break */
+        }
+
+        .description-box {
+            border-left-color: #e67e22;
+            background: #fff4e6;
+        }
+
+        .card-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e0e7ef;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            background: #f8fafc;
+            border-radius: 0 0 24px 24px;
+        }
+
+        .btn-secondary {
+            padding: 12px 25px;
+            border: 1px solid #2c3e50;
+            background: white;
+            color: #2c3e50;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            padding: 12px 25px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f0f4f9;
+            border-top: 4px solid #2c3e50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-database"></i> Database Customer Service</h1>
+            <p>Data dari Sheet: Mirror | Klik baris untuk lihat detail</p>
+            <div class="sheet-badge">
+                <i class="fas fa-info-circle"></i> ✓ Handle line break dalam 1 cell
+            </div>
+        </div>
+
+        <div class="control-bar">
+            <div class="filter-group">
+                <select id="filterAgent">
+                    <option value="">Semua Agent</option>
+                </select>
+                <select id="filterWeek">
+                    <option value="">Semua Week</option>
+                </select>
+            </div>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="Cari...">
+                <i class="fas fa-times clear-search" id="clearSearch"></i>
+            </div>
+            
+            <button class="btn-refresh" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card"><div>Total Data</div><div class="stat-number" id="totalRows">0</div></div>
+            <div class="stat-card"><div>Total Agent</div><div class="stat-number" id="totalAgent">0</div></div>
+            <div class="stat-card"><div>Total Week</div><div class="stat-number" id="totalWeek">0</div></div>
+            <div class="stat-card"><div>Update</div><div class="stat-number" id="lastUpdate">-</div></div>
+        </div>
+
+        <div class="table-wrapper">
+            <div class="table-header">
+                <div><i class="fas fa-table"></i> Data Customer Service</div>
+                <div class="result-count" id="resultCount">0 data</div>
+            </div>
+            
+            <div id="loading" class="loading" style="display: block; padding: 40px; text-align: center;">
+                <div class="loading-spinner"></div>
+                <p>Memuat data...</p>
+            </div>
+            
+            <div id="tableContainer" style="display: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Tanggal</th>
+                            <th>Nama CS</th>
+                            <th>Titik Antar</th>
+                            <th>Agent</th>
+                            <th>Week</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+            
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="far fa-folder-open" style="font-size: 48px;"></i>
+                <h3>Tidak Ada Data</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="detail-card">
+            <div class="card-header">
+                <h2><i class="fas fa-id-card"></i> Detail Customer Service</h2>
+                <div class="id-display" id="modalId">-</div>
+                <div class="close-btn" id="closeModal"><i class="fas fa-times"></i></div>
+            </div>
+            
+            <div class="card-body">
+                <div class="detail-row">
+                    <div class="detail-icon"><i class="far fa-calendar"></i></div>
+                    <div class="detail-content">
+                        <div class="detail-label">Tanggal</div>
+                        <div class="detail-value" id="detailTanggal">-</div>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-icon"><i class="fas fa-user"></i></div>
+                    <div class="detail-content">
+                        <div class="detail-label">Nama CS</div>
+                        <div class="detail-value large" id="detailNama">-</div>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="detail-content">
+                        <div class="detail-label">Titik Antar</div>
+                        <div class="location-box" id="detailTitikAntar">-</div>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-icon"><i class="fas fa-user-tie"></i></div>
+                    <div class="detail-content">
+                        <div class="detail-label">Agent</div>
+                        <div class="detail-value" id="detailAgent">-</div>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-icon"><i class="far fa-calendar-alt"></i></div>
+                    <div class="detail-content">
+                        <div class="detail-label">Week</div>
+                        <div class="detail-value" id="detailWeek">-</div>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-icon"><i class="fas fa-qrcode"></i></div>
+                    <div class="detail-content">
+                        <div class="detail-label">ID (Kolom G)</div>
+                        <div class="detail-value" id="detailIdMirror">-</div>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-icon"><i class="fas fa-align-left"></i></div>
+                    <div class="detail-content">
+                        <div class="detail-label">Deskripsi (Kolom H)</div>
+                        <div class="description-box" id="detailDeskripsi">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <button class="btn-secondary" id="copyData"><i class="far fa-copy"></i> Copy</button>
+                <button class="btn-primary" id="openSheet"><i class="fas fa-external-link-alt"></i> Lihat di Sheets</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // KONFIGURASI
+        const SPREADSHEET_ID = '1AMJmLj2dbkmBmtFq6suRxI8PUlii2gIgywq3yVDnICc';
+        const SHEET_GID = '603290628';
+        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+        const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit#gid=${SHEET_GID}`;
+
+        // STATE
+        let allData = [];
+        let filteredData = [];
+
+        // ELEMEN DOM
+        const el = {
+            loading: document.getElementById('loading'),
+            tableContainer: document.getElementById('tableContainer'),
+            emptyState: document.getElementById('emptyState'),
+            tableBody: document.getElementById('tableBody'),
+            totalRows: document.getElementById('totalRows'),
+            totalAgent: document.getElementById('totalAgent'),
+            totalWeek: document.getElementById('totalWeek'),
+            lastUpdate: document.getElementById('lastUpdate'),
+            filterAgent: document.getElementById('filterAgent'),
+            filterWeek: document.getElementById('filterWeek'),
+            searchInput: document.getElementById('searchInput'),
+            clearSearch: document.getElementById('clearSearch'),
+            resultCount: document.getElementById('resultCount'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            modal: document.getElementById('detailModal'),
+            closeModal: document.getElementById('closeModal'),
+            copyData: document.getElementById('copyData'),
+            openSheet: document.getElementById('openSheet'),
+            modalId: document.getElementById('modalId'),
+            detailTanggal: document.getElementById('detailTanggal'),
+            detailNama: document.getElementById('detailNama'),
+            detailTitikAntar: document.getElementById('detailTitikAntar'),
+            detailAgent: document.getElementById('detailAgent'),
+            detailWeek: document.getElementById('detailWeek'),
+            detailIdMirror: document.getElementById('detailIdMirror'),
+            detailDeskripsi: document.getElementById('detailDeskripsi')
+        };
+
+        // ===== PARSER CSV YANG HANDLE LINE BREAK =====
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    // Handle double quotes inside quotes
+                    if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
+                        current += '"';
+                        i++; // Skip next quote
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current);
+            
+            // Bersihkan dan handle line break
+            return result.map(val => {
+                val = val.trim();
+                // Hapus kutip di awal & akhir
+                if (val.startsWith('"') && val.endsWith('"')) {
+                    val = val.substring(1, val.length - 1);
+                }
+                // Ganti double quotes dengan single
+                val = val.replace(/""/g, '"');
+                // Preserve line breaks (tidak diubah)
+                return val;
+            });
+        }
+
+        // FUNGSI LOAD DATA
+        async function loadData() {
+            el.loading.style.display = 'block';
+            el.tableContainer.style.display = 'none';
+            el.emptyState.style.display = 'none';
+            
+            try {
+                const response = await fetch(CSV_URL);
+                const csvText = await response.text();
+                
+                // ===== PARSING CSV YANG BENAR =====
+                // Kita baca per karakter, bukan per baris
+                const lines = [];
+                let currentLine = '';
+                let inQuotes = false;
+                
+                for (let i = 0; i < csvText.length; i++) {
+                    const char = csvText[i];
+                    
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    }
+                    
+                    currentLine += char;
+                    
+                    // Baris baru hanya jika bukan di dalam quotes
+                    if (char === '\n' && !inQuotes) {
+                        lines.push(currentLine);
+                        currentLine = '';
+                    }
+                }
+                // Push baris terakhir
+                if (currentLine.trim()) {
+                    lines.push(currentLine);
+                }
+                
+                console.log(`Total baris CSV: ${lines.length}`);
+                
+                if (lines.length < 2) throw new Error('Data kosong');
+                
+                // Header di baris pertama
+                const headerRow = parseCSVLine(lines[0]);
+                console.log('Header:', headerRow);
+                
+                // Default index kolom: A=0, B=1, C=2, D=3, E=4, G=6, H=7
+                const idx = {
+                    tanggal: 0,
+                    nama: 1,
+                    titikAntar: 2,
+                    agent: 3,
+                    week: 4,
+                    id: 6,
+                    deskripsi: 7
+                };
+                
+                const data = [];
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    
+                    const cells = parseCSVLine(lines[i]);
+                    
+                    const rowData = {
+                        tanggal: cells[idx.tanggal] || '-',
+                        nama: cells[idx.nama] || '-',
+                        titikAntar: cells[idx.titikAntar] || '-',
+                        agent: cells[idx.agent] || '-',
+                        week: cells[idx.week] || '-',
+                        idMirror: cells[idx.id] || '-',
+                        deskripsi: cells[idx.deskripsi] || '-'
+                    };
+                    
+                    data.push(rowData);
+                }
+                
+                console.log(`✅ Data loaded: ${data.length} baris`);
+                console.log('Contoh data pertama:', data[0]);
+                
+                allData = data;
+                filteredData = [...data];
+                
+                updateUI();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                el.loading.innerHTML = `<p style="color:red">Error: ${error.message}</p>`;
+            }
+        }
+
+        // UPDATE UI
+        function updateUI() {
+            el.totalRows.innerText = allData.length;
+            
+            const uniqueAgents = [...new Set(allData.map(d => d.agent))];
+            const uniqueWeeks = [...new Set(allData.map(d => d.week))];
+            
+            el.totalAgent.innerText = uniqueAgents.length;
+            el.totalWeek.innerText = uniqueWeeks.length;
+            
+            el.filterAgent.innerHTML = '<option value="">Semua Agent</option>';
+            uniqueAgents.sort().forEach(a => {
+                el.filterAgent.innerHTML += `<option value="${a}">${a}</option>`;
+            });
+            
+            el.filterWeek.innerHTML = '<option value="">Semua Week</option>';
+            uniqueWeeks.sort().forEach(w => {
+                el.filterWeek.innerHTML += `<option value="${w}">${w}</option>`;
+            });
+            
+            renderTable();
+            el.lastUpdate.innerText = new Date().toLocaleTimeString();
+            el.loading.style.display = 'none';
+            el.tableContainer.style.display = 'block';
+        }
+
+        // RENDER TABEL
+        function renderTable() {
+            if (filteredData.length === 0) {
+                el.tableContainer.style.display = 'none';
+                el.emptyState.style.display = 'block';
+                return;
+            }
+            
+            let html = '';
+            filteredData.forEach((item, index) => {
+                // Preview untuk tabel (tanpa line break)
+                const previewTitik = item.titikAntar.replace(/\n/g, ' ').substring(0, 50);
+                
+                html += `<tr data-index="${index}">
+                    <td>${index + 1}</td>
+                    <td>${item.tanggal}</td>
+                    <td><strong>${item.nama}</strong></td>
+                    <td>${previewTitik}${item.titikAntar.length > 50 ? '...' : ''}</td>
+                    <td>${item.agent}</td>
+                    <td><strong>${item.week}</strong></td>
+                </tr>`;
+            });
+            el.tableBody.innerHTML = html;
+            
+            el.resultCount.innerText = `Menampilkan ${filteredData.length} dari ${allData.length} data`;
+            
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                row.addEventListener('click', function() {
+                    const index = this.dataset.index;
+                    showDetail(filteredData[index]);
+                });
+            });
+        }
+
+        // SHOW DETAIL (line break tetap terjaga)
+        function showDetail(data) {
+            el.modalId.innerText = data.idMirror;
+            el.detailTanggal.innerText = data.tanggal;
+            el.detailNama.innerText = data.nama;
+            el.detailTitikAntar.innerText = data.titikAntar; // Line break tetap ada
+            el.detailAgent.innerText = data.agent;
+            el.detailWeek.innerText = data.week;
+            el.detailIdMirror.innerText = data.idMirror;
+            el.detailDeskripsi.innerText = data.deskripsi; // Line break tetap ada
+            
+            el.modal.style.display = 'flex';
+        }
+
+        // FILTER
+        function applyFilters() {
+            const agent = el.filterAgent.value;
+            const week = el.filterWeek.value;
+            const search = el.searchInput.value.toLowerCase();
+            
+            filteredData = allData.filter(d => {
+                return (!agent || d.agent === agent) &&
+                       (!week || d.week === week) &&
+                       (!search || 
+                        d.nama.toLowerCase().includes(search) ||
+                        d.titikAntar.toLowerCase().includes(search));
+            });
+            
+            renderTable();
+        }
+
+        // COPY
+        function copyDetail() {
+            const text = `📋 DETAIL CUSTOMER SERVICE
+━━━━━━━━━━━━━━━━━━━━━━
+🆔 ID Mirror   : ${el.modalId.innerText}
+📅 Tanggal     : ${el.detailTanggal.innerText}
+👤 Nama CS     : ${el.detailNama.innerText}
+📍 Titik Antar  : ${el.detailTitikAntar.innerText}
+🤵 Agent       : ${el.detailAgent.innerText}
+📆 Week        : ${el.detailWeek.innerText}
+📝 Deskripsi   : ${el.detailDeskripsi.innerText}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Data dicopy!');
+            });
+        }
+
+        // EVENT LISTENERS
+        el.filterAgent.addEventListener('change', applyFilters);
+        el.filterWeek.addEventListener('change', applyFilters);
+        el.searchInput.addEventListener('input', applyFilters);
+        
+        el.clearSearch.addEventListener('click', () => {
+            el.searchInput.value = '';
+            applyFilters();
+        });
+        
+        el.refreshBtn.addEventListener('click', loadData);
+        el.closeModal.addEventListener('click', () => el.modal.style.display = 'none');
+        el.copyData.addEventListener('click', copyDetail);
+        el.openSheet.addEventListener('click', () => window.open(SHEET_URL, '_blank'));
+        
+        el.modal.addEventListener('click', (e) => {
+            if (e.target === el.modal) el.modal.style.display = 'none';
+        });
+
+        // START
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

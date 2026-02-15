@@ -217,7 +217,7 @@
             padding: 1.2rem 0.8rem 1rem;
             text-align: center;
             transition: all 0.2s ease;
-            border: 2px solid transparent;
+            border: 1px solid rgba(255,255,255,0.9);
             box-shadow: 0 15px 25px -12px rgba(18, 52, 77, 0.15);
             cursor: pointer;
             display: flex;
@@ -232,10 +232,8 @@
             transform: translateY(-5px);
         }
 
-        .card.active {
-            border-color: #1b6b93;
-            background: #f0f9ff;
-            transform: scale(1.02);
+        .card:active {
+            transform: translateY(-2px) scale(0.98);
         }
 
         .icon-circle {
@@ -252,8 +250,8 @@
             border: 2px solid rgba(255,255,255,0.7);
         }
 
-        .card.active .icon-circle {
-            background: #1b6b93;
+        .card:hover .icon-circle {
+            background: #1f6e93;
             color: white;
         }
 
@@ -285,79 +283,11 @@
         .card:nth-child(4) .icon-circle { background: #fcf0ce; color: #b17f3b; }
         .card:nth-child(5) .icon-circle { background: #dcd0f5; color: #5f4b8b; }
 
-        /* Content Area */
-        .content-area {
-            background: white;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            margin: 1.5rem 0 1rem;
-            box-shadow: 0 10px 30px -15px #1a4d68;
-            min-height: 300px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active-content {
-            display: block;
-        }
-
-        .content-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e1f0f9;
-        }
-
-        .content-header i {
-            font-size: 2rem;
-            background: #e1f0f9;
-            padding: 1rem;
-            border-radius: 1.2rem;
-            color: #1b6b93;
-        }
-
-        .content-header h3 {
-            color: #134a63;
-            font-size: 1.5rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-
-        .stat-card {
-            background: #f5fafd;
-            padding: 1.2rem;
-            border-radius: 1.2rem;
-            text-align: center;
-            border-left: 4px solid #1b6b93;
-        }
-
-        .stat-card .number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #0b4b6b;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.8rem;
-            border-bottom: 1px solid #e1f0f9;
-        }
-
-        .info-item i {
-            width: 30px;
-            color: #1b6b93;
-        }
+        .card:nth-child(1):hover .icon-circle { background: #0a4b6e; color: white; }
+        .card:nth-child(2):hover .icon-circle { background: #9b4e2d; color: white; }
+        .card:nth-child(3):hover .icon-circle { background: #2f7d4f; color: white; }
+        .card:nth-child(4):hover .icon-circle { background: #b17f3b; color: white; }
+        .card:nth-child(5):hover .icon-circle { background: #5f4b8b; color: white; }
 
         .repo-footer {
             margin-top: 1.2rem;
@@ -491,7 +421,7 @@
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- HEADER (SAMA PERSIS SEPERTI AWAL) -->
+        <!-- HEADER -->
         <div class="main-header">
             <div class="header-left">
                 <div class="logo-area">
@@ -501,7 +431,7 @@
                     <h2>Halo, Tim! 👋</h2>
                     <p>
                         <i class="fas fa-map-pin"></i> 
-                        5 halaman · siap pakai
+                        5 halaman · 1 repositori
                     </p>
                 </div>
             </div>
@@ -521,170 +451,64 @@
                 <!-- SEARCHBOX -->
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Cari halaman..." id="searchInput" value="">
+                    <input type="text" placeholder="Cari halaman..." id="searchInput">
                     <button onclick="performSearch()" id="searchButton"><i class="fas fa-arrow-right"></i></button>
                 </div>
             </div>
         </div>
 
-        <!-- GRID CARD 5 ITEM (SEKARANG JADI TAB) -->
-        <div class="card-grid" id="cardContainer">
-            <div class="card active" data-page="agent" onclick="switchTab('agent')">
+        <!-- GRID CARD 5 ITEM - SEKARANG JADI LINK KE FILE HTML -->
+        <div class="card-grid">
+            <!-- 1. Dashboard Agent - pindah ke dashboard-agent.html di tab yang sama -->
+            <a href="./dashboard-agent.html" class="card">
                 <div class="icon-circle"><i class="fas fa-user-tie"></i></div>
                 <h3>Dashboard Agent</h3>
                 <p>agen / mitra</p>
-            </div>
+            </a>
 
-            <div class="card" data-page="admin" onclick="switchTab('admin')">
+            <!-- 2. Dashboard Admin - pindah ke DashboardAdmin.html (sesuai nama file Anda) -->
+            <a href="./DashboardAdmin.html" class="card">
                 <div class="icon-circle"><i class="fas fa-user-cog"></i></div>
                 <h3>Dashboard Admin</h3>
                 <p>superuser</p>
-            </div>
+            </a>
 
-            <div class="card" data-page="cs" onclick="switchTab('cs')">
+            <!-- 3. Dashboard CS - pindah ke dashboardCS.html -->
+            <a href="./dashboardCS.html" class="card">
                 <div class="icon-circle"><i class="fas fa-headset"></i></div>
                 <h3>Dashboard CS</h3>
                 <p>customer service</p>
-            </div>
+            </a>
 
-            <div class="card" data-page="order" onclick="switchTab('order')">
+            <!-- 4. Form Order - pindah ke form-order.html -->
+            <a href="./form-order.html" class="card">
                 <div class="icon-circle"><i class="fas fa-clipboard-list"></i></div>
                 <h3>Form Order</h3>
                 <p>isi pemesanan</p>
-            </div>
+            </a>
 
-            <div class="card" data-page="website" onclick="switchTab('website')">
+            <!-- 5. Website Suruhboy - pindah ke website-suruhboy.html -->
+            <a href="./website-suruhboy.html" class="card">
                 <div class="icon-circle"><i class="fas fa-globe"></i></div>
                 <h3>Website Suruhboy</h3>
                 <p>landing page</p>
-            </div>
-        </div>
-
-        <!-- CONTENT AREA (BERUBAH SESUAI CARD YANG DIKLIK) -->
-        <div class="content-area">
-            <!-- Dashboard Agent -->
-            <div id="content-agent" class="tab-content active-content">
-                <div class="content-header">
-                    <i class="fas fa-user-tie"></i>
-                    <h3>Dashboard Agent</h3>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card"><div class="number">24</div><div>Pesanan Hari Ini</div></div>
-                    <div class="stat-card"><div class="number">12</div><div>Dalam Proses</div></div>
-                    <div class="stat-card"><div class="number">98%</div><div>Kepuasan</div></div>
-                </div>
-                <div class="info-item"><i class="fas fa-map-marker-alt"></i><div><strong>Lokasi terdekat:</strong> 3 order pickup</div></div>
-                <div class="info-item"><i class="fas fa-clock"></i><div><strong>Shift:</strong> 08.00 - 17.00</div></div>
-                <div class="info-item"><i class="fas fa-truck"></i><div><strong>Kendaraan:</strong> Motor B 1234 XYZ</div></div>
-            </div>
-
-            <!-- Dashboard Admin -->
-            <div id="content-admin" class="tab-content">
-                <div class="content-header">
-                    <i class="fas fa-user-cog"></i>
-                    <h3>Dashboard Admin</h3>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card"><div class="number">156</div><div>Total Agent</div></div>
-                    <div class="stat-card"><div class="number">1.2K</div><div>Order Bulan Ini</div></div>
-                    <div class="stat-card"><div class="number">45</div><div>Customer Baru</div></div>
-                </div>
-                <div class="info-item"><i class="fas fa-user-check"></i><div><strong>5 agent</strong> perlu verifikasi</div></div>
-                <div class="info-item"><i class="fas fa-file-invoice"></i><div><strong>Laporan keuangan</strong> Q1 2025</div></div>
-                <div class="info-item"><i class="fas fa-map-marked"></i><div><strong>3 area</strong> perlu tambah armada</div></div>
-            </div>
-
-            <!-- Dashboard CS -->
-            <div id="content-cs" class="tab-content">
-                <div class="content-header">
-                    <i class="fas fa-headset"></i>
-                    <h3>Dashboard CS</h3>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card"><div class="number">8</div><div>Chat Aktif</div></div>
-                    <div class="stat-card"><div class="number">3</div><div>Antrian Telepon</div></div>
-                    <div class="stat-card"><div class="number">12</div><div>Tiket Pending</div></div>
-                </div>
-                <div class="info-item"><i class="fas fa-clock"></i><div><strong>Rata-rata respon:</strong> 2.5 menit</div></div>
-                <div class="info-item"><i class="fas fa-smile"></i><div><strong>Kepuasan:</strong> 96%</div></div>
-            </div>
-
-            <!-- Form Order -->
-            <div id="content-order" class="tab-content">
-                <div class="content-header">
-                    <i class="fas fa-clipboard-list"></i>
-                    <h3>Form Order</h3>
-                </div>
-                <div style="background: #f5fafd; padding: 1.5rem; border-radius: 1rem;">
-                    <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;">
-                        <span style="background: white; padding: 0.5rem 1rem; border-radius: 2rem; border: 2px solid #1b6b93;">📦 Kecil</span>
-                        <span style="background: #e1f0f9; padding: 0.5rem 1rem; border-radius: 2rem;">📦 Sedang</span>
-                        <span style="background: #e1f0f9; padding: 0.5rem 1rem; border-radius: 2rem;">📦 Besar</span>
-                    </div>
-                    <div><i class="fas fa-map-pin" style="color:#1b6b93; width:25px;"></i> Jemput: Jl. Merdeka No. 45</div>
-                    <div><i class="fas fa-flag-checkered" style="color:#1b6b93; width:25px;"></i> Tujuan: Jl. Sudirman No. 12</div>
-                    <div><i class="fas fa-box" style="color:#1b6b93; width:25px;"></i> Berat: 2.5 kg</div>
-                    <button style="background:#1b6b93; color:white; border:none; padding:0.8rem 1.5rem; border-radius:2rem; margin-top:1rem;">Pesan</button>
-                </div>
-            </div>
-
-            <!-- Website Suruhboy -->
-            <div id="content-website" class="tab-content">
-                <div class="content-header">
-                    <i class="fas fa-globe"></i>
-                    <h3>Website Suruhboy</h3>
-                </div>
-                <div style="background: linear-gradient(135deg, #0b4057, #1b6b93); padding: 1.5rem; border-radius: 1rem; color: white;">
-                    <h3 style="font-size:1.8rem;">🚀 Suruhboy</h3>
-                    <p>Layanan Antar Instan</p>
-                    <div style="margin-top:1rem;">⭐ 4.8 (1.2K ulasan)</div>
-                    <div style="margin-top:1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
-                        <span style="background:rgba(255,255,255,0.2); padding:0.3rem 1rem; border-radius:2rem;">www.suruhboy.com</span>
-                    </div>
-                </div>
-            </div>
+            </a>
         </div>
 
         <!-- FOOTER -->
         <div class="repo-footer">
             <div class="footer-files">
                 <i class="fas fa-folder-tree"></i> 
-                <span>agent · admin · cs · order · suruhboy</span>
+                <span>dashboard-agent.html · DashboardAdmin.html · dashboardCS.html · form-order.html · website-suruhboy.html</span>
             </div>
             <div class="footer-note">
-                <i class="fas fa-hand-pointer"></i> klik card untuk ganti konten
+                <i class="fas fa-mouse-pointer"></i> klik card → pindah ke file HTML (1 tab)
             </div>
         </div>
     </div>
 
-    <!-- FUNGSI SEARCH DAN TAB -->
+    <!-- FUNGSI SEARCH JAVASCRIPT -->
     <script>
-        function switchTab(tabName) {
-            // Sembunyikan semua konten
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => {
-                content.classList.remove('active-content');
-            });
-            
-            // Tampilkan konten yang dipilih
-            const selectedContent = document.getElementById(`content-${tabName}`);
-            if (selectedContent) {
-                selectedContent.classList.add('active-content');
-            }
-            
-            // Hapus class active dari semua card
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.classList.remove('active');
-            });
-            
-            // Tambah class active ke card yang dipilih
-            const selectedCard = document.querySelector(`.card[data-page="${tabName}"]`);
-            if (selectedCard) {
-                selectedCard.classList.add('active');
-            }
-        }
-
         function performSearch() {
             const searchInput = document.getElementById('searchInput');
             const searchTerm = searchInput.value.toLowerCase().trim();
@@ -694,28 +518,35 @@
                 return;
             }
             
+            // Daftar halaman yang tersedia
             const pages = [
-                { name: 'agent', tab: 'agent' },
-                { name: 'admin', tab: 'admin' },
-                { name: 'cs', tab: 'cs' },
-                { name: 'order', tab: 'order' },
-                { name: 'suruhboy', tab: 'website' },
-                { name: 'website', tab: 'website' }
+                { name: 'dashboard agent', url: './dashboard-agent.html' },
+                { name: 'agent', url: './dashboard-agent.html' },
+                { name: 'dashboard admin', url: './DashboardAdmin.html' },
+                { name: 'admin', url: './DashboardAdmin.html' },
+                { name: 'dashboard cs', url: './dashboardCS.html' },
+                { name: 'cs', url: './dashboardCS.html' },
+                { name: 'form order', url: './form-order.html' },
+                { name: 'order', url: './form-order.html' },
+                { name: 'website suruhboy', url: './website-suruhboy.html' },
+                { name: 'suruhboy', url: './website-suruhboy.html' },
+                { name: 'website', url: './website-suruhboy.html' }
             ];
             
-            const matched = pages.find(page => 
-                page.name.includes(searchTerm) || searchTerm.includes(page.name)
+            // Cari halaman yang cocok
+            const matchedPage = pages.find(page => 
+                page.name.includes(searchTerm) || searchTerm.includes(page.name.split(' ')[0])
             );
             
-            if (matched) {
-                switchTab(matched.tab);
-                searchInput.value = '';
+            if (matchedPage) {
+                // Pindah ke halaman yang dituju (di tab yang sama)
+                window.location.href = matchedPage.url;
             } else {
-                alert('Coba: agent, admin, cs, order, atau suruhboy');
+                alert('Halaman tidak ditemukan. Coba: agent, admin, cs, order, atau suruhboy');
             }
         }
 
-        // Enter key untuk search
+        // Tambahkan event listener untuk enter key
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 performSearch();

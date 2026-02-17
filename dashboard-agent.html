@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Dashboard Agent - Mobile Friendly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== CSS LENGKAP DENGAN MOBILE OPTIMIZATION ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(145deg, #2c3e50, #1e2a36);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: rgba(255,255,255,0.1);
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        /* Control Bar */
+        .control-bar {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .search-box {
+            width: 100%;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #e0e7ef;
+            border-radius: 30px;
+            font-size: 14px;
+            -webkit-appearance: none;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 12px;
+            border: 1px solid #e0e7ef;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+        }
+
+        .refresh-btn {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        /* GRID CARD - MOBILE FRIENDLY */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 480px) {
+            .agent-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .agent-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .agent-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .agent-card {
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #e9eef3;
+        }
+
+        .agent-card:active {
+            transform: scale(0.98);
+            background: #f8fafc;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            color: white;
+            background: #2c3e50;
+            flex-shrink: 0;
+        }
+
+        .title h3 {
+            font-size: 16px;
+            margin-bottom: 2px;
+            word-break: break-word;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
+            color: #334155;
+            font-size: 13px;
+        }
+
+        .info-row i {
+            width: 18px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .order-summary {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 12px 0;
+            text-align: center;
+        }
+
+        .order-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .order-label {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .wa-btn {
+            width: 100%;
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 14px;
+            transition: 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .wa-btn:active {
+            background: #1da851;
+            transform: scale(0.98);
+        }
+
+        /* MODAL POPUP - MOBILE FRIENDLY */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        @media (min-width: 768px) {
+            .modal-overlay {
+                align-items: center;
+            }
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            .modal-card {
+                border-radius: 20px;
+                width: 90%;
+                max-width: 1000px;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(145deg, #2c3e50, #1e2a36);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            flex-shrink: 0;
+        }
+
+        .modal-title h2 {
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .modal-body {
+            padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e9eef3;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #2c3e50;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 480px) {
+            .info-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .info-box {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 3px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e2a36;
+            word-break: break-word;
+        }
+
+        /* SEARCH BAR DI POPUP */
+        .order-search {
+            margin-bottom: 15px;
+        }
+
+        .order-search-input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #e0e7ef;
+            border-radius: 30px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .order-search-box {
+            position: relative;
+        }
+
+        .order-search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .search-stats {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 5px;
+            margin-left: 10px;
+        }
+
+        /* TABEL ADJUSTABLE */
+        .table-controls {
+            margin-left: auto;
+            display: flex;
+            gap: 5px;
+        }
+
+        .table-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .table-btn:active {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .table-responsive-wrapper {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .table-resize-handle {
+            background: #f8fafc;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #64748b;
+            cursor: row-resize;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px solid #e2e8f0;
+            user-select: none;
+        }
+
+        .table-scrollable {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 300px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 500px;
+            table-layout: fixed;
+        }
+
+        .order-table th {
+            position: sticky;
+            top: 0;
+            background: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+            font-size: 11px;
+            padding: 12px 8px;
+            border-bottom: 2px solid #cbd5e1;
+            text-align: left;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .order-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e9eef3;
+            font-size: 12px;
+            word-wrap: break-word;
+        }
+
+        .resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: transparent;
+            cursor: col-resize;
+            z-index: 10;
+        }
+
+        /* Lebar default kolom untuk mobile */
+        .col-tanggal { width: 90px; }
+        .col-cs { width: 110px; }
+        .col-lokasi { width: 150px; }
+        .col-week { width: 70px; }
+        .col-nominal { width: 100px; }
+
+        .table-status-bar {
+            background: #f8fafc;
+            padding: 8px 12px;
+            font-size: 11px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .modal-footer {
+            padding: 15px;
+            border-top: 1px solid #e9eef3;
+            display: flex;
+            gap: 10px;
+            background: #f8fafc;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .modal-wa {
+            flex: 2;
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .modal-close {
+            flex: 1;
+            background: #f0f4f9;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f0f4f9;
+            border-top: 3px solid #2c3e50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        .debug-info {
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 11px;
+            color: #475569;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-between;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1><i class="fas fa-user-tie"></i> Dashboard Agent</h1>
+            <div class="stats">
+                <div class="stat">Total Agent: <span id="totalAgents">0</span></div>
+                <div class="stat">Total Order: <span id="totalOrders">0</span></div>
+            </div>
+        </div>
+
+        <!-- CONTROL BAR -->
+        <div class="control-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Cari agent...">
+            </div>
+            <div class="filter-row">
+                <select class="filter-select" id="agentFilter">
+                    <option value="">Semua Agent</option>
+                </select>
+                <button class="refresh-btn" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- LOADING -->
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Memuat data...</p>
+        </div>
+
+        <!-- ERROR MESSAGE -->
+        <div id="errorMessage" class="error-message" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Gagal memuat data</h3>
+            <p id="errorText"></p>
+        </div>
+
+        <!-- GRID AGENT -->
+        <div id="agentGrid" class="agent-grid" style="display: none;"></div>
+
+        <!-- DEBUG INFO -->
+        <div class="debug-info" id="debugInfo">
+            <span>Memuat data...</span>
+        </div>
+    </div>
+
+    <!-- MODAL DETAIL DENGAN SEARCH BAR -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-avatar" id="modalAvatar">👤</div>
+                <div class="modal-title">
+                    <h2 id="modalName">-</h2>
+                </div>
+                <div class="close-btn" id="closeModal">✕</div>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Informasi Agent -->
+                <div class="section-title">
+                    <i class="fas fa-address-card"></i> Informasi Agent
+                </div>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="info-label"><i class="fas fa-phone-alt"></i> WhatsApp</div>
+                        <div class="info-value" id="modalWA">-</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label"><i class="fas fa-map-marker-alt"></i> Area</div>
+                        <div class="info-value" id="modalArea">-</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label"><i class="fas fa-shopping-cart"></i> Total Order</div>
+                        <div class="info-value" id="modalTotalOrder">0</div>
+                    </div>
+                </div>
+
+                <!-- Riwayat Order dengan Search Bar -->
+                <div class="section-title">
+                    <i class="fas fa-history"></i> Riwayat Order
+                    <div class="table-controls">
+                        <button class="table-btn" id="resetTableWidth" title="Reset lebar">
+                            <i class="fas fa-undo-alt"></i>
+                        </button>
+                        <button class="table-btn" id="fitToContent" title="Sesuaikan konten">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- SEARCH BAR DI POPUP -->
+                <div class="order-search">
+                    <div class="order-search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="order-search-input" id="orderSearchInput" placeholder="Cari berdasarkan tanggal, CS, lokasi...">
+                    </div>
+                    <div class="search-stats" id="orderSearchStats">Menampilkan semua order</div>
+                </div>
+                
+                <div class="table-responsive-wrapper">
+                    <div class="table-resize-handle" id="tableResizeHandle">
+                        <i class="fas fa-grip-lines"></i> Tarik untuk atur tinggi
+                    </div>
+                    <div class="table-scrollable" id="tableScrollable">
+                        <table class="order-table" id="orderTable">
+                            <thead>
+                                <tr>
+                                    <th class="col-tanggal" data-index="0">Tanggal <span class="resize-handle"></span></th>
+                                    <th class="col-cs" data-index="1">Nama CS <span class="resize-handle"></span></th>
+                                    <th class="col-lokasi" data-index="2">Titik Antar <span class="resize-handle"></span></th>
+                                    <th class="col-week" data-index="3">Week <span class="resize-handle"></span></th>
+                                    <th class="col-nominal" data-index="4">Nominal <span class="resize-handle"></span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="table-status-bar">
+                        <span id="tableInfo">0 baris</span>
+                        <span class="table-hint"><i class="fas fa-arrows-alt-h"></i> Tarik border kolom</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="modal-wa" id="modalWAButton">
+                    <i class="fab fa-whatsapp"></i> Chat
+                </button>
+                <button class="modal-close" id="modalCloseBtn">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // KONFIGURASI
+        // ============================================
+        const SPREADSHEET_ID = '1AMJmLj2dbkmBmtFq6suRxI8PUlii2gIgywq3yVDnICc';
+        const AGENT_GID = '1139731848';
+        const ORDER_GID = '603290628';
+        
+        const AGENT_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${AGENT_GID}`;
+        const ORDER_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${ORDER_GID}`;
+
+        // ============================================
+        // STATE
+        // ============================================
+        let agents = [];
+        let orders = [];
+        let filteredAgents = [];
+        let currentAgentOrders = [];
+        let filteredOrders = [];
+
+        // ============================================
+        // ELEMENTS
+        // ============================================
+        const el = {
+            loading: document.getElementById('loading'),
+            errorMessage: document.getElementById('errorMessage'),
+            errorText: document.getElementById('errorText'),
+            agentGrid: document.getElementById('agentGrid'),
+            totalAgents: document.getElementById('totalAgents'),
+            totalOrders: document.getElementById('totalOrders'),
+            debugInfo: document.getElementById('debugInfo'),
+            searchInput: document.getElementById('searchInput'),
+            agentFilter: document.getElementById('agentFilter'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            modal: document.getElementById('detailModal'),
+            closeModal: document.getElementById('closeModal'),
+            modalCloseBtn: document.getElementById('modalCloseBtn'),
+            modalWAButton: document.getElementById('modalWAButton'),
+            modalAvatar: document.getElementById('modalAvatar'),
+            modalName: document.getElementById('modalName'),
+            modalWA: document.getElementById('modalWA'),
+            modalArea: document.getElementById('modalArea'),
+            modalTotalOrder: document.getElementById('modalTotalOrder'),
+            orderTableBody: document.getElementById('orderTableBody'),
+            tableInfo: document.getElementById('tableInfo'),
+            resetTableWidth: document.getElementById('resetTableWidth'),
+            fitToContent: document.getElementById('fitToContent'),
+            tableScrollable: document.getElementById('tableScrollable'),
+            tableResizeHandle: document.getElementById('tableResizeHandle'),
+            orderSearchInput: document.getElementById('orderSearchInput'),
+            orderSearchStats: document.getElementById('orderSearchStats')
+        };
+
+        // ============================================
+        // FORMAT FUNCTIONS
+        // ============================================
+        function formatWA(wa) {
+            if (!wa || wa === '-') return '-';
+            const cleaned = wa.toString().replace(/\D/g, '');
+            if (cleaned.length >= 10) {
+                return cleaned.replace(/(\d{4})(\d{4})(\d{4})/, '$1-$2-$3');
+            }
+            return wa;
+        }
+
+        function formatCurrency(amount) {
+            if (!amount || amount === '-') return '-';
+            const num = parseInt(amount.toString().replace(/[^0-9-]/g, '')) || 0;
+            return 'Rp' + num.toLocaleString('id-ID');
+        }
+
+        // ============================================
+        // PARSE CSV
+        // ============================================
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current);
+            
+            return result.map(val => val.replace(/^"|"$/g, '').trim());
+        }
+
+        // ============================================
+        // LOAD DATA AGENT
+        // ============================================
+        async function loadAgents() {
+            const response = await fetch(AGENT_CSV_URL);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const csv = await response.text();
+            const lines = csv.split('\n').filter(l => l.trim() !== '');
+            
+            if (lines.length < 2) return [];
+            
+            const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase());
+            
+            const nameIndex = headers.findIndex(h => h.includes('nama'));
+            const waIndex = headers.findIndex(h => h.includes('whatsapp') || h.includes('wa'));
+            const areaIndex = headers.findIndex(h => h.includes('area'));
+            
+            const agents = [];
+            for (let i = 1; i < lines.length; i++) {
+                const cols = parseCSVLine(lines[i]);
+                agents.push({
+                    nama: (nameIndex !== -1 && cols[nameIndex]) || `Agent-${i}`,
+                    wa: (waIndex !== -1 && cols[waIndex]) || '-',
+                    area: (areaIndex !== -1 && cols[areaIndex]) || '-'
+                });
+            }
+            
+            return agents;
+        }
+
+        // ============================================
+        // LOAD DATA ORDER
+        // ============================================
+        async function loadOrders() {
+            const response = await fetch(ORDER_CSV_URL);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const csv = await response.text();
+            
+            // Parse dengan handle kutip
+            const lines = [];
+            let currentLine = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < csv.length; i++) {
+                const char = csv[i];
+                if (char === '"') inQuotes = !inQuotes;
+                currentLine += char;
+                if (char === '\n' && !inQuotes) {
+                    lines.push(currentLine);
+                    currentLine = '';
+                }
+            }
+            if (currentLine.trim()) lines.push(currentLine);
+            
+            if (lines.length < 2) return [];
+            
+            const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase());
+            
+            const tanggalIndex = headers.findIndex(h => h.includes('tanggal'));
+            const csIndex = headers.findIndex(h => h.includes('nama cs'));
+            const lokasiIndex = headers.findIndex(h => h.includes('titik antar'));
+            const agentIndex = headers.findIndex(h => h.includes('agent'));
+            const weekIndex = headers.findIndex(h => h.includes('week'));
+            const nominalIndex = headers.findIndex(h => h.includes('nominal'));
+            
+            const orders = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const cols = parseCSVLine(lines[i]);
+                orders.push({
+                    tanggal: (tanggalIndex !== -1 && cols[tanggalIndex]) || '-',
+                    cs: (csIndex !== -1 && cols[csIndex]) || '-',
+                    lokasi: (lokasiIndex !== -1 && cols[lokasiIndex]) || '-',
+                    agent: (agentIndex !== -1 && cols[agentIndex]) || '-',
+                    week: (weekIndex !== -1 && cols[weekIndex]) || '-',
+                    nominal: (nominalIndex !== -1 && cols[nominalIndex]) || '-'
+                });
+            }
+            
+            return orders;
+        }
+
+        // ============================================
+        // LOAD ALL DATA
+        // ============================================
+        async function loadAllData() {
+            try {
+                el.loading.style.display = 'block';
+                el.agentGrid.style.display = 'none';
+                
+                agents = await loadAgents();
+                orders = await loadOrders();
+                
+                filteredAgents = [...agents];
+                renderGrid();
+                updateStats();
+                
+                el.debugInfo.innerHTML = `
+                    <span>📊 Agents: ${agents.length}</span>
+                    <span>📦 Orders: ${orders.length}</span>
+                    <span>🕐 ${new Date().toLocaleTimeString()}</span>
+                `;
+                
+                el.loading.style.display = 'none';
+                el.agentGrid.style.display = 'grid';
+                
+            } catch (error) {
+                el.loading.style.display = 'none';
+                el.errorMessage.style.display = 'block';
+                el.errorText.innerText = error.message;
+                el.debugInfo.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        // ============================================
+        // RENDER GRID
+        // ============================================
+        function renderGrid() {
+            const search = el.searchInput.value.toLowerCase();
+            const filterAgent = el.agentFilter.value;
+            
+            filteredAgents = agents.filter(agent => {
+                const matchSearch = !search || 
+                    agent.nama.toLowerCase().includes(search) ||
+                    agent.area.toLowerCase().includes(search);
+                const matchFilter = !filterAgent || agent.nama === filterAgent;
+                return matchSearch && matchFilter;
+            });
+
+            let html = '';
+            filteredAgents.forEach(agent => {
+                const agentOrders = orders.filter(o => o.agent === agent.nama);
+                const totalOrder = agentOrders.length;
+                
+                html += `
+                    <div class="agent-card" data-agent="${agent.nama}">
+                        <div class="card-header">
+                            <div class="avatar">👤</div>
+                            <div class="title">
+                                <h3>${agent.nama}</h3>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <i class="fas fa-phone-alt"></i>
+                            <span>${formatWA(agent.wa)}</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${agent.area}</span>
+                        </div>
+                        <div class="order-summary">
+                            <div class="order-value">${totalOrder}</div>
+                            <div class="order-label">Total Order</div>
+                        </div>
+                        <button class="wa-btn" data-wa="${agent.wa}" onclick="event.stopPropagation(); chatWA('${agent.wa}')">
+                            <i class="fab fa-whatsapp"></i> Chat
+                        </button>
+                    </div>
+                `;
+            });
+            
+            el.agentGrid.innerHTML = html;
+            
+            document.querySelectorAll('.agent-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!e.target.closest('.wa-btn')) {
+                        const agentName = this.dataset.agent;
+                        const agent = agents.find(a => a.nama === agentName);
+                        if (agent) showDetail(agent);
+                    }
+                });
+            });
+        }
+
+        // ============================================
+        // SHOW DETAIL
+        // ============================================
+        function showDetail(agent) {
+            currentAgentOrders = orders.filter(o => o.agent === agent.nama);
+            filteredOrders = [...currentAgentOrders];
+            
+            el.modalName.innerText = agent.nama;
+            el.modalWA.innerText = formatWA(agent.wa);
+            el.modalArea.innerText = agent.area;
+            el.modalTotalOrder.innerText = currentAgentOrders.length;
+            
+            renderOrderTable();
+            
+            // Reset search input
+            el.orderSearchInput.value = '';
+            el.orderSearchStats.innerText = `Menampilkan ${filteredOrders.length} order`;
+            
+            el.modalWAButton.onclick = () => chatWA(agent.wa);
+            
+            setTimeout(() => {
+                initTableResize();
+                initTableHeightResize();
+            }, 100);
+            
+            el.modal.style.display = 'flex';
+        }
+
+        // ============================================
+        // RENDER ORDER TABLE
+        // ============================================
+        function renderOrderTable() {
+            if (filteredOrders.length === 0) {
+                el.orderTableBody.innerHTML = `<tr><td colspan="5" class="no-data">Tidak ada order</td></tr>`;
+                el.tableInfo.innerText = '0 baris';
+                return;
+            }
+            
+            let html = '';
+            filteredOrders.forEach(order => {
+                html += `
+                    <tr>
+                        <td>${order.tanggal}</td>
+                        <td>${order.cs}</td>
+                        <td>${order.lokasi}</td>
+                        <td>${order.week}</td>
+                        <td>${formatCurrency(order.nominal)}</td>
+                    </tr>
+                `;
+            });
+            
+            el.orderTableBody.innerHTML = html;
+            el.tableInfo.innerText = `${filteredOrders.length} baris`;
+        }
+
+        // ============================================
+        // SEARCH ORDER DI POPUP
+        // ============================================
+        function filterOrders() {
+            const search = el.orderSearchInput.value.toLowerCase().trim();
+            
+            if (!search) {
+                filteredOrders = [...currentAgentOrders];
+            } else {
+                filteredOrders = currentAgentOrders.filter(order => 
+                    order.tanggal.toLowerCase().includes(search) ||
+                    order.cs.toLowerCase().includes(search) ||
+                    order.lokasi.toLowerCase().includes(search) ||
+                    order.week.toLowerCase().includes(search)
+                );
+            }
+            
+            renderOrderTable();
+            el.orderSearchStats.innerText = `Menampilkan ${filteredOrders.length} dari ${currentAgentOrders.length} order`;
+        }
+
+        // ============================================
+        // CHAT WA
+        // ============================================
+        function chatWA(wa) {
+            const clean = wa.toString().replace(/\D/g, '');
+            if (clean) window.open(`https://wa.me/${clean}`, '_blank');
+        }
+
+        // ============================================
+        // UPDATE STATS
+        // ============================================
+        function updateStats() {
+            el.totalAgents.innerText = agents.length;
+            el.totalOrders.innerText = orders.length;
+            
+            let filterHtml = '<option value="">Semua Agent</option>';
+            agents.sort((a, b) => a.nama.localeCompare(b.nama)).forEach(a => {
+                filterHtml += `<option value="${a.nama}">${a.nama}</option>`;
+            });
+            el.agentFilter.innerHTML = filterHtml;
+        }
+
+        // ============================================
+        // RESIZE FUNCTIONS
+        // ============================================
+        function initTableResize() {
+            const table = document.getElementById('orderTable');
+            if (!table) return;
+            
+            const headers = table.querySelectorAll('th');
+            
+            headers.forEach(th => {
+                const handle = th.querySelector('.resize-handle');
+                if (!handle) return;
+                
+                let isResizing = false;
+                let startX, startWidth;
+                
+                handle.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isResizing = true;
+                    startX = e.pageX;
+                    startWidth = th.offsetWidth;
+                    
+                    const overlay = document.createElement('div');
+                    overlay.id = 'resize-overlay';
+                    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;cursor:col-resize;';
+                    document.body.appendChild(overlay);
+                    
+                    const onMouseMove = (e) => {
+                        if (!isResizing) return;
+                        const diff = e.pageX - startX;
+                        const newWidth = Math.max(50, startWidth + diff);
+                        th.style.width = newWidth + 'px';
+                    };
+                    
+                    const onMouseUp = () => {
+                        isResizing = false;
+                        document.body.removeChild(overlay);
+                        document.removeEventListener('mousemove', onMouseMove);
+                        document.removeEventListener('mouseup', onMouseUp);
+                    };
+                    
+                    document.addEventListener('mousemove', onMouseMove);
+                    document.addEventListener('mouseup', onMouseUp);
+                });
+            });
+        }
+
+        function initTableHeightResize() {
+            if (!el.tableResizeHandle || !el.tableScrollable) return;
+            
+            let isResizing = false;
+            let startY, startHeight;
+            
+            el.tableResizeHandle.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                isResizing = true;
+                startY = e.pageY;
+                startHeight = el.tableScrollable.offsetHeight;
+                
+                const overlay = document.createElement('div');
+                overlay.id = 'resize-overlay';
+                overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;cursor:row-resize;';
+                document.body.appendChild(overlay);
+                
+                const onMouseMove = (e) => {
+                    if (!isResizing) return;
+                    const diff = e.pageY - startY;
+                    const newHeight = Math.max(150, startHeight + diff);
+                    el.tableScrollable.style.maxHeight = newHeight + 'px';
+                };
+                
+                const onMouseUp = () => {
+                    isResizing = false;
+                    document.body.removeChild(overlay);
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+                
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        }
+
+        function resetTableWidth() {
+            const table = document.getElementById('orderTable');
+            if (!table) return;
+            
+            const headers = table.querySelectorAll('th');
+            const defaultWidths = ['90px', '110px', '150px', '70px', '100px'];
+            
+            headers.forEach((th, i) => th.style.width = defaultWidths[i]);
+        }
+
+        function fitToContent() {
+            const table = document.getElementById('orderTable');
+            if (!table) return;
+            
+            const headers = table.querySelectorAll('th');
+            
+            headers.forEach((th, index) => {
+                const cells = table.querySelectorAll(`tbody td:nth-child(${index + 1})`);
+                let maxWidth = th.innerText.length * 7;
+                
+                cells.forEach(cell => {
+                    const width = cell.innerText.length * 7;
+                    if (width > maxWidth) maxWidth = width;
+                });
+                
+                th.style.width = Math.min(maxWidth + 20, 250) + 'px';
+            });
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        el.searchInput.addEventListener('input', renderGrid);
+        el.agentFilter.addEventListener('change', renderGrid);
+        el.refreshBtn.addEventListener('click', loadAllData);
+        el.closeModal.addEventListener('click', () => el.modal.style.display = 'none');
+        el.modalCloseBtn.addEventListener('click', () => el.modal.style.display = 'none');
+        el.modal.addEventListener('click', (e) => e.target === el.modal && (el.modal.style.display = 'none'));
+        
+        el.orderSearchInput.addEventListener('input', filterOrders);
+        el.resetTableWidth.addEventListener('click', resetTableWidth);
+        el.fitToContent.addEventListener('click', fitToContent);
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', loadAllData);
+    </script>
+</body>
+</html>

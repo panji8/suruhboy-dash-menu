@@ -668,6 +668,39 @@
         }
 
         // ============================================
+        // FUNGSI PARSE TANGGAL (UNTUK SORTING)
+        // ============================================
+        function parseTanggal(tanggalStr) {
+            if (!tanggalStr || tanggalStr === '-') return null;
+            
+            // Format: DD/MM/YYYY
+            const parts = tanggalStr.split('/');
+            if (parts.length === 3) {
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1; // Bulan dimulai dari 0
+                const year = parseInt(parts[2]);
+                
+                if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                    return new Date(year, month, day);
+                }
+            }
+            
+            // Format: YYYY-MM-DD
+            const isoParts = tanggalStr.split('-');
+            if (isoParts.length === 3) {
+                const year = parseInt(isoParts[0]);
+                const month = parseInt(isoParts[1]) - 1;
+                const day = parseInt(isoParts[2]);
+                
+                if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                    return new Date(year, month, day);
+                }
+            }
+            
+            return null;
+        }
+
+        // ============================================
         // LOAD AGENTS FROM SHEET
         // ============================================
         async function loadAgents() {
@@ -682,7 +715,7 @@
                 
                 const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase());
                 
-                // Cari index kolom (lebih fleksibel)
+                // Cari index kolom
                 const nameIndex = headers.findIndex(h => 
                     h.includes('nama') || h.includes('agent'));
                 const waIndex = headers.findIndex(h => 
@@ -900,7 +933,7 @@
             // Reset search
             el.orderSearch.value = '';
             
-            // Render compact list
+            // Render compact list dengan urutan terbaru ke terlama
             renderCompactList(agentOrders);
             
             // Set WA button
@@ -910,12 +943,27 @@
         };
 
         // ============================================
-        // RENDER COMPACT LIST
+        // RENDER COMPACT LIST (DENGAN SORTING TERBARU)
         // ============================================
         function renderCompactList(agentOrders) {
             const search = el.orderSearch.value.toLowerCase();
             
-            let filteredOrders = agentOrders.filter(order => 
+            // ===== SORTING: TERBARU KE TERLAMA =====
+            const sortedOrders = [...agentOrders].sort((a, b) => {
+                const dateA = parseTanggal(a.tanggal);
+                const dateB = parseTanggal(b.tanggal);
+                
+                // Jika tanggal tidak valid, tempatkan di akhir
+                if (!dateA && !dateB) return 0;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                
+                // Descending (terbaru dulu)
+                return dateB - dateA;
+            });
+            
+            // Filter berdasarkan search
+            let filteredOrders = sortedOrders.filter(order => 
                 order.cs.toLowerCase().includes(search) ||
                 order.lokasi.toLowerCase().includes(search)
             );

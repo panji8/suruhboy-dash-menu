@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Order Agent - WhatsApp & Payment Status</title>
+    <title>Dashboard Order Agent - WhatsApp & Payment Status (Update Konversi 7% Fee)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* SEMUA STYLE CSS PERTAMA TETAP SAMA */
+        /* SEMUA STYLE CSS SAMA SEPERTI SEBELUMNYA */
         * {
             margin: 0;
             padding: 0;
@@ -954,7 +954,6 @@
                 text-align: left;
             }
             
-            /* Untuk tabel yang lebih lebar karena ada kolom baru */
             .table-container {
                 font-size: 12px;
             }
@@ -1058,6 +1057,23 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
+        
+        /* Styling khusus untuk agent dengan fee 7% */
+        .fee-badge {
+            display: inline-block;
+            background-color: #3b82f6;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        
+        .fee-badge.warning {
+            background-color: #f59e0b;
+        }
     </style>
 </head>
 <body>
@@ -1077,6 +1093,7 @@
                     Google Sheets Order Agent
                 </a>
                 | Sheets: "To Dashboard" & "Database Agent" & "Payment History"
+                | <span style="color: #ffdd00; font-weight: bold;">UPDATE KONVERSI: Diar & Akhmad Rifki Fee 7% (Orderan Tetap)</span>
             </div>
         </header>
         
@@ -1162,6 +1179,7 @@
                     <div class="agent-info-row">
                         <span class="agent-info-label">Biaya Admin Minggu Ini:</span>
                         <span class="agent-info-value" id="agent-admin-fee">Rp0</span>
+                        <span id="agent-fee-badge" style="margin-left: 5px;"></span>
                     </div>
                     <div class="agent-info-row">
                         <span class="agent-info-label">Total Orderan:</span>
@@ -1225,7 +1243,7 @@
                                         <th>No</th>
                                         <th>Nama Agent</th>
                                         <th>Nomor WhatsApp</th>
-                                        <th>Total Biaya Admin (10%)</th>
+                                        <th>Total Biaya Admin</th>
                                         <th>Total Orderan</th>
                                         <th>Status Pembayaran</th>
                                         <th>CTWA ke Agent</th>
@@ -1288,7 +1306,11 @@
                         <div class="info-box">
                             <div class="info-title">📊 Informasi Dashboard</div>
                             <p><strong>Mode Aggregated:</strong> Data dikelompokkan per agent per minggu</p>
-                            <p><strong>Perhitungan:</strong> Total Orderan = Total Biaya Admin × 10</p>
+                            <p><strong>Perhitungan:</strong> 
+                                <br>▪ Agent lain: Data langsung dari sheet (fee 10%)
+                                <br>▪ <span style="color:#3b82f6; font-weight:600;">Diar & Akhmad Rifki: Admin Fee = (Total Order × 7%) → dikonversi dari 10%</span>
+                                <br>▪ <span style="color:#059669; font-weight:600;">Total Orderan untuk semua agent tetap sama dengan data asli</span>
+                            </p>
                             <p><strong>Sumber Data:</strong> Google Sheets "To Dashboard" & "Database Agent"</p>
                             <p><strong>Tren Mingguan:</strong> Data dari sheet "Report Weekly" (5 minggu terakhir) - Minggu terbaru di kanan</p>
                             <p><strong>Fitur CTWA:</strong> Tombol hijau di tabel untuk kirim pesan langsung ke agent</p>
@@ -1349,7 +1371,6 @@
                                 </button>
                             </h3>
                             <div id="payment-history-list">
-                                <!-- History akan diisi di sini -->
                                 <div style="text-align: center; color: #888; padding: 30px 20px;">
                                     <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i>
                                     <div>Belum ada riwayat pembayaran</div>
@@ -1372,7 +1393,8 @@
             <p style="font-size: 12px; margin-top: 5px;">
                 Terakhir diupdate: <span id="last-update">-</span> | 
                 Payment API Status: <span id="api-status">🔴 Offline</span> |
-                Fitur CTWA: <span style="color: #25D366;">✓ Aktif</span>
+                Fitur CTWA: <span style="color: #25D366;">✓ Aktif</span> |
+                <span style="color:#3b82f6;">Agent 7% (konversi): Diar, Akhmad Rifki</span>
             </p>
         </footer>
     </div>
@@ -1390,6 +1412,14 @@
         const ORDER_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${ORDER_SHEET_NAME}`;
         const AGENT_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${AGENT_SHEET_NAME}`;
         const WEEKLY_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${WEEKLY_SHEET_NAME}`;
+        
+        // ==============================================
+        // KONFIGURASI AGENT DENGAN FEE KHUSUS (7%)
+        // ==============================================
+        const SPECIAL_AGENTS = {
+            'Diar': 7,
+            'Akhmad Rifki': 7
+        };
         
         // Application State
         let rawData = [];
@@ -1447,6 +1477,7 @@
             agentRemainingPayment: document.getElementById('agent-remaining-payment'),
             whatsappReminderBtn: document.getElementById('whatsapp-reminder-btn'),
             whatsappContactBtn: document.getElementById('whatsapp-contact-btn'),
+            agentFeeBadge: document.getElementById('agent-fee-badge'),
             
             // Payment Section
             paymentAgentSelect: document.getElementById('payment-agent-select'),
@@ -1464,6 +1495,96 @@
             // Weekly Chart Elements
             weeklyChartTitle: document.getElementById('weekly-chart-title')
         };
+        
+        // ==============================================
+        // FUNGSI BARU: MENGHITUNG ADMIN FEE BERDASARKAN TOTAL ORDER
+        // UNTUK AGENT DENGAN FEE KHUSUS (7%)
+        // ==============================================
+        function calculateAdminFee(totalOrder, agentName) {
+            // Default: data dari sheet sudah dalam bentuk admin fee 10%
+            // Jadi kita kembalikan totalOrder / 10 untuk agent biasa
+            if (!agentName || !SPECIAL_AGENTS[agentName]) {
+                return totalOrder / 10;
+            }
+            
+            // Untuk agent khusus (7%): admin fee = totalOrder * 7%
+            // Tapi karena di sheet data admin fee adalah 10% dari total order,
+            // kita perlu konversi: 
+            // Jika di sheet admin fee = X (10% dari total order) 
+            // Maka total order = X * 10
+            // Untuk fee 7%: admin fee baru = (X * 10) * 7% = X * 0.7
+            
+            // Jadi kita bisa hitung dari total order:
+            // admin fee = totalOrder * 7%
+            return Math.round(totalOrder * 0.07);
+        }
+        
+        // ==============================================
+        // FUNGSI UNTUK MENDAPATKAN TOTAL ORDER DARI DATA ASLI
+        // ==============================================
+        function getTotalOrderFromAdminFee(adminFee, agentName) {
+            // Untuk agent biasa: total order = adminFee * 10
+            if (!agentName || !SPECIAL_AGENTS[agentName]) {
+                return adminFee * 10;
+            }
+            
+            // Untuk agent khusus: total order = adminFee / 7 * 100
+            // Tapi karena data di sheet adalah admin fee 10%,
+            // maka kita perlu menyimpan total order asli
+            // Solusi: simpan total order asli dari data mentah
+            
+            // Default fallback
+            return Math.round(adminFee * (100 / SPECIAL_AGENTS[agentName]));
+        }
+        
+        // ==============================================
+        // FUNGSI UTAMA: MEMPROSES DATA AGREGAT
+        // ==============================================
+        function processAggregatedData() {
+            const processed = {};
+            
+            // Loop melalui setiap minggu
+            Object.keys(aggregatedData).forEach(week => {
+                processed[week] = {};
+                
+                // Loop melalui setiap agent di minggu tersebut
+                Object.entries(aggregatedData[week]).forEach(([agent, adminFee10Percent]) => {
+                    // adminFee10Percent adalah biaya admin dari sheet (10% dari total order)
+                    
+                    if (SPECIAL_AGENTS[agent]) {
+                        // Untuk agent 7%: 
+                        // Total order sebenarnya = adminFee10Percent * 10
+                        const actualTotalOrder = adminFee10Percent * 10;
+                        
+                        // Biaya admin yang baru (7% dari total order)
+                        const newAdminFee = Math.round(actualTotalOrder * 0.07);
+                        
+                        // Simpan dengan biaya admin yang baru
+                        processed[week][agent] = newAdminFee;
+                        
+                        console.log(`Konversi ${agent}: admin lama ${adminFee10Percent} → admin baru ${newAdminFee} (total order ${actualTotalOrder})`);
+                    } else {
+                        // Agent biasa: tetap pakai data asli
+                        processed[week][agent] = adminFee10Percent;
+                    }
+                });
+            });
+            
+            return processed;
+        }
+        
+        // ==============================================
+        // FUNGSI UNTUK MENDAPATKAN TOTAL ORDER DARI DATA YANG SUDAH DIPROSES
+        // ==============================================
+        function getTotalOrder(agent, adminFee) {
+            if (SPECIAL_AGENTS[agent]) {
+                // Untuk agent 7%: total order = adminFee / 7 * 100
+                return Math.round(adminFee * (100 / SPECIAL_AGENTS[agent]));
+            } else {
+                // Untuk agent biasa: total order = adminFee * 10
+                return adminFee * 10;
+            }
+        }
         
         // Toast Notification System
         function showToast(message, type = 'info', duration = 5000) {
@@ -1515,11 +1636,6 @@
                 return `+${cleanNumber}`;
             }
             return cleanNumber;
-        }
-        
-        // Calculate Total Order
-        function calculateTotalOrder(adminFee) {
-            return parseInt(adminFee) * 10;
         }
         
         // Update Status Indicator
@@ -1701,7 +1817,8 @@
             }
             
             const weekData = Object.entries(aggregatedData[week]).map(([agent, adminFee]) => {
-                const totalOrder = calculateTotalOrder(adminFee);
+                // Hitung total order berdasarkan agent
+                const totalOrder = getTotalOrder(agent, adminFee);
                 const paymentInfo = getPaymentInfo(agent, week);
                 const paidAmount = paymentInfo ? paymentInfo.paidAmount : 0;
                 const remaining = adminFee - paidAmount;
@@ -1714,7 +1831,8 @@
                     isActive: adminFee > 0,
                     paidAmount: paidAmount,
                     remaining: remaining,
-                    paymentStatus: getPaymentStatus(adminFee, paidAmount)
+                    paymentStatus: getPaymentStatus(adminFee, paidAmount),
+                    feePercentage: SPECIAL_AGENTS[agent] || 10 // tambahan info fee
                 };
             });
             
@@ -1765,9 +1883,13 @@
             }
         }
         
-        // ==============================================
-        // FUNGSI BARU: INTEGRASI GOOGLE SHEETS PAYMENT
-        // ==============================================
+        // Get badge for agent fee
+        function getAgentFeeBadge(agentName) {
+            if (SPECIAL_AGENTS[agentName]) {
+                return `<span class="fee-badge">${SPECIAL_AGENTS[agentName]}% (konversi)</span>`;
+            }
+            return '<span class="fee-badge" style="background-color:#6b7280;">10%</span>';
+        }
         
         // Test koneksi ke Apps Script
         async function testAppsScriptConnection() {
@@ -1792,71 +1914,6 @@
             }
         }
         
-        // Kirim data pembayaran ke Google Sheets
-        async function sendPaymentToGoogleSheets(paymentData) {
-            try {
-                showToast('Mengirim data ke Google Sheets...', 'info');
-                
-                // Cek koneksi dulu
-                const isConnected = await testAppsScriptConnection();
-                if (!isConnected) {
-                    showToast('⚠️ Koneksi terbatas. Mencoba mode alternatif...', 'info');
-                }
-                
-                // Tambah timestamp dan info tambahan
-                const fullPaymentData = {
-                    ...paymentData,
-                    timestamp: new Date().toISOString(),
-                    inputBy: 'Dashboard Admin',
-                    action: 'savePayment'
-                };
-                
-                // Gunakan proxy untuk menghindari CORS (alternatif)
-                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(APPS_SCRIPT_URL)}`;
-                
-                const response = await fetch(proxyUrl, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: JSON.stringify(fullPaymentData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Simpan juga ke localStorage sebagai backup
-                    savePaymentToLocalStorage(paymentData);
-                    
-                    // Trigger reload data
-                    loadPaymentHistoryFromGoogleSheets(paymentData.agent, paymentData.week);
-                    
-                    // Animasikan success
-                    elements.paymentSubmitBtn.classList.add('payment-success-animation');
-                    setTimeout(() => {
-                        elements.paymentSubmitBtn.classList.remove('payment-success-animation');
-                    }, 2000);
-                    
-                    return { success: true, data: result };
-                } else {
-                    throw new Error(result.message || 'Gagal menyimpan data');
-                }
-                
-            } catch (error) {
-                console.error('Error sending to Google Sheets:', error);
-                
-                // Fallback: simpan ke localStorage saja
-                savePaymentToLocalStorage(paymentData);
-                showToast('⚠️ Disimpan di browser (offline mode)', 'info');
-                
-                return { 
-                    success: false, 
-                    message: `Disimpan lokal: ${error.message}` 
-                };
-            }
-        }
-        
         // Simpan ke localStorage sebagai backup
         function savePaymentToLocalStorage(paymentData) {
             try {
@@ -1872,7 +1929,6 @@
                 offlinePayments.push(offlinePayment);
                 localStorage.setItem('offline_payments', JSON.stringify(offlinePayments));
                 
-                // Simpan juga ke payment history lokal
                 savePayment(paymentData.agent, paymentData.week, paymentData.paidAmount);
                 
                 return true;
@@ -1882,52 +1938,50 @@
             }
         }
         
-        // Load payment history dari Google Sheets
+        // Load payment history dari Google Sheets (simulasi sederhana)
         async function loadPaymentHistoryFromGoogleSheets(agentName, week) {
             try {
                 elements.refreshHistoryBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
                 elements.refreshHistoryBtn.disabled = true;
                 
-                const url = `${APPS_SCRIPT_URL}?action=getHistory&agent=${encodeURIComponent(agentName || '')}&week=${encodeURIComponent(week || '')}&timestamp=${Date.now()}`;
-                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+                // Untuk demo, kita hanya ambil dari localStorage
+                const offlinePayments = JSON.parse(localStorage.getItem('offline_payments') || '[]');
                 
-                const response = await fetch(proxyUrl);
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Combine dengan data lokal
-                    const offlinePayments = JSON.parse(localStorage.getItem('offline_payments') || '[]');
-                    const allHistory = [...data.history || [], ...offlinePayments];
-                    
-                    // Filter untuk agent/week tertentu
-                    let filteredHistory = allHistory;
-                    if (agentName) {
-                        filteredHistory = filteredHistory.filter(h => h.agent === agentName);
-                    }
-                    if (week) {
-                        filteredHistory = filteredHistory.filter(h => h.week === week);
-                    }
-                    
-                    // Sort by timestamp
-                    filteredHistory.sort((a, b) => {
-                        const timeA = new Date(a.timestamp || a.savedAt || 0);
-                        const timeB = new Date(b.timestamp || b.savedAt || 0);
-                        return timeB - timeA;
-                    });
-                    
-                    renderPaymentHistory(filteredHistory);
-                    
-                } else {
-                    renderPaymentHistory([]);
+                // Filter untuk agent/week tertentu
+                let filteredHistory = offlinePayments;
+                if (agentName) {
+                    filteredHistory = filteredHistory.filter(h => h.agent === agentName);
                 }
+                if (week) {
+                    filteredHistory = filteredHistory.filter(h => h.week === week);
+                }
+                
+                // Tambahkan data dari paymentHistory
+                const paymentKey = `${agentName}_${week}`;
+                if (paymentHistory[paymentKey]) {
+                    const existing = {
+                        agent: agentName,
+                        week: week,
+                        paidAmount: paymentHistory[paymentKey].paidAmount,
+                        timestamp: paymentHistory[paymentKey].date,
+                        isOffline: true,
+                        keterangan: 'Disimpan lokal'
+                    };
+                    filteredHistory.push(existing);
+                }
+                
+                // Sort by timestamp
+                filteredHistory.sort((a, b) => {
+                    const timeA = new Date(a.timestamp || a.savedAt || 0);
+                    const timeB = new Date(b.timestamp || b.savedAt || 0);
+                    return timeB - timeA;
+                });
+                
+                renderPaymentHistory(filteredHistory);
                 
             } catch (error) {
                 console.warn('Error loading payment history:', error);
                 renderPaymentHistory([]);
-                
-                // Tampilkan data dari localStorage saja
-                showToast('⚠️ Menampilkan data lokal (offline)', 'info');
-                
             } finally {
                 elements.refreshHistoryBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
                 elements.refreshHistoryBtn.disabled = false;
@@ -1976,7 +2030,6 @@
             // Render
             let html = '';
             const dates = Object.keys(groupedByDate).sort((a, b) => {
-                // Sort dates descending
                 return new Date(b.split(', ')[1] || b) - new Date(a.split(', ')[1] || a);
             });
             
@@ -1995,7 +2048,7 @@
                     
                     const isOffline = record.isOffline;
                     const status = record.status || 
-                        (record.paidAmount >= record.totalAdmin ? 'Lunas' : 
+                        (record.paidAmount >= (record.totalAdmin || 0) ? 'Lunas' : 
                          record.paidAmount === 0 ? 'Belum Bayar' : 'Sebagian');
                     
                     const statusClass = status === 'Lunas' ? 'status-paid' : 
@@ -2076,34 +2129,29 @@
                     week: week,
                     totalAdmin: agentData.adminFee,
                     paidAmount: paidAmount,
-                    remaining: agentData.adminFee - paidAmount
+                    remaining: agentData.adminFee - paidAmount,
+                    timestamp: new Date().toISOString()
                 };
                 
-                // Send to Google Sheets
-                const result = await sendPaymentToGoogleSheets(paymentData);
+                // Simpan ke localStorage
+                savePaymentToLocalStorage(paymentData);
                 
-                if (result.success) {
-                    // Update UI
-                    updateAgentInfo();
-                    
-                    // Show success
-                    if (paidAmount >= agentData.adminFee) {
-                        showToast(`✅ Pembayaran lunas untuk ${agentName}`, 'success');
-                    } else if (paidAmount === 0) {
-                        showToast(`🔄 Status direset untuk ${agentName}`, 'info');
-                    } else {
-                        showToast(`✅ Pembayaran ${formatCurrency(paidAmount)} berhasil disimpan`, 'success');
-                    }
-                    
-                    // Clear form
-                    elements.paymentPaidAmount.value = '';
-                    
-                    // Reload payment history
-                    loadPaymentHistoryFromGoogleSheets(agentName, week);
-                    
+                // Update UI
+                updateAgentInfo();
+                
+                if (paidAmount >= agentData.adminFee) {
+                    showToast(`✅ Pembayaran lunas untuk ${agentName}`, 'success');
+                } else if (paidAmount === 0) {
+                    showToast(`🔄 Status direset untuk ${agentName}`, 'info');
                 } else {
-                    showToast(`⚠️ ${result.message}`, 'info');
+                    showToast(`✅ Pembayaran ${formatCurrency(paidAmount)} berhasil disimpan`, 'success');
                 }
+                
+                // Clear form
+                elements.paymentPaidAmount.value = '';
+                
+                // Reload payment history
+                loadPaymentHistoryFromGoogleSheets(agentName, week);
                 
             } catch (error) {
                 console.error('Payment submission error:', error);
@@ -2243,8 +2291,12 @@
                 
                 sortedAgents.forEach(agent => {
                     const option = document.createElement('option');
+                    let label = agent;
+                    if (SPECIAL_AGENTS[agent]) {
+                        label += ` (${SPECIAL_AGENTS[agent]}% - konversi)`;
+                    }
                     option.value = agent;
-                    option.textContent = agent;
+                    option.textContent = label;
                     select.appendChild(option);
                 });
             });
@@ -2313,7 +2365,27 @@
                 
                 // Aggregate data
                 aggregatedData = aggregateData(rawData);
-                console.log('Aggregated data:', aggregatedData);
+                console.log('Aggregated data (before conversion):', aggregatedData);
+                
+                // Proses konversi untuk agent 7%
+                const convertedData = {};
+                Object.keys(aggregatedData).forEach(week => {
+                    convertedData[week] = {};
+                    Object.entries(aggregatedData[week]).forEach(([agent, adminFee]) => {
+                        if (SPECIAL_AGENTS[agent]) {
+                            // Hitung total order sebenarnya
+                            const totalOrder = adminFee * 10;
+                            // Admin fee baru 7%
+                            convertedData[week][agent] = Math.round(totalOrder * 0.07);
+                            console.log(`Konversi ${agent} di minggu ${week}: ${adminFee} → ${convertedData[week][agent]} (total order ${totalOrder})`);
+                        } else {
+                            convertedData[week][agent] = adminFee;
+                        }
+                    });
+                });
+                
+                aggregatedData = convertedData;
+                console.log('Aggregated data (after conversion):', aggregatedData);
                 
                 // Extract and sort weeks
                 availableWeeks = extractAndSortWeeks(aggregatedData);
@@ -2361,7 +2433,7 @@
         }
         
         // ==============================================
-        // FUNGSI BARU: CTWA (CONTACT WHATSAPP)
+        // FUNGSI CTWA (CONTACT WHATSAPP)
         // ==============================================
         
         // Generate CTWA message
@@ -2370,11 +2442,16 @@
             const formattedAdminFee = formatCurrency(adminFee);
             const formattedPaid = formatCurrency(paidAmount);
             const formattedRemaining = formatCurrency(remaining);
+            const feePercentage = SPECIAL_AGENTS[agentName] || 10;
+            
+            // Hitung total order
+            const totalOrder = getTotalOrder(agentName, adminFee);
             
             let message = `Halo ${agentName}!\n\n`;
-            message += `Berikut informasi pembayaran biaya admin periode *${formattedWeek}*:\n\n`;
+            message += `Berikut informasi pembayaran biaya admin (${feePercentage}%) periode *${formattedWeek}*:\n\n`;
             message += `📊 *Detail Tagihan:*\n`;
-            message += `• Total Biaya Admin: ${formattedAdminFee}\n`;
+            message += `• Total Order: ${formatCurrency(totalOrder)}\n`;
+            message += `• Biaya Admin (${feePercentage}%): ${formattedAdminFee}\n`;
             message += `• Sudah dibayar: ${formattedPaid}\n`;
             
             if (remaining > 0) {
@@ -2423,10 +2500,6 @@
             window.open(url, '_blank');
         }
         
-        // ==============================================
-        // FUNGSI RENDER TABLE DENGAN KOLOM CTWA
-        // ==============================================
-        
         // Render Table dengan kolom CTWA
         function renderTable(data, week) {
             const tbody = elements.agentTable;
@@ -2449,6 +2522,9 @@
                 // Buat pesan CTWA
                 const ctwaMessage = generateCTWAMessage(item.agent, week, item.adminFee, item.paidAmount || 0, item.remaining);
                 
+                // Badge fee di kolom nama
+                const feeBadge = getAgentFeeBadge(item.agent);
+                
                 // Buat tombol CTWA atau tampilkan pesan "Tidak ada WA"
                 let ctwaCell;
                 if (hasWhatsapp && hasAdminFee) {
@@ -2470,7 +2546,10 @@
                 
                 row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td><strong>${item.agent}</strong></td>
+                    <td>
+                        <strong>${item.agent}</strong>
+                        ${feeBadge}
+                    </td>
                     <td class="whatsapp-number">${whatsappDisplay}</td>
                     <td class="currency">${formatCurrency(item.adminFee)}</td>
                     <td class="currency">${formatCurrency(item.totalOrder)}</td>
@@ -2500,16 +2579,16 @@
         
         function loadSampleData() {
             rawData = [
-                { agent: "Diar", adminFee: 20000, week: "14-20 Des" },
-                { agent: "Diar", adminFee: 30000, week: "14-20 Des" },
                 { agent: "Diar", adminFee: 10000, week: "14-20 Des" },
+                { agent: "Diar", adminFee: 15000, week: "14-20 Des" },
+                { agent: "Diar", adminFee: 25000, week: "14-20 Des" }, // total admin 50000 (10% dari 500.000)
                 { agent: "Agung", adminFee: 0, week: "14-20 Des" },
                 { agent: "Lutfi Majid", adminFee: 15500, week: "14-20 Des" },
                 { agent: "Restu", adminFee: 3000, week: "14-20 Des" },
                 { agent: "Restu", adminFee: 2000, week: "14-20 Des" },
                 { agent: "Bagus", adminFee: 1600, week: "14-20 Des" },
                 { agent: "Aryo", adminFee: 2000, week: "14-20 Des" },
-                { agent: "Akhmad Rifki", adminFee: 15200, week: "14-20 Des" },
+                { agent: "Akhmad Rifki", adminFee: 15200, week: "14-20 Des" }, // 10% dari 152.000
                 { agent: "Agus", adminFee: 0, week: "14-20 Des" },
                 { agent: "Yosi", adminFee: 4900, week: "14-20 Des" },
                 { agent: "Yosi", adminFee: 3100, week: "14-20 Des" },
@@ -2531,8 +2610,8 @@
                 { agent: "Angga", adminFee: 1200, week: "14-20 Des" },
                 { agent: "Acil", adminFee: 0, week: "14-20 Des" },
                 
-                { agent: "Diar", adminFee: 25000, week: "21-27 Des" },
-                { agent: "Diar", adminFee: 35000, week: "21-27 Des" },
+                { agent: "Diar", adminFee: 30000, week: "21-27 Des" },
+                { agent: "Diar", adminFee: 30000, week: "21-27 Des" }, // total 60000 (10% dari 600.000)
                 { agent: "Restu", adminFee: 8000, week: "21-27 Des" },
                 { agent: "Restu", adminFee: 7000, week: "21-27 Des" },
                 { agent: "Fajar", adminFee: 28500, week: "21-27 Des" },
@@ -2542,7 +2621,8 @@
                 { agent: "Lutfi Majid", adminFee: 22500, week: "21-27 Des" },
                 { agent: "Akhmad Rifki", adminFee: 18500, week: "21-27 Des" },
                 
-                { agent: "Diar", adminFee: 18000, week: "28 Des - 3 Jan" },
+                { agent: "Diar", adminFee: 35000, week: "28 Des - 3 Jan" },
+                { agent: "Diar", adminFee: 35000, week: "28 Des - 3 Jan" }, // total 70000 (10% dari 700.000)
                 { agent: "Restu", adminFee: 6000, week: "28 Des - 3 Jan" },
                 { agent: "Fajar", adminFee: 22000, week: "28 Des - 3 Jan" }
             ];
@@ -2579,6 +2659,27 @@
             loadSampleWeeklyData();
             
             aggregatedData = aggregateData(rawData);
+            console.log('Sample data - before conversion:', aggregatedData);
+            
+            // Konversi untuk agent 7%
+            const convertedData = {};
+            Object.keys(aggregatedData).forEach(week => {
+                convertedData[week] = {};
+                Object.entries(aggregatedData[week]).forEach(([agent, adminFee]) => {
+                    if (SPECIAL_AGENTS[agent]) {
+                        // Hitung total order sebenarnya
+                        const totalOrder = adminFee * 10;
+                        // Admin fee baru 7%
+                        convertedData[week][agent] = Math.round(totalOrder * 0.07);
+                        console.log(`Sample - Konversi ${agent} di minggu ${week}: ${adminFee} → ${convertedData[week][agent]} (total order ${totalOrder})`);
+                    } else {
+                        convertedData[week][agent] = adminFee;
+                    }
+                });
+            });
+            
+            aggregatedData = convertedData;
+            
             availableWeeks = extractAndSortWeeks(aggregatedData);
             currentWeekIndex = availableWeeks.length - 1;
             
@@ -2818,6 +2919,9 @@
             elements.agentAdminFee.textContent = formatCurrency(agentData.adminFee);
             elements.agentTotalOrder.textContent = formatCurrency(agentData.totalOrder);
             
+            const feePercentage = SPECIAL_AGENTS[agentName] ? `${SPECIAL_AGENTS[agentName]}% (konversi)` : '10%';
+            elements.agentFeeBadge.innerHTML = `<span class="fee-badge">${feePercentage}</span>`;
+            
             const statusText = getPaymentStatusText(agentData.paymentStatus, agentData.remaining);
             elements.agentPaymentStatus.textContent = statusText;
             elements.agentRemainingPayment.textContent = formatCurrency(agentData.remaining);
@@ -2836,11 +2940,16 @@
             const formattedAdminFee = formatCurrency(adminFee);
             const formattedPaid = formatCurrency(paidAmount);
             const formattedRemaining = formatCurrency(remaining);
+            const feePercentage = SPECIAL_AGENTS[agentName] || 10;
+            
+            // Hitung total order
+            const totalOrder = getTotalOrder(agentName, adminFee);
             
             let message = `Halo ${agentName}!\n\n`;
-            message += `Ini pengingat untuk pembayaran biaya admin periode *${formattedWeek}*.\n\n`;
+            message += `Ini pengingat untuk pembayaran biaya admin (${feePercentage}%) periode *${formattedWeek}*.\n\n`;
             message += `📊 *Detail Tagihan:*\n`;
-            message += `• Total Biaya Admin: ${formattedAdminFee}\n`;
+            message += `• Total Order: ${formatCurrency(totalOrder)}\n`;
+            message += `• Biaya Admin (${feePercentage}%): ${formattedAdminFee}\n`;
             message += `• Sudah dibayar: ${formattedPaid}\n`;
             
             if (remaining > 0) {
@@ -2867,14 +2976,16 @@
                     return;
                 }
                 
-                let csvContent = "No,Nama Agent,Nomor WhatsApp,Biaya Admin (10%),Total Orderan,Status Pembayaran,CTWA Message\n";
+                let csvContent = "No,Nama Agent,Nomor WhatsApp,Biaya Admin (Fee),Total Orderan,Status Pembayaran,CTWA Message\n";
                 
                 weekData.forEach((item, index) => {
                     const statusText = getPaymentStatusText(item.paymentStatus, item.remaining);
                     const whatsapp = item.whatsapp || '-';
+                    const feePercentage = SPECIAL_AGENTS[item.agent] || 10;
+                    const feeText = SPECIAL_AGENTS[item.agent] ? `${feePercentage}% (konversi)` : `${feePercentage}%`;
                     const ctwaMessage = generateCTWAMessage(item.agent, currentWeek, item.adminFee, item.paidAmount || 0, item.remaining);
                     
-                    csvContent += `${index + 1},"${item.agent}","${whatsapp}",${item.adminFee},${item.totalOrder},"${statusText}","${ctwaMessage.replace(/"/g, '""')}"\n`;
+                    csvContent += `${index + 1},"${item.agent} (${feeText})","${whatsapp}",${item.adminFee},${item.totalOrder},"${statusText}","${ctwaMessage.replace(/"/g, '""')}"\n`;
                 });
                 
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

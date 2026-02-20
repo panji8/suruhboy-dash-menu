@@ -1,320 +1,1214 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8">
-  <title>Form Order - SuruhBoy</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Database CS - Mobile Friendly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS SAMA SEPERTI SEBELUMNYA - TIDAK BERUBAH */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
 
-  <style>
-    :root{
-      --bg:#f5f7fa;
-      --card:#ffffff;
-      --accent:#25D366;
-      --primary:#2563eb;
-      --muted:#6b7280;
-    }
-    *{box-sizing:border-box}
-    body{font-family:Inter,system-ui,Arial; background:var(--bg); margin:0; color:#0f172a}
-    .container{max-width:980px; margin:36px auto; padding:20px}
-    .header{display:flex; align-items:center; gap:14px; margin-bottom:18px}
-    .logo{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
-    .muted{color:var(--muted); margin:0}
-    .card{background:var(--card); padding:22px; border-radius:14px; box-shadow:0 8px 20px rgba(2,6,23,0.06)}
-    label{display:block; margin-top:10px; font-weight:600; color:#0b1220}
-    input, textarea, select { width:100%; padding:12px; margin-top:6px; border-radius:10px; border:1px solid #e6eef6; background:#fbfdff }
-    textarea{min-height:90px}
-    .primary{display:inline-block; margin-top:14px; background:var(--primary); color:#fff; border:none; padding:12px 16px; border-radius:10px; cursor:pointer; font-weight:700}
-    .center{display:flex; justify-content:center}
-    .result-card{max-width:600px; padding:24px; border-radius:16px; box-shadow:0 8px 20px rgb(0 0 0 / 0.08); background:white; margin:auto}
-    h2{margin-top:0; text-align:center; font-size:22px; font-weight:700}
-    #templateBox{background:#f0f2f4; padding:16px; border-radius:10px; white-space:pre-wrap; font-size:15px; line-height:1.55; border:1px solid #e3e6e8}
-    .btn{display:block; margin-top:16px; padding:14px; color:white; text-align:center; border-radius:10px; text-decoration:none; font-weight:600; transition:0.15s; cursor:pointer; user-select:none}
-    #chatBtn{background:#007bff}
-    #chatBtn:hover{opacity:0.9}
-    #copyBtn{background:#28a745; border:none}
-    #copyBtn:active{transform:scale(0.98)}
-    .quick-options{display:flex; gap:10px; margin-top:8px; flex-wrap:wrap}
-    .quick-option{background:#e9ecef; padding:8px 12px; border-radius:20px; font-size:14px; cursor:pointer; border:1px solid #ced4da; transition:all 0.2s}
-    .quick-option:hover{background:#007bff; color:white; border-color:#007bff}
-    
-    /* Style untuk searchable dropdown */
-    .dropdown-wrapper {
-      position: relative;
-      width: 100%;
-    }
-    .dropdown-input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #e6eef6;
-      border-radius: 10px;
-      background: #fbfdff;
-      cursor: pointer;
-    }
-    .dropdown-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      max-height: 250px;
-      overflow-y: auto;
-      background: white;
-      border: 1px solid #e6eef6;
-      border-radius: 10px;
-      margin-top: 4px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      display: none;
-      z-index: 1000;
-    }
-    .dropdown-list.show {
-      display: block;
-    }
-    .dropdown-item {
-      padding: 10px 12px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .dropdown-item:hover {
-      background: #f0f2f4;
-    }
-    .dropdown-item.selected {
-      background: #e3f2fd;
-      color: #1976d2;
-    }
-    .no-results {
-      padding: 10px 12px;
-      color: var(--muted);
-      font-style: italic;
-    }
-  </style>
+        :root {
+            --primary: #2c3e50;
+            --primary-dark: #1e2a36;
+            --primary-light: #eef2ff;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        body {
+            background-color: var(--gray-50);
+            color: var(--gray-800);
+            min-height: 100vh;
+            padding: 12px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 16px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .back-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.2rem;
+            backdrop-filter: blur(4px);
+            flex-shrink: 0;
+        }
+
+        .back-button:active {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(0.95);
+        }
+
+        .header-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.2;
+            flex: 1;
+        }
+
+        .header-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            padding-left: 52px;
+        }
+
+        .sheet-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-left: 52px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* ===== CONTROL PANEL ===== */
+        .control-panel {
+            background: white;
+            padding: 16px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 20px 14px 45px;
+            border: 1px solid var(--gray-200);
+            border-radius: 50px;
+            font-size: 0.95rem;
+            background-color: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            font-size: 1rem;
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            cursor: pointer;
+            display: none;
+            font-size: 1rem;
+        }
+
+        .search-input:not(:placeholder-shown) ~ .clear-search {
+            display: block;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-refresh {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .btn-refresh:active {
+            background: var(--primary-dark);
+            transform: scale(0.98);
+        }
+
+        /* ===== STATS CARDS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 16px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        /* ===== DATA CARDS ===== */
+        .data-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-badge {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .data-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 2px;
+        }
+
+        .data-card {
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            padding: 16px;
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .card-week {
+            background: var(--gray-200);
+            color: var(--gray-700);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .card-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-item-label {
+            font-size: 0.7rem;
+            color: var(--gray-500);
+            margin-bottom: 2px;
+        }
+
+        .detail-item-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray-800);
+        }
+
+        .phone-number {
+            font-family: monospace;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--gray-300);
+        }
+
+        .location-preview {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .order-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        .order-btn:active {
+            background: #0da271;
+            transform: scale(0.95);
+        }
+
+        .order-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            border-radius: 24px 24px 0 0;
+            position: relative;
+        }
+
+        .modal-header h2 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-id {
+            background: rgba(255,255,255,0.15);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.8rem;
+            font-family: monospace;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--gray-200);
+        }
+
+        .modal-icon {
+            width: 32px;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .modal-content {
+            flex: 1;
+        }
+
+        .modal-label {
+            font-size: 0.7rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .modal-value {
+            font-size: 1rem;
+            color: var(--gray-800);
+            font-weight: 500;
+            white-space: pre-line;
+            word-break: break-word;
+        }
+
+        .modal-value.location, .modal-value.description {
+            background: var(--gray-50);
+            padding: 12px;
+            border-radius: var(--radius);
+            margin-top: 4px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .modal-value.description {
+            border-left-color: var(--warning);
+            background: var(--warning-light);
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: 10px;
+            background: var(--gray-50);
+            border-radius: 0 0 24px 24px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            touch-action: manipulation;
+        }
+
+        .modal-btn.secondary {
+            background: white;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .modal-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* ===== LOADING ===== */
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .loading-spinner {
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray-400);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        /* ===== UTILITY ===== */
+        .d-none { display: none !important; }
+        .text-center { text-align: center; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            body { padding: 20px; }
+            
+            .filter-row {
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .filter-group {
+                flex-direction: row;
+                width: auto;
+            }
+            
+            .filter-select {
+                width: 200px;
+            }
+            
+            .search-container {
+                flex: 1;
+            }
+            
+            .action-buttons {
+                width: auto;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 500px;
+            }
+            
+            .data-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .data-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-top">
+                <button class="back-button" onclick="goBack()" title="Kembali">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="header-title">📋 Database CS</h1>
+            </div>
+            <div class="header-subtitle">
+                Data dari Sheet Mirror • Klik card untuk detail
+            </div>
+            <div class="sheet-badge">
+                <i class="fas fa-info-circle"></i> Klik NEW ORDER untuk order ulang
+            </div>
+        </div>
 
-<div class="container">
-  <div class="header">
-    <div class="logo">SB</div>
-    <div>
-      <h2 style="margin:0">SuruhBoy</h2>
-      <p class="muted">Form Order</p>
+        <!-- CONTROL PANEL -->
+        <div class="control-panel">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <select class="filter-select" id="filterAgent">
+                        <option value="">Semua Agent</option>
+                    </select>
+                    <select class="filter-select" id="filterWeek">
+                        <option value="">Semua Week</option>
+                    </select>
+                </div>
+                
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Cari nama CS atau titik...">
+                    <i class="fas fa-times clear-search" id="clearSearch"></i>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn-refresh" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS CARDS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Data</div>
+                <div class="stat-value" id="totalRows">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Agent</div>
+                <div class="stat-value" id="totalAgent">0</div>
+            </div>
+        </div>
+
+        <!-- DATA SECTION -->
+        <div class="data-section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-database"></i> Data CS
+                </div>
+                <div class="result-badge" id="resultCount">0 data</div>
+            </div>
+
+            <!-- LOADING -->
+            <div id="loading" class="loading">
+                <div class="loading-spinner"></div>
+                <p>Memuat data dari Google Sheets...</p>
+            </div>
+
+            <!-- DATA CARDS CONTAINER -->
+            <div id="dataContainer" class="data-container" style="display: none;"></div>
+
+            <!-- EMPTY STATE -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="far fa-folder-open"></i>
+                <h3>Tidak Ada Data</h3>
+                <p style="margin-top: 8px;">Coba ubah filter atau refresh</p>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="card">
-    <form id="orderForm">
-      <label>Biaya</label>
-      <input name="biaya" required id="biaya">
-      <div class="quick-options">
-        <span class="quick-option" data-value="10rb diluar parkir">10rb diluar parkir</span>
-        <span class="quick-option" data-value="12rb diluar parkir">12rb diluar parkir</span>
-        <span class="quick-option" data-value="10.000">10.000</span>
-        <span class="quick-option" data-value="12.000">12.000</span>
-      </div>
+    <!-- MODAL DETAIL -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2><i class="fas fa-id-card"></i> Detail CS</h2>
+                <div class="modal-id" id="modalId">-</div>
+                <div class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
 
-      <label>Kapan</label>
-      <input name="kapan" type="date" required>
+            <div class="modal-body">
+                <div class="modal-row">
+                    <div class="modal-icon"><i class="far fa-calendar"></i></div>
+                    <div class="modal-content">
+                        <div class="modal-label">Tanggal</div>
+                        <div class="modal-value" id="detailTanggal">-</div>
+                    </div>
+                </div>
 
-      <label>Nama</label>
-      <input name="nama" required>
+                <div class="modal-row">
+                    <div class="modal-icon"><i class="fas fa-user"></i></div>
+                    <div class="modal-content">
+                        <div class="modal-label">Nama CS</div>
+                        <div class="modal-value" id="detailNama">-</div>
+                    </div>
+                </div>
 
-      <label>No HP</label>
-      <input name="hp" required id="hp">
+                <div class="modal-row">
+                    <div class="modal-icon"><i class="fas fa-phone"></i></div>
+                    <div class="modal-content">
+                        <div class="modal-label">Nomor CS</div>
+                        <div class="modal-value phone-number" id="detailNomor">-</div>
+                    </div>
+                </div>
 
-      <label>Deskripsi</label>
-      <textarea name="deskripsi"></textarea>
+                <div class="modal-row">
+                    <div class="modal-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="modal-content">
+                        <div class="modal-label">Titik Antar</div>
+                        <div class="modal-value location" id="detailTitikAntar">-</div>
+                    </div>
+                </div>
 
-      <label>Jemput</label>
-      <input name="jemput">
+                <div class="modal-row">
+                    <div class="modal-icon"><i class="fas fa-user-tie"></i></div>
+                    <div class="modal-content">
+                        <div class="modal-label">Agent</div>
+                        <div class="modal-value" id="detailAgent">-</div>
+                    </div>
+                </div>
 
-      <label>Antar</label>
-      <input name="antar">
+                <div class="modal-row">
+                    <div class="modal-icon"><i class="far fa-calendar-alt"></i></div>
+                    <div class="modal-content">
+                        <div class="modal-label">Week</div>
+                        <div class="modal-value" id="detailWeek">-</div>
+                    </div>
+                </div>
 
-      <label>Agent</label>
-      <!-- Searchable dropdown untuk Agent -->
-      <div class="dropdown-wrapper" id="agentDropdown">
-        <input type="text" class="dropdown-input" id="agentInput" placeholder="Ketik atau pilih agent..." autocomplete="off" required>
-        <input type="hidden" name="agent" id="agentHidden">
-        <div class="dropdown-list" id="dropdownList"></div>
-      </div>
+                <div class="modal-row">
+                    <div class="modal-icon"><i class="fas fa-qrcode"></i></div>
+                    <div class="modal-content">
+                        <div class="modal-label">ID Mirror</div>
+                        <div class="modal-value" id="detailIdMirror">-</div>
+                    </div>
+                </div>
 
-      <label>admin</label>
-      <input name="admin">
+                <div class="modal-row">
+                    <div class="modal-icon"><i class="fas fa-align-left"></i></div>
+                    <div class="modal-content">
+                        <div class="modal-label">Deskripsi</div>
+                        <div class="modal-value description" id="detailDeskripsi">-</div>
+                    </div>
+                </div>
+            </div>
 
-      <button class="primary" type="submit" id="submitBtn" style="width:100%">SUBMIT</button>
-    </form>
-  </div>
-</div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" id="copyData">
+                    <i class="far fa-copy"></i> Copy
+                </button>
+                <button class="modal-btn primary" id="openSheet">
+                    <i class="fas fa-external-link-alt"></i> Buka Sheets
+                </button>
+            </div>
+        </div>
+    </div>
 
-<!-- HASIL TEMPLATE (awalnya tersembunyi) -->
-<div class="container" id="resultContainer" style="display:none">
-  <div class="result-card">
-    <h2>🟦 ORDER MASUK</h2>
-    <pre id="templateBox"></pre>
-    <button id="copyBtn" class="btn">COPY TEMPLATE</button>
-    <a id="chatBtn" class="btn" target="_blank">CHAT KE AGENT</a>
-  </div>
-</div>
+    <script>
+        // ==================== FUNGSI BACK ====================
+        function goBack() {
+            window.location.href = 'index.html';
+        }
 
-<script>
-const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbwinE9yP9HTE4WWdnvMpu0PJUGPnpBaWg9ENNdtQGMpaIE4bYcTHEyxRE1atiFWCTRv/exec";
+        // ==================== FUNGSI ESCAPE HTML ====================
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
-// Daftar agent
-const agentList = [
-  "Agung", "Agus", "Andi", "Aryo", "Awa", "Bagus", "Diar", "Lutfi Majid",
-  "Malek", "Mbak Yuni", "Naily", "Nia", "Panji", "Restu", "Akhmad Rifki",
-  "Yosi", "Yusuf", "Ilham", "Barkah", "Mukhlis", "Kharisma", "Ardi",
-  "Acil", "Defita", "Fajar", "Ichsan", "Gilang", "Angga Aji", "Putri Utami",
-  "Arif Ahmadi", "Hana", "Indah Rahayu"
-];
+        // ==================== FUNGSI NEW ORDER ====================
+        function newOrder(nama, nomor, titikAntar) {
+            console.log('New Order clicked:', { nama, nomor, titikAntar });
+            
+            // Format nomor ke 62xxxx
+            let formattedNomor = nomor;
+            
+            // Hapus semua karakter non-digit
+            let cleanNumber = String(nomor).replace(/\D/g, '');
+            
+            // Jika dimulai dengan 0, ganti dengan 62
+            if (cleanNumber.startsWith('0')) {
+                formattedNomor = '62' + cleanNumber.substring(1);
+            } 
+            // Jika sudah 62, biarkan
+            else if (cleanNumber.startsWith('62')) {
+                formattedNomor = cleanNumber;
+            }
+            // Jika tidak, tambahkan 62 di depan
+            else {
+                formattedNomor = '62' + cleanNumber;
+            }
+            
+            // Data yang akan dikirim ke form
+            const orderData = {
+                namaCS: nama,
+                nomorCS: formattedNomor,
+                titikAntar: titikAntar
+            };
+            
+            console.log('Saving to localStorage:', orderData);
+            
+            // Simpan ke localStorage
+            localStorage.setItem('newOrderData', JSON.stringify(orderData));
+            
+            // Tampilkan notifikasi
+            alert(`Membuat order baru untuk ${nama}`);
+            
+            // Redirect ke form agent
+            window.location.href = 'Form-Agent.html?action=new';
+        }
 
-const hpInput = document.getElementById("hp");
-const agentInput = document.getElementById("agentInput");
-const agentHidden = document.getElementById("agentHidden");
-const dropdownList = document.getElementById("dropdownList");
-const dropdownWrapper = document.getElementById("agentDropdown");
+        // ==================== KONFIGURASI ====================
+        const SPREADSHEET_ID = '1AMJmLj2dbkmBmtFq6suRxI8PUlii2gIgywq3yVDnICc';
+        const SHEET_GID = '603290628';
+        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+        const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit#gid=${SHEET_GID}`;
 
-// Format nomor HP → harus 62xxxx tanpa spasi
-hpInput.addEventListener("input", function () {
-  let v = this.value.replace(/\D/g, ""); // angka saja
+        // ==================== STATE ====================
+        let allData = [];
+        let filteredData = [];
 
-  if (!v.startsWith("62")) {
-    v = "62" + v.replace(/^0+/, "");
-  }
+        // ==================== DOM ELEMENTS ====================
+        const el = {
+            loading: document.getElementById('loading'),
+            dataContainer: document.getElementById('dataContainer'),
+            emptyState: document.getElementById('emptyState'),
+            totalRows: document.getElementById('totalRows'),
+            totalAgent: document.getElementById('totalAgent'),
+            filterAgent: document.getElementById('filterAgent'),
+            filterWeek: document.getElementById('filterWeek'),
+            searchInput: document.getElementById('searchInput'),
+            clearSearch: document.getElementById('clearSearch'),
+            resultCount: document.getElementById('resultCount'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            modal: document.getElementById('detailModal'),
+            closeModal: document.getElementById('closeModal'),
+            copyData: document.getElementById('copyData'),
+            openSheet: document.getElementById('openSheet'),
+            modalId: document.getElementById('modalId'),
+            detailTanggal: document.getElementById('detailTanggal'),
+            detailNama: document.getElementById('detailNama'),
+            detailNomor: document.getElementById('detailNomor'),
+            detailTitikAntar: document.getElementById('detailTitikAntar'),
+            detailAgent: document.getElementById('detailAgent'),
+            detailWeek: document.getElementById('detailWeek'),
+            detailIdMirror: document.getElementById('detailIdMirror'),
+            detailDeskripsi: document.getElementById('detailDeskripsi')
+        };
 
-  this.value = v;
-});
+        // ==================== PARSER CSV ====================
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current);
+            
+            return result.map(val => {
+                val = val.trim();
+                if (val.startsWith('"') && val.endsWith('"')) {
+                    val = val.substring(1, val.length - 1);
+                }
+                val = val.replace(/""/g, '"');
+                return val;
+            });
+        }
 
-// Quick options untuk biaya
-document.querySelectorAll('.quick-option').forEach(option => {
-  option.addEventListener('click', function() {
-    document.getElementById('biaya').value = this.dataset.value;
-  });
-});
+        // ==================== LOAD DATA ====================
+        async function loadData() {
+            el.loading.style.display = 'block';
+            el.dataContainer.style.display = 'none';
+            el.emptyState.style.display = 'none';
+            
+            try {
+                const response = await fetch(CSV_URL);
+                const csvText = await response.text();
+                
+                // Parse CSV dengan handle quotes
+                const lines = [];
+                let currentLine = '';
+                let inQuotes = false;
+                
+                for (let i = 0; i < csvText.length; i++) {
+                    const char = csvText[i];
+                    
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    }
+                    
+                    currentLine += char;
+                    
+                    if (char === '\n' && !inQuotes) {
+                        lines.push(currentLine);
+                        currentLine = '';
+                    }
+                }
+                if (currentLine.trim()) {
+                    lines.push(currentLine);
+                }
+                
+                if (lines.length < 2) throw new Error('Data kosong');
+                
+                // Parse data
+                const data = [];
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    
+                    const cells = parseCSVLine(lines[i]);
+                    
+                    // Pastikan cells punya panjang yang cukup
+                    data.push({
+                        tanggal: cells[0] || '-',
+                        nama: cells[1] || '-',
+                        titikAntar: cells[2] || '-',
+                        agent: cells[3] || '-',
+                        week: cells[4] || '-',
+                        nomor: cells[5] || '-',      // Kolom F untuk nomor CS
+                        idMirror: cells[6] || '-',
+                        deskripsi: cells[7] || '-'
+                    });
+                }
+                
+                console.log('Data loaded:', data);
+                allData = data;
+                filteredData = [...data];
+                
+                updateUI();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                el.loading.innerHTML = `<p style="color:red">Error: ${error.message}</p>`;
+            }
+        }
 
-// Fungsi untuk menampilkan dropdown
-function showDropdown(filter = "") {
-  const filteredAgents = agentList.filter(agent => 
-    agent.toLowerCase().includes(filter.toLowerCase())
-  );
-  
-  if (filteredAgents.length === 0) {
-    dropdownList.innerHTML = '<div class="no-results">Tidak ada agent</div>';
-  } else {
-    dropdownList.innerHTML = filteredAgents.map(agent => 
-      `<div class="dropdown-item" data-value="${agent}">${agent}</div>`
-    ).join('');
-  }
-  
-  dropdownList.classList.add('show');
-}
+        // ==================== UPDATE UI ====================
+        function updateUI() {
+            // Update stats
+            el.totalRows.innerText = allData.length;
+            
+            const uniqueAgents = [...new Set(allData.map(d => d.agent))];
+            el.totalAgent.innerText = uniqueAgents.length;
+            
+            // Update filter dropdowns
+            el.filterAgent.innerHTML = '<option value="">Semua Agent</option>';
+            uniqueAgents.sort().forEach(a => {
+                el.filterAgent.innerHTML += `<option value="${a}">${a}</option>`;
+            });
+            
+            const uniqueWeeks = [...new Set(allData.map(d => d.week))];
+            el.filterWeek.innerHTML = '<option value="">Semua Week</option>';
+            uniqueWeeks.sort().forEach(w => {
+                el.filterWeek.innerHTML += `<option value="${w}">${w}</option>`;
+            });
+            
+            renderDataCards();
+            el.loading.style.display = 'none';
+        }
 
-// Event listener untuk input agent
-agentInput.addEventListener('focus', () => {
-  showDropdown(agentInput.value);
-});
+        // ==================== RENDER DATA CARDS ====================
+        function renderDataCards() {
+            if (filteredData.length === 0) {
+                el.dataContainer.style.display = 'none';
+                el.emptyState.style.display = 'block';
+                el.resultCount.innerText = '0 data';
+                return;
+            }
+            
+            let html = '';
+            filteredData.forEach((item, index) => {
+                // Preview titik antar (tanpa line break)
+                const previewTitik = item.titikAntar.replace(/\n/g, ' ').substring(0, 40);
+                
+                html += `
+                    <div class="data-card" data-index="${index}">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-user-circle"></i> ${escapeHtml(item.nama)}
+                                ${item.idMirror !== '-' ? '<span class="card-badge">ID</span>' : ''}
+                            </div>
+                            <span class="card-week">${escapeHtml(item.week)}</span>
+                        </div>
+                        
+                        <div class="card-details">
+                            <div class="detail-item">
+                                <span class="detail-item-label">Tanggal</span>
+                                <span class="detail-item-value">${escapeHtml(item.tanggal)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item-label">Agent</span>
+                                <span class="detail-item-value">${escapeHtml(item.agent)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item-label">Nomor</span>
+                                <span class="detail-item-value phone-number">${escapeHtml(item.nomor)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item-label">Titik Antar</span>
+                                <span class="detail-item-value">${escapeHtml(previewTitik)}${item.titikAntar.length > 40 ? '...' : ''}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <span class="location-preview">
+                                <i class="fas fa-map-pin"></i> Klik untuk detail
+                            </span>
+                            <button class="order-btn" data-index="${index}">
+                                <i class="fas fa-plus-circle"></i> New Order
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            el.dataContainer.innerHTML = html;
+            el.dataContainer.style.display = 'grid';
+            el.emptyState.style.display = 'none';
+            el.resultCount.innerText = `Menampilkan ${filteredData.length} dari ${allData.length} data`;
+            
+            // Event listener untuk klik card (detail)
+            document.querySelectorAll('.data-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Jangan buka modal jika yang diklik adalah tombol order
+                    if (e.target.closest('.order-btn')) return;
+                    
+                    const index = this.dataset.index;
+                    showDetail(filteredData[index]);
+                });
+            });
+            
+            // Event listener untuk tombol New Order
+            document.querySelectorAll('.order-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Mencegah event bubbling ke card
+                    const index = this.dataset.index;
+                    const data = filteredData[index];
+                    console.log('Order button clicked for:', data);
+                    newOrder(data.nama, data.nomor, data.titikAntar);
+                });
+            });
+        }
 
-agentInput.addEventListener('input', (e) => {
-  showDropdown(e.target.value);
-});
+        // ==================== SHOW DETAIL ====================
+        function showDetail(data) {
+            console.log('Showing detail:', data);
+            el.modalId.innerText = data.idMirror;
+            el.detailTanggal.innerText = data.tanggal;
+            el.detailNama.innerText = data.nama;
+            el.detailNomor.innerText = data.nomor;
+            el.detailTitikAntar.innerText = data.titikAntar;
+            el.detailAgent.innerText = data.agent;
+            el.detailWeek.innerText = data.week;
+            el.detailIdMirror.innerText = data.idMirror;
+            el.detailDeskripsi.innerText = data.deskripsi;
+            
+            el.modal.style.display = 'flex';
+        }
 
-// Klik di luar dropdown untuk menutup
-document.addEventListener('click', (e) => {
-  if (!dropdownWrapper.contains(e.target)) {
-    dropdownList.classList.remove('show');
-  }
-});
+        // ==================== APPLY FILTERS ====================
+        function applyFilters() {
+            const agent = el.filterAgent.value;
+            const week = el.filterWeek.value;
+            const search = el.searchInput.value.toLowerCase();
+            
+            filteredData = allData.filter(d => {
+                return (!agent || d.agent === agent) &&
+                       (!week || d.week === week) &&
+                       (!search || 
+                        d.nama.toLowerCase().includes(search) ||
+                        d.titikAntar.toLowerCase().includes(search));
+            });
+            
+            renderDataCards();
+        }
 
-// Event delegation untuk item dropdown
-dropdownList.addEventListener('click', (e) => {
-  const item = e.target.closest('.dropdown-item');
-  if (item) {
-    const value = item.dataset.value;
-    agentInput.value = value;
-    agentHidden.value = value;
-    dropdownList.classList.remove('show');
-  }
-});
+        // ==================== COPY DETAIL ====================
+        function copyDetail() {
+            const text = `📋 DETAIL CUSTOMER SERVICE
+━━━━━━━━━━━━━━━━━━━━━━
+🆔 ID Mirror   : ${el.modalId.innerText}
+📅 Tanggal     : ${el.detailTanggal.innerText}
+👤 Nama CS     : ${el.detailNama.innerText}
+📞 Nomor CS    : ${el.detailNomor.innerText}
+📍 Titik Antar  : ${el.detailTitikAntar.innerText}
+🤵 Agent       : ${el.detailAgent.innerText}
+📆 Week        : ${el.detailWeek.innerText}
+📝 Deskripsi   : ${el.detailDeskripsi.innerText}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Data berhasil dicopy!');
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                alert('Gagal copy data');
+            });
+        }
 
-// Set hidden input saat submit
-document.getElementById("orderForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
-  
-  // Validasi agent tidak kosong
-  if (!agentInput.value.trim()) {
-    alert("Pilih atau ketik nama agent!");
-    return;
-  }
-  
-  // Set hidden input dengan nilai dari agentInput
-  agentHidden.value = agentInput.value;
+        // ==================== EVENT LISTENERS ====================
+        el.filterAgent.addEventListener('change', applyFilters);
+        el.filterWeek.addEventListener('change', applyFilters);
+        el.searchInput.addEventListener('input', applyFilters);
+        
+        el.clearSearch.addEventListener('click', () => {
+            el.searchInput.value = '';
+            applyFilters();
+        });
+        
+        el.refreshBtn.addEventListener('click', loadData);
+        el.closeModal.addEventListener('click', () => el.modal.style.display = 'none');
+        el.copyData.addEventListener('click', copyDetail);
+        el.openSheet.addEventListener('click', () => window.open(SHEET_URL, '_blank'));
+        
+        el.modal.addEventListener('click', (e) => {
+            if (e.target === el.modal) el.modal.style.display = 'none';
+        });
 
-  const submitBtn = document.getElementById("submitBtn");
-  submitBtn.disabled = true;
-  submitBtn.textContent = "⏳ Mengirim...";
-
-  const form = new FormData(this);
-
-  // Backup form sebelum reset
-  const data = {};
-  form.forEach((v, k) => data[k] = v);
-
-  // Kirim ke Apps Script
-  await fetch(SCRIPT_URL, { method: "POST", body: form });
-
-  // Template aman (menggunakan backtick)
-  const template = `
-🟦 ORDER MASUK
-
-📦 Biaya: ${data.biaya}
-📅 Kapan: ${data.kapan}
-👤 Nama: ${data.nama}
-📱 https://wa.me/${data.hp}?text=${encodeURIComponent("Hai kak, dengan Suruhboy disini")}
-📝 Deskripsi: ${data.deskripsi || "-"}
-
-📍 Jemput: ${data.jemput || "-"}
-📍 Antar: ${data.antar || "-"}
-
-🧑‍💼 Agent: ${data.agent}
-  `.trim();
-
-  document.getElementById("templateBox").textContent = template;
-  document.getElementById("resultContainer").style.display = "block";
-
-  document.getElementById("chatBtn").href =
-    "https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc";
-
-  // Scroll ke hasil
-  document.getElementById("resultContainer").scrollIntoView({ behavior: "smooth" });
-
-  this.reset();
-  agentInput.value = ""; // Reset input agent
-  agentHidden.value = "";
-
-  submitBtn.disabled = false;
-  submitBtn.textContent = "SUBMIT";
-});
-
-// COPY BUTTON
-document.getElementById("copyBtn").addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(
-      document.getElementById("templateBox").textContent
-    );
-
-    const copyBtn = document.getElementById("copyBtn");
-    copyBtn.textContent = "✔ TERSALIN!";
-    copyBtn.style.background = "#1e7c33";
-
-    setTimeout(() => {
-      copyBtn.textContent = "COPY TEMPLATE";
-      copyBtn.style.background = "#28a745";
-    }, 1500);
-
-  } catch {
-    alert("Gagal menyalin!");
-  }
-});
-</script>
-
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
 </body>
 </html>

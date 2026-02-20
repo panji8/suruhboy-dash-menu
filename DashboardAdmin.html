@@ -61,17 +61,51 @@
         header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            padding: 20px 16px;
+            padding: 16px;
             border-radius: var(--radius-lg);
             margin-bottom: 16px;
             box-shadow: var(--shadow-md);
         }
 
-        h1 {
-            font-size: 1.5rem;
+        /* Header with back button */
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .back-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.2rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .back-button:active {
+            transform: scale(0.95);
+        }
+
+        .header-title {
+            font-size: 1.3rem;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin: 0;
             line-height: 1.2;
+            flex: 1;
         }
 
         .period-info {
@@ -80,6 +114,7 @@
             align-items: center;
             gap: 12px;
             margin-bottom: 8px;
+            margin-left: 48px; /* Memberi ruang untuk back button */
         }
 
         .period-badge {
@@ -121,6 +156,7 @@
             font-size: 0.8rem;
             line-height: 1.5;
             word-break: break-word;
+            margin-left: 48px; /* Memberi ruang untuk back button */
         }
 
         .sheet-info a {
@@ -929,6 +965,10 @@
                 right: 20px;
                 min-width: 300px;
             }
+
+            .period-info, .sheet-info {
+                margin-left: 48px;
+            }
         }
 
         /* Small phones */
@@ -948,7 +988,14 @@
     <div class="container">
         <!-- HEADER -->
         <header>
-            <h1>📊 Dashboard Order Agent</h1>
+            <div class="header-top">
+                <!-- TOMBOL BACK -->
+                <button class="back-button" onclick="goBack()" title="Kembali ke beranda">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="header-title">📊 Dashboard Agent</h1>
+            </div>
+            
             <div class="period-info">
                 <div class="period-badge" id="current-week">Minggu: Loading...</div>
                 <div class="data-status">
@@ -1204,6 +1251,17 @@
     </div>
 
     <script>
+        // ==================== FUNGSI BACK ====================
+        function goBack() {
+            // Menampilkan toast notifikasi
+            showToast('Kembali ke beranda...', 'info', 1000);
+            
+            // Redirect ke index.html setelah 300ms (biar toast sempat muncul)
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 300);
+        }
+
         // ==================== KONFIGURASI ====================
         const SHEET_ID = '1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c';
         const ORDER_SHEET_NAME = 'To Dashboard';

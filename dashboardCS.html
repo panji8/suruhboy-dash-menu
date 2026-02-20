@@ -226,7 +226,7 @@
             transform: scale(0.98);
         }
 
-        /* ===== STATS CARDS ===== */
+        /* ===== STATS CARDS (HANYA 2 CARD) ===== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -620,7 +620,8 @@
             }
             
             .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 500px;
             }
             
             .data-container {
@@ -681,7 +682,7 @@
             </div>
         </div>
 
-        <!-- STATS CARDS -->
+        <!-- STATS CARDS - HANYA 2 CARD -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Total Data</div>
@@ -690,14 +691,6 @@
             <div class="stat-card">
                 <div class="stat-label">Total Agent</div>
                 <div class="stat-value" id="totalAgent">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Total Week</div>
-                <div class="stat-value" id="totalWeek">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Update</div>
-                <div class="stat-value" id="lastUpdate">-</div>
             </div>
         </div>
 
@@ -831,8 +824,6 @@
             emptyState: document.getElementById('emptyState'),
             totalRows: document.getElementById('totalRows'),
             totalAgent: document.getElementById('totalAgent'),
-            totalWeek: document.getElementById('totalWeek'),
-            lastUpdate: document.getElementById('lastUpdate'),
             filterAgent: document.getElementById('filterAgent'),
             filterWeek: document.getElementById('filterWeek'),
             searchInput: document.getElementById('searchInput'),
@@ -958,10 +949,7 @@
             el.totalRows.innerText = allData.length;
             
             const uniqueAgents = [...new Set(allData.map(d => d.agent))];
-            const uniqueWeeks = [...new Set(allData.map(d => d.week))];
-            
             el.totalAgent.innerText = uniqueAgents.length;
-            el.totalWeek.innerText = uniqueWeeks.length;
             
             // Update filter dropdowns
             el.filterAgent.innerHTML = '<option value="">Semua Agent</option>';
@@ -969,13 +957,13 @@
                 el.filterAgent.innerHTML += `<option value="${a}">${a}</option>`;
             });
             
+            const uniqueWeeks = [...new Set(allData.map(d => d.week))];
             el.filterWeek.innerHTML = '<option value="">Semua Week</option>';
             uniqueWeeks.sort().forEach(w => {
                 el.filterWeek.innerHTML += `<option value="${w}">${w}</option>`;
             });
             
             renderDataCards();
-            el.lastUpdate.innerText = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
             el.loading.style.display = 'none';
         }
 

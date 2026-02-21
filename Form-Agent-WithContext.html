@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Form Order (Dengan Data CS) - SuruhBoy</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <style>
+    :root{
+      --bg:#f5f7fa;
+      --card:#ffffff;
+      --accent:#25D366;
+      --primary:#2563eb;
+      --muted:#6b7280;
+      --info:#0ea5e9;
+      --info-light:#e0f2fe;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Arial; background:var(--bg); margin:0; color:#0f172a}
+    .container{max-width:980px; margin:36px auto; padding:20px}
+    .header{display:flex; align-items:center; gap:14px; margin-bottom:18px}
+    .logo{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .muted{color:var(--muted); margin:0}
+    .card{background:var(--card); padding:22px; border-radius:14px; box-shadow:0 8px 20px rgba(2,6,23,0.06)}
+    
+    /* Info context card */
+    .context-card {
+      background: var(--info-light);
+      border-left: 4px solid var(--info);
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .context-icon {
+      background: var(--info);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .context-content {
+      flex: 1;
+    }
+    .context-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #0369a1;
+    }
+    .context-detail {
+      font-size: 14px;
+      color: #075985;
+    }
+    .context-detail span {
+      font-weight: 600;
+    }
+    .btn-clear-context {
+      background: transparent;
+      border: 1px solid var(--info);
+      color: var(--info);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 8px;
+      display: inline-block;
+    }
+    
+    label{display:block; margin-top:10px; font-weight:600; color:#0b1220}
+    input, textarea, select { width:100%; padding:12px; margin-top:6px; border-radius:10px; border:1px solid #e6eef6; background:#fbfdff }
+    textarea{min-height:90px}
+    .primary{display:inline-block; margin-top:14px; background:var(--primary); color:#fff; border:none; padding:12px 16px; border-radius:10px; cursor:pointer; font-weight:700}
+    .center{display:flex; justify-content:center}
+    .result-card{max-width:600px; padding:24px; border-radius:16px; box-shadow:0 8px 20px rgb(0 0 0 / 0.08); background:white; margin:auto}
+    h2{margin-top:0; text-align:center; font-size:22px; font-weight:700}
+    #templateBox{background:#f0f2f4; padding:16px; border-radius:10px; white-space:pre-wrap; font-size:15px; line-height:1.55; border:1px solid #e3e6e8}
+    .btn{display:block; margin-top:16px; padding:14px; color:white; text-align:center; border-radius:10px; text-decoration:none; font-weight:600; transition:0.15s; cursor:pointer; user-select:none}
+    #chatBtn{background:#007bff}
+    #chatBtn:hover{opacity:0.9}
+    #copyBtn{background:#28a745; border:none}
+    #copyBtn:active{transform:scale(0.98)}
+    .quick-options{display:flex; gap:10px; margin-top:8px; flex-wrap:wrap}
+    .quick-option{background:#e9ecef; padding:8px 12px; border-radius:20px; font-size:14px; cursor:pointer; border:1px solid #ced4da; transition:all 0.2s}
+    .quick-option:hover{background:#007bff; color:white; border-color:#007bff}
+    
+    /* Style untuk searchable dropdown */
+    .dropdown-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .dropdown-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e6eef6;
+      border-radius: 10px;
+      background: #fbfdff;
+      cursor: pointer;
+    }
+    .dropdown-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 250px;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid #e6eef6;
+      border-radius: 10px;
+      margin-top: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 1000;
+    }
+    .dropdown-list.show {
+      display: block;
+    }
+    .dropdown-item {
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .dropdown-item:hover {
+      background: #f0f2f4;
+    }
+    .dropdown-item.selected {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+    .no-results {
+      padding: 10px 12px;
+      color: var(--muted);
+      font-style: italic;
+    }
+    
+    /* Field yang auto-fill diberi highlight */
+    .auto-filled {
+      background-color: #fff9e6 !important;
+      border-left: 4px solid #fbbf24 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">SB</div>
+    <div>
+      <h2 style="margin:0">SuruhBoy</h2>
+      <p class="muted">Form Order (Dengan Data CS)</p>
+    </div>
+  </div>
+
+  <!-- CONTEXT CARD - Akan muncul jika ada data dari HTML 1 -->
+  <div id="contextCard" class="context-card" style="display: none;">
+    <div class="context-icon">📋</div>
+    <div class="context-content">
+      <div class="context-title">Membuat Order Berdasarkan Data CS</div>
+      <div class="context-detail" id="contextDetail"></div>
+      <button class="btn-clear-context" id="clearContextBtn">✕ Hapus data context</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <form id="orderForm">
+      <label>Biaya</label>
+      <input name="biaya" required id="biaya">
+      <div class="quick-options">
+        <span class="quick-option" data-value="10rb diluar parkir">10rb diluar parkir</span>
+        <span class="quick-option" data-value="12rb diluar parkir">12rb diluar parkir</span>
+        <span class="quick-option" data-value="10.000">10.000</span>
+        <span class="quick-option" data-value="12.000">12.000</span>
+      </div>
+
+      <label>Kapan</label>
+      <input name="kapan" type="date" required>
+
+      <label>Nama CS <span style="color: #f59e0b;">(auto-fill)</span></label>
+      <input name="nama" id="nama" required class="auto-filled">
+
+      <label>No HP CS <span style="color: #f59e0b;">(auto-fill)</span></label>
+      <input name="hp" required id="hp" class="auto-filled">
+
+      <label>Deskripsi</label>
+      <textarea name="deskripsi"></textarea>
+
+      <label>Jemput</label>
+      <input name="jemput">
+
+      <label>Titik Antar <span style="color: #f59e0b;">(auto-fill)</span></label>
+      <input name="antar" id="antar" class="auto-filled">
+
+      <label>Agent</label>
+      <!-- Searchable dropdown untuk Agent -->
+      <div class="dropdown-wrapper" id="agentDropdown">
+        <input type="text" class="dropdown-input" id="agentInput" placeholder="Ketik atau pilih agent..." autocomplete="off" required>
+        <input type="hidden" name="agent" id="agentHidden">
+        <div class="dropdown-list" id="dropdownList"></div>
+      </div>
+
+      <label>admin</label>
+      <input name="admin">
+
+      <button class="primary" type="submit" id="submitBtn" style="width:100%">SUBMIT</button>
+    </form>
+  </div>
+</div>
+
+<!-- HASIL TEMPLATE (awalnya tersembunyi) -->
+<div class="container" id="resultContainer" style="display:none">
+  <div class="result-card">
+    <h2>🟦 ORDER MASUK</h2>
+    <pre id="templateBox"></pre>
+    <button id="copyBtn" class="btn">COPY TEMPLATE</button>
+    <a id="chatBtn" class="btn" target="_blank">CHAT KE AGENT</a>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbwinE9yP9HTE4WWdnvMpu0PJUGPnpBaWg9ENNdtQGMpaIE4bYcTHEyxRE1atiFWCTRv/exec";
+
+// Daftar agent
+const agentList = [
+  "Agung", "Agus", "Andi", "Aryo", "Awa", "Bagus", "Diar", "Lutfi Majid",
+  "Malek", "Mbak Yuni", "Naily", "Nia", "Panji", "Restu", "Akhmad Rifki",
+  "Yosi", "Yusuf", "Ilham", "Barkah", "Mukhlis", "Kharisma", "Ardi",
+  "Acil", "Defita", "Fajar", "Ichsan", "Gilang", "Angga Aji", "Putri Utami",
+  "Arif Ahmadi", "Hana", "Indah Rahayu"
+];
+
+// Ambil elemen-elemen yang diperlukan
+const hpInput = document.getElementById("hp");
+const namaInput = document.getElementById("nama");
+const antarInput = document.getElementById("antar");
+const agentInput = document.getElementById("agentInput");
+const agentHidden = document.getElementById("agentHidden");
+const dropdownList = document.getElementById("dropdownList");
+const dropdownWrapper = document.getElementById("agentDropdown");
+const contextCard = document.getElementById("contextCard");
+const contextDetail = document.getElementById("contextDetail");
+const clearContextBtn = document.getElementById("clearContextBtn");
+
+// ========== LOAD DATA DARI LOCALSTORAGE (dari HTML 1) ==========
+function loadContextData() {
+  const savedData = localStorage.getItem('newOrderData');
+  
+  if (savedData) {
+    try {
+      const data = JSON.parse(savedData);
+      
+      // Isi form dengan data dari HTML 1
+      if (data.namaCS) {
+        namaInput.value = data.namaCS;
+      }
+      
+      if (data.nomorCS) {
+        hpInput.value = data.nomorCS;
+      }
+      
+      if (data.titikAntar) {
+        antarInput.value = data.titikAntar;
+      }
+      
+      // Tampilkan context card
+      contextDetail.innerHTML = `
+        <span>Nama:</span> ${data.namaCS || '-'}<br>
+        <span>No HP:</span> ${data.nomorCS || '-'}<br>
+        <span>Titik Antar:</span> ${data.titikAntar ? data.titikAntar.substring(0, 50) + (data.titikAntar.length > 50 ? '...' : '') : '-'}
+      `;
+      contextCard.style.display = 'flex';
+      
+    } catch (e) {
+      console.error('Error parsing context data:', e);
+    }
+  }
+}
+
+// Panggil saat halaman dimuat
+window.addEventListener('DOMContentLoaded', loadContextData);
+
+// Tombol untuk menghapus context
+clearContextBtn.addEventListener('click', function() {
+  localStorage.removeItem('newOrderData');
+  contextCard.style.display = 'none';
+  namaInput.value = '';
+  hpInput.value = '';
+  antarInput.value = '';
+});
+
+// Format nomor HP
+hpInput.addEventListener("input", function () {
+  let v = this.value.replace(/\D/g, "");
+  if (!v.startsWith("62")) {
+    v = "62" + v.replace(/^0+/, "");
+  }
+  this.value = v;
+});
+
+// Quick options untuk biaya
+document.querySelectorAll('.quick-option').forEach(option => {
+  option.addEventListener('click', function() {
+    document.getElementById('biaya').value = this.dataset.value;
+  });
+});
+
+// Fungsi untuk menampilkan dropdown agent
+function showDropdown(filter = "") {
+  const filteredAgents = agentList.filter(agent => 
+    agent.toLowerCase().includes(filter.toLowerCase())
+  );
+  
+  if (filteredAgents.length === 0) {
+    dropdownList.innerHTML = '<div class="no-results">Tidak ada agent</div>';
+  } else {
+    dropdownList.innerHTML = filteredAgents.map(agent => 
+      `<div class="dropdown-item" data-value="${agent}">${agent}</div>`
+    ).join('');
+  }
+  
+  dropdownList.classList.add('show');
+}
+
+// Event listener untuk input agent
+agentInput.addEventListener('focus', () => {
+  showDropdown(agentInput.value);
+});
+
+agentInput.addEventListener('input', (e) => {
+  showDropdown(e.target.value);
+});
+
+// Klik di luar dropdown untuk menutup
+document.addEventListener('click', (e) => {
+  if (!dropdownWrapper.contains(e.target)) {
+    dropdownList.classList.remove('show');
+  }
+});
+
+// Event delegation untuk item dropdown
+dropdownList.addEventListener('click', (e) => {
+  const item = e.target.closest('.dropdown-item');
+  if (item) {
+    const value = item.dataset.value;
+    agentInput.value = value;
+    agentHidden.value = value;
+    dropdownList.classList.remove('show');
+  }
+});
+
+// Submit form
+document.getElementById("orderForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  
+  if (!agentInput.value.trim()) {
+    alert("Pilih atau ketik nama agent!");
+    return;
+  }
+  
+  agentHidden.value = agentInput.value;
+
+  const submitBtn = document.getElementById("submitBtn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "⏳ Mengirim...";
+
+  const form = new FormData(this);
+  const data = {};
+  form.forEach((v, k) => data[k] = v);
+
+  // Kirim ke Apps Script
+  await fetch(SCRIPT_URL, { method: "POST", body: form });
+
+  // Buat template
+  const template = `
+🟦 ORDER MASUK
+
+📦 Biaya: ${data.biaya}
+📅 Kapan: ${data.kapan}
+👤 Nama: ${data.nama}
+📱 https://wa.me/${data.hp}?text=${encodeURIComponent("Hai kak, dengan Suruhboy disini")}
+📝 Deskripsi: ${data.deskripsi || "-"}
+
+📍 Jemput: ${data.jemput || "-"}
+📍 Antar: ${data.antar || "-"}
+
+🧑‍💼 Agent: ${data.agent}
+  `.trim();
+
+  document.getElementById("templateBox").textContent = template;
+  document.getElementById("resultContainer").style.display = "block";
+
+  document.getElementById("chatBtn").href =
+    "https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc";
+
+  // Scroll ke hasil
+  document.getElementById("resultContainer").scrollIntoView({ behavior: "smooth" });
+
+  // Reset form tapi jangan hapus localStorage (biar user bisa submit lagi)
+  this.reset();
+  agentInput.value = "";
+  agentHidden.value = "";
+  
+  // Kembalikan data context (karena reset menghapus field)
+  loadContextData();
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = "SUBMIT";
+});
+
+// COPY BUTTON
+document.getElementById("copyBtn").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(
+      document.getElementById("templateBox").textContent
+    );
+
+    const copyBtn = document.getElementById("copyBtn");
+    copyBtn.textContent = "✔ TERSALIN!";
+    copyBtn.style.background = "#1e7c33";
+
+    setTimeout(() => {
+      copyBtn.textContent = "COPY TEMPLATE";
+      copyBtn.style.background = "#28a745";
+    }, 1500);
+
+  } catch {
+    alert("Gagal menyalin!");
+  }
+});
+</script>
+
+</body>
+</html>

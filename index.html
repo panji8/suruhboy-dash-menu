@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Menu Dashboard + Header · Mobile Friendly</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Suruhboy · App Style with Floating Bar</title>
     <!-- Font Awesome 6 (free) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -11,7 +11,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
@@ -20,422 +20,670 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0.75rem;
+            padding: 0;
         }
 
-        .dashboard-container {
-            max-width: 1200px;
+        /* Container seperti layar HP */
+        .phone-frame {
             width: 100%;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 2rem;
-            padding: 1.25rem 1rem;
-            box-shadow: 0 30px 55px -20px #1d3f55;
-            border: 1px solid rgba(255, 255, 255, 0.7);
-        }
-
-        /* ------- HEADER RESPONSIF ------- */
-        .main-header {
+            max-width: 400px;
+            height: 750px;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
             display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px dashed rgba(45, 112, 142, 0.3);
-            gap: 1rem;
+            flex-direction: column;
+            border: 8px solid #1a1a1a;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            flex: 1 1 auto;
-        }
-
-        .logo-area {
+        /* Status bar (simulasi) */
+        .status-bar {
             background: #1b6b93;
-            width: 48px;
-            height: 48px;
-            min-width: 48px;
-            border-radius: 16px;
+            padding: 12px 20px 8px;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Header app */
+        .app-header {
+            background: #1b6b93;
+            padding: 10px 20px 25px;
+            color: white;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo-small {
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: white;
+            gap: 8px;
+        }
+
+        .logo-small i {
             font-size: 1.8rem;
-            box-shadow: 0 12px 18px -8px #105072;
-            transition: 0.2s;
+            background: rgba(255,255,255,0.2);
+            padding: 8px;
+            border-radius: 12px;
         }
 
-        .greeting {
-            flex: 1;
-        }
-
-        .greeting h2 {
-            font-size: 1.4rem;
-            font-weight: 650;
-            letter-spacing: -0.02em;
-            color: #0b3445;
-            line-height: 1.2;
-            white-space: nowrap;
+        .greeting h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
         }
 
         .greeting p {
-            color: #2a5f79;
-            font-weight: 500;
             font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(255,255,255,0.6);
-            padding: 0.2rem 0.8rem 0.2rem 0.6rem;
+            opacity: 0.9;
+        }
+
+        .profile-icon {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
             border-radius: 30px;
-            width: fit-content;
-            backdrop-filter: blur(2px);
-            white-space: nowrap;
+            font-size: 0.9rem;
         }
 
-        .header-right {
+        /* Search bar */
+        .search-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 30px;
+            padding: 10px 15px;
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-            width: 100%;
+            gap: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
-        .stat-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: white;
-            padding: 0.35rem 0.9rem;
-            border-radius: 40px;
-            box-shadow: 0 6px 14px rgba(0, 45, 60, 0.08);
-            border: 1px solid rgba(255,255,255,0.8);
-            font-size: 0.85rem;
-            white-space: nowrap;
-        }
-
-        .stat-item i {
+        .search-bar i {
+            color: white;
             font-size: 1rem;
-            color: #1a6f96;
+            opacity: 0.8;
         }
 
-        .stat-item span {
-            font-weight: 650;
-            color: #0a3342;
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: white;
+            width: 100%;
+            font-size: 0.95rem;
+            outline: none;
         }
 
-        .stat-item small {
-            color: #3b6f89;
-            font-size: 0.7rem;
-            font-weight: 400;
-            margin-left: 2px;
+        .search-bar input::placeholder {
+            color: rgba(255,255,255,0.7);
         }
 
-        /* grid card */
-        .card-grid {
+        /* Content area - scrollable */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 20px 90px; /* Padding bottom untuk floating nav */
+            background: #f5f8fa;
+        }
+
+        /* Welcome card */
+        .welcome-card {
+            background: linear-gradient(135deg, #1b6b93, #124c6b);
+            color: white;
+            padding: 25px;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(27, 107, 147, 0.3);
+        }
+
+        .welcome-card h2 {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+        }
+
+        .welcome-card p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        /* Stats cards */
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin: 1.5rem 0 1.2rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
         }
 
-        .card {
-            background: #ffffffdd;
-            backdrop-filter: blur(4px);
-            border-radius: 24px;
-            padding: 1.2rem 0.8rem 1rem;
+        .stat-card {
+            background: white;
+            padding: 18px 5px;
+            border-radius: 20px;
             text-align: center;
-            transition: all 0.2s ease;
-            border: 1px solid rgba(255,255,255,0.9);
-            box-shadow: 0 15px 25px -12px rgba(18, 52, 77, 0.15);
-            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .stat-card i {
+            font-size: 1.6rem;
+            color: #1b6b93;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0b3445;
+        }
+
+        .stat-card .label {
+            font-size: 0.75rem;
+            color: #5f7d95;
+        }
+
+        /* Section title */
+        .section-title {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.6rem;
+            margin-bottom: 15px;
+        }
+
+        .section-title h4 {
+            color: #0b3445;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .section-title span {
+            color: #1b6b93;
+            font-size: 0.85rem;
+        }
+
+        /* Menu grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .menu-item {
+            background: white;
+            padding: 20px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.2s;
             text-decoration: none;
             color: inherit;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
+        .menu-item:active {
+            transform: scale(0.98);
         }
 
-        .card:active {
-            transform: translateY(-2px) scale(0.98);
+        .menu-item i {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
         }
 
-        .icon-circle {
-            width: 60px;
-            height: 60px;
-            background: rgba(72, 157, 202, 0.15);
-            border-radius: 50%;
+        .menu-item span {
+            display: block;
+            font-weight: 600;
+            color: #0b3445;
+            font-size: 1rem;
+        }
+
+        .menu-item p {
+            font-size: 0.7rem;
+            color: #5f7d95;
+            margin-top: 4px;
+        }
+
+        .menu-item.agent i { color: #0a4b6e; }
+        .menu-item.admin i { color: #9b4e2d; }
+        .menu-item.user i { color: #2f7d4f; }
+        .menu-item.website i { color: #5f4b8b; }
+
+        /* Activity list */
+        .activity-list {
+            background: white;
+            border-radius: 25px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #eef2f6;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 45px;
+            height: 45px;
+            background: #e1f0f9;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            color: #175873;
-            transition: 0.2s;
-            border: 2px solid rgba(255,255,255,0.7);
+            color: #1b6b93;
+            font-size: 1.2rem;
         }
 
-        .card:hover .icon-circle {
-            background: #1f6e93;
-            color: white;
+        .activity-detail {
+            flex: 1;
         }
 
-        .card h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #0e3a4f;
-            letter-spacing: -0.2px;
-            margin: 0;
-            line-height: 1.2;
+        .activity-detail h5 {
+            color: #0b3445;
+            font-size: 1rem;
+            margin-bottom: 4px;
         }
 
-        .card p {
-            font-size: 0.7rem;
-            color: #3b6579;
-            background: #d9eaf3c9;
-            padding: 0.2rem 0.8rem;
-            border-radius: 40px;
-            font-weight: 500;
-            backdrop-filter: blur(2px);
-            border: 1px solid #bcd8e7;
-            white-space: nowrap;
-        }
-
-        /* warna ikon */
-        .card:nth-child(1) .icon-circle { background: #d4eaf7; color: #0a4b6e; }
-        .card:nth-child(2) .icon-circle { background: #f0e0d6; color: #9b4e2d; }
-        .card:nth-child(3) .icon-circle { background: #ddeeda; color: #2f7d4f; }
-        .card:nth-child(4) .icon-circle { background: #fcf0ce; color: #b17f3b; }
-        .card:nth-child(5) .icon-circle { background: #dcd0f5; color: #5f4b8b; }
-
-        .card:nth-child(1):hover .icon-circle { background: #0a4b6e; color: white; }
-        .card:nth-child(2):hover .icon-circle { background: #9b4e2d; color: white; }
-        .card:nth-child(3):hover .icon-circle { background: #2f7d4f; color: white; }
-        .card:nth-child(4):hover .icon-circle { background: #b17f3b; color: white; }
-        .card:nth-child(5):hover .icon-circle { background: #5f4b8b; color: white; }
-
-        .repo-footer {
-            margin-top: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(4px);
-            padding: 0.7rem 1rem;
-            border-radius: 40px;
-            border: 1px solid rgba(255,255,255,0.7);
-            color: #16546b;
+        .activity-detail p {
+            color: #5f7d95;
             font-size: 0.8rem;
         }
 
-        .footer-files {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
+        .activity-time {
+            color: #5f7d95;
+            font-size: 0.75rem;
+            font-weight: 500;
         }
 
-        .footer-files i {
-            color: #226480;
+        /* FLOATING BOTTOM NAVIGATION */
+        .floating-nav-container {
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px 20px 20px;
+            background: transparent;
+            pointer-events: none;
+            z-index: 100;
+            margin-top: -40px;
         }
 
-        .footer-note {
+        .floating-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 8px 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            pointer-events: auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #5f7d95;
+            font-size: 0.65rem;
+            gap: 2px;
+            transition: all 0.2s;
+            padding: 8px 0;
+            width: 50px;
+        }
+
+        .nav-item i {
+            font-size: 1.3rem;
+            margin-bottom: 2px;
+        }
+
+        .nav-item span {
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            color: #1b6b93;
+        }
+
+        /* FAB - Form Order sebagai tombol plus di tengah */
+        .fab-item {
+            position: relative;
+            top: -15px;
+        }
+
+        .fab-button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #b17f3b, #8e6329);
+            border-radius: 30px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 10px 20px rgba(177, 127, 59, 0.4);
+            transition: all 0.2s;
+            border: 4px solid white;
+            text-decoration: none;
+            margin-bottom: 2px;
+        }
+
+        .fab-button:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .fab-label {
+            text-align: center;
+            font-size: 0.6rem;
+            color: #b17f3b;
+            font-weight: 600;
+            background: rgba(255,255,255,0.7);
+            padding: 2px 8px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
             white-space: nowrap;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit;
+        /* Quick actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
-        /* BREAKPOINT MOBILE */
-        @media (max-width: 500px) {
-            body {
-                padding: 0.5rem;
-                align-items: flex-start;
+        .quick-action {
+            background: white;
+            padding: 15px 5px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.03);
+        }
+
+        .quick-action i {
+            font-size: 1.4rem;
+            color: #1b6b93;
+            margin-bottom: 5px;
+        }
+
+        .quick-action span {
+            font-size: 0.7rem;
+            color: #3b6579;
+            display: block;
+            font-weight: 500;
+        }
+
+        /* Active state */
+        .nav-item.active {
+            color: #1b6b93;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            .phone-frame {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
             }
             
-            .dashboard-container {
-                padding: 1rem 0.75rem;
-                border-radius: 1.5rem;
-            }
-
-            .main-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 0.8rem;
-            }
-
-            .header-left {
-                width: 100%;
-            }
-
-            .greeting h2 {
-                font-size: 1.2rem;
-                white-space: normal;
-            }
-
-            .greeting p {
-                font-size: 0.7rem;
-                white-space: normal;
-            }
-
-            .header-right {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 0.7rem;
-            }
-
-            .stat-badge {
-                justify-content: space-between;
-            }
-
-            .stat-item {
-                flex: 1;
-                justify-content: center;
-                font-size: 0.75rem;
-            }
-
-            .card-grid {
+            .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 0.7rem;
             }
-
-            .card {
-                padding: 1rem 0.4rem 0.8rem;
-                border-radius: 20px;
-            }
-
-            .icon-circle {
-                width: 50px;
-                height: 50px;
-                font-size: 1.7rem;
-            }
-
-            .card h3 {
-                font-size: 0.95rem;
-            }
-
-            .card p {
-                font-size: 0.6rem;
-                white-space: normal;
-            }
-
-            .repo-footer {
-                flex-direction: column;
-                text-align: center;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .card-grid {
-                grid-template-columns: 1fr;
+            
+            .floating-nav-container {
+                padding: 10px 10px 15px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- HEADER -->
-        <div class="main-header">
-            <div class="header-left">
-                <div class="logo-area">
+    <div class="phone-frame">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <span><i class="fas fa-signal"></i> <i class="fas fa-wifi"></i> <i class="fas fa-battery-full"></i></span>
+        </div>
+
+        <!-- App Header -->
+        <div class="app-header">
+            <div class="header-top">
+                <div class="logo-small">
                     <i class="fas fa-cube"></i>
-                </div>
-                <div class="greeting">
-                    <h2>Halo, Tim! 👋</h2>
-                    <p>
-                        <i class="fas fa-map-pin"></i> 
-                        5 halaman · 1 repositori
-                    </p>
-                </div>
-            </div>
-
-            <div class="header-right">
-                <div class="stat-badge">
-                    <div class="stat-item">
-                        <i class="fas fa-file-alt"></i>
-                        <span>5 <small>file</small></span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-link"></i>
-                        <span>1 <small>repo</small></span>
+                    <div class="greeting">
+                        <h3>Suruhboy</h3>
+                        <p>Selamat datang, Tim! 👋</p>
                     </div>
                 </div>
+                <div class="profile-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Cari dashboard atau halaman..." id="searchInput">
+                <i class="fas fa-sliders-h" style="opacity: 0.8;"></i>
             </div>
         </div>
-        
-        <!-- GRID CARD 5 ITEM - SEKARANG JADI LINK KE FILE HTML -->
-        <div class="card-grid">
-            <!-- 1. Dashboard Agent - pindah ke dashboard-agent.html di tab yang sama -->
-            <a href="./dashboard-agent.html" class="card">
-                <div class="icon-circle"><i class="fas fa-user-tie"></i></div>
-                <h3>Dashboard Agent</h3>
-                <p>agen / mitra</p>
-            </a>
 
-            <!-- 2. Dashboard Admin - pindah ke DashboardAdmin.html (sesuai nama file Anda) -->
-            <a href="./DashboardAdmin.html" class="card">
-                <div class="icon-circle"><i class="fas fa-user-cog"></i></div>
-                <h3>Dashboard Admin</h3>
-                <p>superuser</p>
-            </a>
+        <!-- Content Area (Scrollable) -->
+        <div class="content-area" id="contentArea">
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <h2>Halo, Team! 👋</h2>
+                <p>Ada 12 order baru dan 3 agent online</p>
+            </div>
 
-            <!-- 3. Dashboard CS - pindah ke dashboardCS.html -->
-            <a href="./dashboardCS.html" class="card">
-                <div class="icon-circle"><i class="fas fa-headset"></i></div>
-                <h3>Dashboard CS</h3>
-                <p>customer service</p>
-            </a>
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-box"></i>
+                    <div class="value">24</div>
+                    <div class="label">Order Hari Ini</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-truck"></i>
+                    <div class="value">12</div>
+                    <div class="label">Dalam Proses</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <div class="value">8</div>
+                    <div class="label">Agent Aktif</div>
+                </div>
+            </div>
 
-            <!-- 4. Form Order - pindah ke form-order.html -->
-            <a href="./Form-Agent.html" class="card">
-                <div class="icon-circle"><i class="fas fa-clipboard-list"></i></div>
-                <h3>Form Order</h3>
-                <p>isi pemesanan</p>
-            </a>
+            <!-- Quick Access Menu -->
+            <div class="section-title">
+                <h4>Akses Cepat</h4>
+                <span>Lihat semua <i class="fas fa-arrow-right"></i></span>
+            </div>
 
-            <!-- 5. Website Suruhboy - pindah ke website-suruhboy.html -->
-            <a href="./website-suruhboy.html" class="card">
-                <div class="icon-circle"><i class="fas fa-globe"></i></div>
-                <h3>Website Suruhboy</h3>
-                <p>landing page</p>
-            </a>
+            <div class="menu-grid">
+                <a href="./dashboard-agent.html" class="menu-item agent">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Dashboard Agent</span>
+                    <p>agen & mitra</p>
+                </a>
+                <a href="./DashboardAdmin.html" class="menu-item admin">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Dashboard Admin</span>
+                    <p>superuser</p>
+                </a>
+                <a href="./dashboardUser.html" class="menu-item user">
+                    <i class="fas fa-user"></i>
+                    <span>Dashboard User</span>
+                    <p>pengguna</p>
+                </a>
+                <a href="./website-suruhboy.html" class="menu-item website">
+                    <i class="fas fa-globe"></i>
+                    <span>Website Suruhboy</span>
+                    <p>landing page</p>
+                </a>
+            </div>
+
+            <!-- Section Title -->
+            <div class="section-title">
+                <h4>Aktivitas Terkini</h4>
+                <span>Lihat semua <i class="fas fa-arrow-right"></i></span>
+            </div>
+
+            <!-- Activity List -->
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon"><i class="fas fa-user-tie"></i></div>
+                    <div class="activity-detail">
+                        <h5>Order #INV-001</h5>
+                        <p>Agent · Pickup selesai</p>
+                    </div>
+                    <div class="activity-time">10:30</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon"><i class="fas fa-user-cog"></i></div>
+                    <div class="activity-detail">
+                        <h5>Verifikasi Agent Baru</h5>
+                        <p>Admin · Pending</p>
+                    </div>
+                    <div class="activity-time">09:15</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon"><i class="fas fa-user"></i></div>
+                    <div class="activity-detail">
+                        <h5>User baru mendaftar</h5>
+                        <p>Dashboard User · 3 menit lalu</p>
+                    </div>
+                    <div class="activity-time">08:45</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="quick-action">
+                    <i class="fas fa-box"></i>
+                    <span>Order</span>
+                </div>
+                <div class="quick-action">
+                    <i class="fas fa-users"></i>
+                    <span>Agent</span>
+                </div>
+                <div class="quick-action">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Report</span>
+                </div>
+                <div class="quick-action">
+                    <i class="fas fa-cog"></i>
+                    <span>Setting</span>
+                </div>
+            </div>
+            
+            <!-- Spacer untuk floating nav -->
+            <div style="height: 20px;"></div>
         </div>
 
-        <!-- FOOTER -->
-        <div class="repo-footer">
-            <div class="footer-files">
-                <i class="fas fa-folder-tree"></i> 
-                <span>dashboard-agent.html · DashboardAdmin.html · dashboardCS.html · form-order.html · website-suruhboy.html</span>
-            </div>
-            <div class="footer-note">
-                <i class="fas fa-mouse-pointer"></i> klik card → pindah ke file HTML (1 tab)
+        <!-- FLOATING BOTTOM NAVIGATION (NGAMBANG) -->
+        <div class="floating-nav-container">
+            <div class="floating-nav">
+                <!-- Agent (kiri) -->
+                <a href="./dashboard-agent.html" class="nav-item">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Agent</span>
+                </a>
+                
+                <!-- Admin (kiri tengah) -->
+                <a href="./DashboardAdmin.html" class="nav-item">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Admin</span>
+                </a>
+                
+                <!-- FAB: Form Order (tengah) -->
+                <div class="fab-item">
+                    <a href="./form-order.html" class="fab-button">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    <div class="fab-label">Form Order</div>
+                </div>
+                
+                <!-- Dashboard User (kanan tengah) -->
+                <a href="./dashboardUser.html" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>User</span>
+                </a>
+                
+                <!-- Website Suruhboy (kanan) -->
+                <a href="./website-suruhboy.html" class="nav-item">
+                    <i class="fas fa-globe"></i>
+                    <span>Website</span>
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- FUNGSI SEARCH TELAH DIHAPUS -->
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (searchTerm === '') {
+                alert('Silakan masukkan kata kunci pencarian');
+                return;
+            }
+            
+            const pages = [
+                { name: 'agent', url: './dashboard-agent.html' },
+                { name: 'admin', url: './DashboardAdmin.html' },
+                { name: 'user', url: './dashboardUser.html' },
+                { name: 'order', url: './form-order.html' },
+                { name: 'suruhboy', url: './website-suruhboy.html' },
+                { name: 'website', url: './website-suruhboy.html' }
+            ];
+            
+            const matched = pages.find(page => 
+                page.name.includes(searchTerm) || searchTerm.includes(page.name)
+            );
+            
+            if (matched) {
+                window.location.href = matched.url;
+            } else {
+                alert('Coba: agent, admin, user, order, atau suruhboy');
+            }
+        }
+
+        // Enter key for search
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Set active nav item based on current page
+        const currentPath = window.location.pathname;
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        navItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href && currentPath.includes(href.replace('./', ''))) {
+                item.classList.add('active');
+            }
+        });
+    </script>
 </body>
 </html>

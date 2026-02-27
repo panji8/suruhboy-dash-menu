@@ -16,9 +16,11 @@
         }
 
         :root {
-            --primary: #3a56e6;
-            --primary-dark: #2a46d6;
-            --primary-light: #f0f4ff;
+            --primary: #1F4F59;
+            --primary-dark: #2E6B73;
+            --primary-light: #e0f0f3;
+            --accent: #F4A64D;
+            --accent-light: #fef3e0;
             --success: #10b981;
             --success-light: #d1fae5;
             --warning: #f59e0b;
@@ -27,6 +29,9 @@
             --danger-light: #fee2e2;
             --whatsapp: #25D366;
             --whatsapp-dark: #1da851;
+            --cream: #F3E4D3;
+            --background: #E9EEED;
+            --text: #1D2A2E;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -46,8 +51,8 @@
         }
 
         body {
-            background-color: var(--gray-50);
-            color: var(--gray-800);
+            background-color: var(--background);
+            color: var(--text);
             min-height: 100vh;
             padding: 12px;
         }
@@ -114,7 +119,7 @@
             align-items: center;
             gap: 12px;
             margin-bottom: 8px;
-            margin-left: 48px; /* Memberi ruang untuk back button */
+            margin-left: 48px;
         }
 
         .period-badge {
@@ -140,7 +145,7 @@
             background-color: var(--success);
         }
 
-        .status-dot.loading { background-color: var(--warning); animation: pulse 1.5s infinite; }
+        .status-dot.loading { background-color: var(--accent); animation: pulse 1.5s infinite; }
         .status-dot.error { background-color: var(--danger); }
 
         @keyframes pulse {
@@ -156,7 +161,7 @@
             font-size: 0.8rem;
             line-height: 1.5;
             word-break: break-word;
-            margin-left: 48px; /* Memberi ruang untuk back button */
+            margin-left: 48px;
         }
 
         .sheet-info a {
@@ -187,7 +192,7 @@
         .control-title {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--text);
         }
 
         .week-filter-group {
@@ -216,7 +221,7 @@
         .week-dropdown:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(58, 86, 230, 0.1);
+            box-shadow: 0 0 0 3px rgba(31, 79, 89, 0.1);
         }
 
         .nav-buttons {
@@ -353,7 +358,7 @@
         }
 
         .agent-info-card {
-            background-color: var(--primary-light);
+            background-color: var(--cream);
             border-radius: var(--radius);
             padding: 16px;
             margin-bottom: 16px;
@@ -381,7 +386,7 @@
 
         .agent-info-value {
             font-size: 0.95rem;
-            color: var(--gray-800);
+            color: var(--text);
             font-weight: 600;
             text-align: right;
             word-break: break-word;
@@ -524,8 +529,8 @@
         }
 
         .agent-rank {
-            background-color: var(--gray-200);
-            color: var(--gray-700);
+            background-color: var(--accent);
+            color: white;
             width: 24px;
             height: 24px;
             border-radius: 12px;
@@ -539,12 +544,16 @@
 
         .fee-badge {
             display: inline-block;
-            background-color: var(--primary);
+            background-color: var(--accent);
             color: white;
             font-size: 0.7rem;
             font-weight: 600;
             padding: 2px 6px;
             border-radius: 12px;
+        }
+
+        .fee-badge.special {
+            background-color: var(--primary);
         }
 
         .agent-details {
@@ -568,7 +577,7 @@
         .detail-value {
             font-size: 0.95rem;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--text);
         }
 
         .detail-value.currency {
@@ -682,11 +691,11 @@
 
         /* INFO BOX */
         .info-box {
-            background-color: var(--primary-light);
+            background-color: var(--cream);
             padding: 16px;
             border-radius: var(--radius);
             margin-top: 20px;
-            border-left: 4px solid var(--primary);
+            border-left: 4px solid var(--accent);
             font-size: 0.9rem;
         }
 
@@ -867,12 +876,12 @@
 
         .toast.success { border-left: 4px solid var(--success); }
         .toast.error { border-left: 4px solid var(--danger); }
-        .toast.info { border-left: 4px solid var(--primary); }
+        .toast.info { border-left: 4px solid var(--accent); }
 
         .toast-icon { font-size: 1.2rem; }
         .toast.success .toast-icon { color: var(--success); }
         .toast.error .toast-icon { color: var(--danger); }
-        .toast.info .toast-icon { color: var(--primary); }
+        .toast.info .toast-icon { color: var(--accent); }
 
         .toast-message {
             flex: 1;
@@ -897,7 +906,7 @@
 
         .loading-spinner {
             border: 3px solid var(--gray-200);
-            border-top: 3px solid var(--primary);
+            border-top: 3px solid var(--accent);
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -1005,7 +1014,7 @@
             </div>
             <div class="sheet-info">
                 🔗 <a href="https://docs.google.com/spreadsheets/d/1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c/edit?usp=sharing" target="_blank">Google Sheets</a> | 
-                <span style="color: #ffd700;">Diar & Akhmad Rifki: 7%</span>
+                <span style="color: #F4A64D;">Diar & Akhmad Rifki: 7%</span>
             </div>
         </header>
 
@@ -1515,8 +1524,8 @@
                 const whatsappDisplay = item.whatsapp ? formatWhatsappNumber(item.whatsapp) : '-';
                 const hasWA = item.whatsapp && item.whatsapp.trim() !== '';
                 const feeBadge = SPECIAL_AGENTS[item.agent] 
-                    ? `<span class="fee-badge">${SPECIAL_AGENTS[item.agent]}%</span>` 
-                    : '<span class="fee-badge" style="background:#6b7280;">10%</span>';
+                    ? `<span class="fee-badge special">${SPECIAL_AGENTS[item.agent]}%</span>` 
+                    : '<span class="fee-badge">10%</span>';
                 
                 const ctwaMessage = encodeURIComponent(
                     `Halo ${item.agent}!\n\nInfo pembayaran periode ${week}:\n` +
@@ -1635,8 +1644,8 @@
                         {
                             label: 'Jumlah Order',
                             data: orderData,
-                            borderColor: '#3a56e6',
-                            backgroundColor: 'rgba(58,86,230,0.1)',
+                            borderColor: '#1F4F59',
+                            backgroundColor: 'rgba(31,79,89,0.1)',
                             tension: 0.4,
                             fill: true,
                             yAxisID: 'y'
@@ -1644,8 +1653,8 @@
                         {
                             label: 'Nominal (Rp)',
                             data: amountData,
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16,185,129,0.1)',
+                            borderColor: '#F4A64D',
+                            backgroundColor: 'rgba(244,166,77,0.1)',
                             tension: 0.4,
                             fill: true,
                             yAxisID: 'y1'

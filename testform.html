@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Form Order - SuruhBoy</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style>
+
+:root{
+--bg:#f5f7fa;
+--card:#ffffff;
+--accent:#25D366;
+--primary:#2563eb;
+--muted:#6b7280;
+}
+
+*{box-sizing:border-box}
+
+body{
+font-family:Inter,system-ui,Arial;
+background:var(--bg);
+margin:0;
+color:#0f172a
+}
+
+.container{
+max-width:980px;
+margin:36px auto;
+padding:20px
+}
+
+.header{
+display:flex;
+align-items:center;
+gap:14px;
+margin-bottom:18px
+}
+
+.logo{
+width:48px;
+height:48px;
+border-radius:50%;
+background:var(--accent);
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:700
+}
+
+.muted{
+color:var(--muted);
+margin:0
+}
+
+.card{
+background:var(--card);
+padding:22px;
+border-radius:14px;
+box-shadow:0 8px 20px rgba(2,6,23,0.06)
+}
+
+label{
+display:block;
+margin-top:12px;
+font-weight:600
+}
+
+input,textarea{
+width:100%;
+padding:12px;
+margin-top:6px;
+border-radius:10px;
+border:1px solid #e6eef6
+}
+
+textarea{min-height:90px}
+
+.primary{
+display:inline-block;
+margin-top:14px;
+background:var(--primary);
+color:#fff;
+border:none;
+padding:12px 16px;
+border-radius:10px;
+cursor:pointer;
+font-weight:700
+}
+
+.quick-options{
+display:flex;
+gap:10px;
+margin-top:8px;
+flex-wrap:wrap
+}
+
+.quick-option{
+background:#e9ecef;
+padding:8px 12px;
+border-radius:20px;
+font-size:14px;
+cursor:pointer
+}
+
+.service-box{
+display:flex;
+gap:10px;
+margin-top:8px
+}
+
+.agent-box{
+margin-top:8px
+}
+
+.result-card{
+max-width:600px;
+padding:24px;
+border-radius:16px;
+box-shadow:0 8px 20px rgb(0 0 0 / 0.08);
+background:white;
+margin:auto
+}
+
+.btn{
+display:block;
+margin-top:16px;
+padding:14px;
+color:white;
+text-align:center;
+border-radius:10px;
+text-decoration:none;
+font-weight:600;
+cursor:pointer
+}
+
+#chatBtn{background:#007bff}
+#copyBtn{background:#28a745}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<div class="logo">SB</div>
+<div>
+<h2 style="margin:0">SuruhBoy</h2>
+<p class="muted">Form Order</p>
+</div>
+</div>
+
+<div class="card">
+
+<form id="orderForm">
+
+<label>Biaya</label>
+<input name="biaya" required id="biaya">
+
+<div class="quick-options">
+<span class="quick-option" data-value="10rb diluar parkir">10rb diluar parkir</span>
+<span class="quick-option" data-value="12rb diluar parkir">12rb diluar parkir</span>
+<span class="quick-option" data-value="10.000">10.000</span>
+<span class="quick-option" data-value="12.000">12.000</span>
+</div>
+
+<label>Tambahan Jasa</label>
+
+<div id="extraServices"></div>
+
+<button type="button" class="primary" onclick="addService()" style="background:#64748b">
++ Tambah Jasa
+</button>
+
+<label>Kapan</label>
+<input name="kapan" type="date" required>
+
+<label>Nama</label>
+<input name="nama" required>
+
+<label>No HP</label>
+<input name="hp" required id="hp">
+
+<label>Deskripsi</label>
+<textarea name="deskripsi"></textarea>
+
+<label>Jemput</label>
+<input name="jemput">
+
+<label>Antar</label>
+<input name="antar">
+
+<label>Agent</label>
+
+<div id="agentContainer"></div>
+
+<button type="button" class="primary" onclick="addAgent()" style="background:#64748b">
++ Tambah Agent
+</button>
+
+<label>admin</label>
+<input name="admin">
+
+<button class="primary" type="submit" style="width:100%">SUBMIT</button>
+
+</form>
+
+</div>
+</div>
+
+
+<div class="container" id="resultContainer" style="display:none">
+
+<div class="result-card">
+
+<h2>🟦 ORDER MASUK</h2>
+
+<pre id="templateBox"></pre>
+
+<button id="copyBtn" class="btn">COPY TEMPLATE</button>
+
+<a id="chatBtn" class="btn" target="_blank">CHAT KE AGENT</a>
+
+</div>
+</div>
+
+
+<script>
+
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwinE9yP9HTE4WWdnvMpu0PJUGPnpBaWg9ENNdtQGMpaIE4bYcTHEyxRE1atiFWCTRv/exec";
+
+let serviceCount=0;
+let agentCount=0;
+
+
+
+document.querySelectorAll('.quick-option').forEach(option=>{
+option.onclick=()=>document.getElementById('biaya').value=option.dataset.value
+})
+
+
+
+function addService(){
+
+serviceCount++
+
+const div=document.createElement("div")
+
+div.className="service-box"
+
+div.innerHTML=`
+<input name="service${serviceCount}" placeholder="Nama jasa">
+<input name="serviceBiaya${serviceCount}" placeholder="Biaya">
+`
+
+document.getElementById("extraServices").appendChild(div)
+
+}
+
+
+
+function addAgent(){
+
+if(agentCount>=5){
+
+alert("Maksimal 5 agent")
+
+return
+
+}
+
+agentCount++
+
+const div=document.createElement("div")
+
+div.className="agent-box"
+
+div.innerHTML=`
+<input name="agent${agentCount}" placeholder="Nama Agent">
+`
+
+document.getElementById("agentContainer").appendChild(div)
+
+}
+
+
+
+const hpInput=document.getElementById("hp")
+
+hpInput.addEventListener("input",function(){
+
+let v=this.value.replace(/\D/g,"")
+
+if(!v.startsWith("62")){
+
+v="62"+v.replace(/^0+/,"")
+
+}
+
+this.value=v
+
+})
+
+
+
+document.getElementById("orderForm").addEventListener("submit",async function(e){
+
+e.preventDefault()
+
+const form=new FormData(this)
+
+const data={}
+
+form.forEach((v,k)=>data[k]=v)
+
+
+
+const agents=[]
+
+for(let i=1;i<=5;i++){
+
+const val=form.get("agent"+i)
+
+if(val)agents.push(val)
+
+}
+
+
+
+for(const ag of agents){
+
+form.set("agent",ag)
+
+await fetch(SCRIPT_URL,{
+method:"POST",
+body:form
+})
+
+}
+
+
+
+const template=`
+
+🟦 ORDER MASUK
+
+📦 Biaya: ${data.biaya}
+📅 Kapan: ${data.kapan}
+👤 Nama: ${data.nama}
+📱 https://wa.me/${data.hp}
+
+📝 Deskripsi: ${data.deskripsi||"-"}
+
+📍 Jemput: ${data.jemput||"-"}
+📍 Antar: ${data.antar||"-"}
+
+🧑‍💼 Agent: ${agents.join(", ")}
+
+`.trim()
+
+
+
+document.getElementById("templateBox").textContent=template
+
+document.getElementById("resultContainer").style.display="block"
+
+document.getElementById("chatBtn").href="https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc"
+
+this.reset()
+
+})
+
+
+
+document.getElementById("copyBtn").onclick=async()=>{
+
+await navigator.clipboard.writeText(
+document.getElementById("templateBox").textContent
+)
+
+alert("Template tersalin!")
+
+}
+
+</script>
+
+</body>
+</html>

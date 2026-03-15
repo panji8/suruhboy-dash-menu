@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
-
 :root{
 --bg:#f5f7fa;
 --card:#ffffff;
@@ -38,21 +37,13 @@ margin-bottom:18px
 }
 
 .logo{
-width:48px;
-height:48px;
-border-radius:50%;
+width:48px;height:48px;border-radius:50%;
 background:var(--accent);
-color:#fff;
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:700
+color:#fff;display:flex;align-items:center;
+justify-content:center;font-weight:700
 }
 
-.muted{
-color:var(--muted);
-margin:0
-}
+.muted{color:var(--muted)}
 
 .card{
 background:var(--card);
@@ -78,15 +69,15 @@ border:1px solid #e6eef6
 textarea{min-height:90px}
 
 .primary{
-display:inline-block;
-margin-top:14px;
+margin-top:12px;
 background:var(--primary);
-color:#fff;
+color:white;
 border:none;
-padding:12px 16px;
+padding:12px;
 border-radius:10px;
 cursor:pointer;
-font-weight:700
+font-weight:700;
+width:100%
 }
 
 .quick-options{
@@ -100,18 +91,33 @@ flex-wrap:wrap
 background:#e9ecef;
 padding:8px 12px;
 border-radius:20px;
-font-size:14px;
 cursor:pointer
 }
 
-.service-box{
-display:flex;
-gap:10px;
-margin-top:8px
+.dropdown-wrapper{position:relative}
+.dropdown-list{
+position:absolute;
+top:100%;
+left:0;
+right:0;
+background:white;
+border:1px solid #e6eef6;
+border-radius:10px;
+max-height:220px;
+overflow:auto;
+display:none;
+z-index:1000
 }
 
-.agent-box{
-margin-top:8px
+.dropdown-list.show{display:block}
+
+.dropdown-item{
+padding:10px;
+cursor:pointer
+}
+
+.dropdown-item:hover{
+background:#f0f2f4
 }
 
 .result-card{
@@ -169,10 +175,10 @@ cursor:pointer
 
 <label>Tambahan Jasa</label>
 
-<div id="extraServices"></div>
+<div id="extraCost"></div>
 
-<button type="button" class="primary" onclick="addService()" style="background:#64748b">
-+ Tambah Jasa
+<button type="button" onclick="addCost()" style="margin-top:8px">
++ Tambah biaya tambahan
 </button>
 
 <label>Kapan</label>
@@ -197,14 +203,14 @@ cursor:pointer
 
 <div id="agentContainer"></div>
 
-<button type="button" class="primary" onclick="addAgent()" style="background:#64748b">
+<button type="button" onclick="addAgent()" style="margin-top:8px">
 + Tambah Agent
 </button>
 
 <label>admin</label>
 <input name="admin">
 
-<button class="primary" type="submit" style="width:100%">SUBMIT</button>
+<button class="primary" type="submit">SUBMIT</button>
 
 </form>
 
@@ -213,7 +219,6 @@ cursor:pointer
 
 
 <div class="container" id="resultContainer" style="display:none">
-
 <div class="result-card">
 
 <h2>🟦 ORDER MASUK</h2>
@@ -230,80 +235,99 @@ cursor:pointer
 
 <script>
 
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwinE9yP9HTE4WWdnvMpu0PJUGPnpBaWg9ENNdtQGMpaIE4bYcTHEyxRE1atiFWCTRv/exec";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwinE9yP9HTE4WWdnvMpu0PJUGPnpBaWg9ENNdtQGMpaIE4bYcTHEyxRE1atiFWCTRv/exec"
 
-let serviceCount=0;
-let agentCount=0;
+const agentList=[
+"Agung","Agus","Aryo","Awa","Bagus","Diar","Lutfi Majid",
+"Malek","Mbak Yuni","Naily","Nia","Panji","Restu","Akhmad Rifki",
+"Yosi","Yusuf","Ilham","Barkah","Mukhlis","Kharisma","Ardi",
+"Acil","Defita","Fajar","Ichsan","Gilang","Angga Aji","Putri Utami",
+"Arif Ahmadi","Hana","Indah Rahayu","Angga Mobil","Muhammad Aan Pickup"
+]
 
+let agentCount=0
+let costCount=0
 
 
 document.querySelectorAll('.quick-option').forEach(option=>{
-option.onclick=()=>document.getElementById('biaya').value=option.dataset.value
+option.onclick=()=>document.getElementById("biaya").value=option.dataset.value
 })
 
 
+function addCost(){
 
-function addService(){
-
-serviceCount++
+costCount++
 
 const div=document.createElement("div")
 
-div.className="service-box"
+div.innerHTML=`<input name="extra${costCount}" placeholder="Biaya tambahan">`
 
-div.innerHTML=`
-<input name="service${serviceCount}" placeholder="Nama jasa">
-<input name="serviceBiaya${serviceCount}" placeholder="Biaya">
-`
-
-document.getElementById("extraServices").appendChild(div)
+document.getElementById("extraCost").appendChild(div)
 
 }
-
 
 
 function addAgent(){
 
 if(agentCount>=5){
-
 alert("Maksimal 5 agent")
-
 return
-
 }
 
 agentCount++
 
-const div=document.createElement("div")
+const wrapper=document.createElement("div")
 
-div.className="agent-box"
+wrapper.className="dropdown-wrapper"
 
-div.innerHTML=`
-<input name="agent${agentCount}" placeholder="Nama Agent">
+wrapper.innerHTML=`
+
+<input type="text" placeholder="Ketik agent..." class="agentInput">
+
+<div class="dropdown-list"></div>
+
 `
 
-document.getElementById("agentContainer").appendChild(div)
+document.getElementById("agentContainer").appendChild(wrapper)
+
+const input=wrapper.querySelector(".agentInput")
+const list=wrapper.querySelector(".dropdown-list")
+
+function showList(filter=""){
+
+const result=agentList.filter(a=>a.toLowerCase().includes(filter.toLowerCase()))
+
+list.innerHTML=result.map(a=>`<div class="dropdown-item">${a}</div>`).join("")
+
+list.classList.add("show")
+
+}
+
+input.addEventListener("focus",()=>showList())
+
+input.addEventListener("input",e=>showList(e.target.value))
+
+list.addEventListener("click",e=>{
+if(e.target.classList.contains("dropdown-item")){
+input.value=e.target.textContent
+list.classList.remove("show")
+}
+})
 
 }
 
 
-
-const hpInput=document.getElementById("hp")
-
-hpInput.addEventListener("input",function(){
+document.getElementById("hp").addEventListener("input",function(){
 
 let v=this.value.replace(/\D/g,"")
 
 if(!v.startsWith("62")){
-
 v="62"+v.replace(/^0+/,"")
-
 }
 
 this.value=v
 
 })
-
 
 
 document.getElementById("orderForm").addEventListener("submit",async function(e){
@@ -312,23 +336,11 @@ e.preventDefault()
 
 const form=new FormData(this)
 
-const data={}
-
-form.forEach((v,k)=>data[k]=v)
-
-
-
 const agents=[]
 
-for(let i=1;i<=5;i++){
-
-const val=form.get("agent"+i)
-
-if(val)agents.push(val)
-
-}
-
-
+document.querySelectorAll(".agentInput").forEach(i=>{
+if(i.value.trim())agents.push(i.value)
+})
 
 for(const ag of agents){
 
@@ -341,7 +353,8 @@ body:form
 
 }
 
-
+const data={}
+form.forEach((v,k)=>data[k]=v)
 
 const template=`
 
@@ -361,19 +374,13 @@ const template=`
 
 `.trim()
 
-
-
 document.getElementById("templateBox").textContent=template
 
 document.getElementById("resultContainer").style.display="block"
 
 document.getElementById("chatBtn").href="https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc"
 
-this.reset()
-
 })
-
-
 
 document.getElementById("copyBtn").onclick=async()=>{
 
@@ -384,6 +391,8 @@ document.getElementById("templateBox").textContent
 alert("Template tersalin!")
 
 }
+
+addAgent()
 
 </script>
 

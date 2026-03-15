@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
+
 :root{
 --bg:#f5f7fa;
 --card:#ffffff;
@@ -23,24 +24,20 @@ margin:0;
 color:#0f172a
 }
 
-.container{
-max-width:980px;
-margin:36px auto;
-padding:20px
-}
+.container{max-width:980px;margin:36px auto;padding:20px}
 
-.header{
-display:flex;
-align-items:center;
-gap:14px;
-margin-bottom:18px
-}
+.header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
 
 .logo{
-width:48px;height:48px;border-radius:50%;
+width:48px;
+height:48px;
+border-radius:50%;
 background:var(--accent);
-color:#fff;display:flex;align-items:center;
-justify-content:center;font-weight:700
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:700
 }
 
 .muted{color:var(--muted)}
@@ -54,7 +51,7 @@ box-shadow:0 8px 20px rgba(2,6,23,0.06)
 
 label{
 display:block;
-margin-top:12px;
+margin-top:10px;
 font-weight:600
 }
 
@@ -63,15 +60,16 @@ width:100%;
 padding:12px;
 margin-top:6px;
 border-radius:10px;
-border:1px solid #e6eef6
+border:1px solid #e6eef6;
+background:#fbfdff
 }
 
 textarea{min-height:90px}
 
 .primary{
-margin-top:12px;
+margin-top:14px;
 background:var(--primary);
-color:white;
+color:#fff;
 border:none;
 padding:12px;
 border-radius:10px;
@@ -91,20 +89,33 @@ flex-wrap:wrap
 background:#e9ecef;
 padding:8px 12px;
 border-radius:20px;
-cursor:pointer
+font-size:14px;
+cursor:pointer;
+border:1px solid #ced4da
 }
 
-.dropdown-wrapper{position:relative}
+.dropdown-wrapper{position:relative;width:100%}
+
+.dropdown-input{
+width:100%;
+padding:12px;
+border:1px solid #e6eef6;
+border-radius:10px;
+background:#fbfdff
+}
+
 .dropdown-list{
 position:absolute;
 top:100%;
 left:0;
 right:0;
+max-height:250px;
+overflow-y:auto;
 background:white;
 border:1px solid #e6eef6;
 border-radius:10px;
-max-height:220px;
-overflow:auto;
+margin-top:4px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
 display:none;
 z-index:1000
 }
@@ -112,12 +123,17 @@ z-index:1000
 .dropdown-list.show{display:block}
 
 .dropdown-item{
-padding:10px;
+padding:10px 12px;
 cursor:pointer
 }
 
 .dropdown-item:hover{
 background:#f0f2f4
+}
+
+.no-results{
+padding:10px;
+color:#6b7280
 }
 
 .result-card{
@@ -127,6 +143,16 @@ border-radius:16px;
 box-shadow:0 8px 20px rgb(0 0 0 / 0.08);
 background:white;
 margin:auto
+}
+
+#templateBox{
+background:#f0f2f4;
+padding:16px;
+border-radius:10px;
+white-space:pre-wrap;
+font-size:15px;
+line-height:1.55;
+border:1px solid #e3e6e8
 }
 
 .btn{
@@ -169,17 +195,14 @@ cursor:pointer
 <div class="quick-options">
 <span class="quick-option" data-value="10rb diluar parkir">10rb diluar parkir</span>
 <span class="quick-option" data-value="12rb diluar parkir">12rb diluar parkir</span>
-<span class="quick-option" data-value="10.000">10.000</span>
-<span class="quick-option" data-value="12.000">12.000</span>
+<span class="quick-option" data-value="10000">10000</span>
+<span class="quick-option" data-value="12000">12000</span>
 </div>
 
-<label>Tambahan Jasa</label>
-
+<label>Tambahan Biaya</label>
 <div id="extraCost"></div>
 
-<button type="button" onclick="addCost()" style="margin-top:8px">
-+ Tambah biaya tambahan
-</button>
+<button type="button" onclick="addCost()">+ Tambah biaya</button>
 
 <label>Kapan</label>
 <input name="kapan" type="date" required>
@@ -188,7 +211,7 @@ cursor:pointer
 <input name="nama" required>
 
 <label>No HP</label>
-<input name="hp" required id="hp">
+<input name="hp" id="hp" required>
 
 <label>Deskripsi</label>
 <textarea name="deskripsi"></textarea>
@@ -201,24 +224,30 @@ cursor:pointer
 
 <label>Agent</label>
 
-<div id="agentContainer"></div>
+<div id="agentContainer">
 
-<button type="button" onclick="addAgent()" style="margin-top:8px">
-+ Tambah Agent
-</button>
+<div class="dropdown-wrapper agentBox">
+<input type="text" class="dropdown-input agentInput" placeholder="Ketik atau pilih agent..." autocomplete="off">
+<input type="hidden" name="agent1" class="agentHidden">
+<div class="dropdown-list"></div>
+</div>
 
-<label>admin</label>
+</div>
+
+<button type="button" onclick="addAgent()">+ Tambah Agent</button>
+
+<label>Admin</label>
 <input name="admin">
 
-<button class="primary" type="submit">SUBMIT</button>
+<button class="primary" type="submit" id="submitBtn">SUBMIT</button>
 
 </form>
 
 </div>
 </div>
 
-
 <div class="container" id="resultContainer" style="display:none">
+
 <div class="result-card">
 
 <h2>🟦 ORDER MASUK</h2>
@@ -232,40 +261,25 @@ cursor:pointer
 </div>
 </div>
 
-
 <script>
 
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwinE9yP9HTE4WWdnvMpu0PJUGPnpBaWg9ENNdtQGMpaIE4bYcTHEyxRE1atiFWCTRv/exec"
+const SCRIPT_URL="PASTE_SCRIPT_URL_KAMU";
 
 const agentList=[
 "Agung","Agus","Aryo","Awa","Bagus","Diar","Lutfi Majid",
-"Malek","Mbak Yuni","Naily","Nia","Panji","Restu","Akhmad Rifki",
-"Yosi","Yusuf","Ilham","Barkah","Mukhlis","Kharisma","Ardi",
-"Acil","Defita","Fajar","Ichsan","Gilang","Angga Aji","Putri Utami",
-"Arif Ahmadi","Hana","Indah Rahayu","Angga Mobil","Muhammad Aan Pickup"
-]
+"Malek","Mbak Yuni","Naily","Nia","Panji","Restu",
+"Yosi","Yusuf","Ilham","Barkah","Mukhlis"
+];
 
-let agentCount=0
+let agentCount=1
 let costCount=0
 
-
-document.querySelectorAll('.quick-option').forEach(option=>{
-option.onclick=()=>document.getElementById("biaya").value=option.dataset.value
-})
-
-
 function addCost(){
-
 costCount++
-
 const div=document.createElement("div")
-
 div.innerHTML=`<input name="extra${costCount}" placeholder="Biaya tambahan">`
-
 document.getElementById("extraCost").appendChild(div)
-
 }
-
 
 function addAgent(){
 
@@ -276,70 +290,81 @@ return
 
 agentCount++
 
-const wrapper=document.createElement("div")
+const div=document.createElement("div")
+div.className="dropdown-wrapper agentBox"
 
-wrapper.className="dropdown-wrapper"
-
-wrapper.innerHTML=`
-
-<input type="text" placeholder="Ketik agent..." class="agentInput">
-
+div.innerHTML=`
+<input type="text" class="dropdown-input agentInput" placeholder="Ketik atau pilih agent..." autocomplete="off">
+<input type="hidden" name="agent${agentCount}" class="agentHidden">
 <div class="dropdown-list"></div>
-
 `
 
-document.getElementById("agentContainer").appendChild(wrapper)
+document.getElementById("agentContainer").appendChild(div)
+
+initDropdown(div)
+
+}
+
+function initDropdown(wrapper){
 
 const input=wrapper.querySelector(".agentInput")
+const hidden=wrapper.querySelector(".agentHidden")
 const list=wrapper.querySelector(".dropdown-list")
 
-function showList(filter=""){
+function showDropdown(filter=""){
 
-const result=agentList.filter(a=>a.toLowerCase().includes(filter.toLowerCase()))
+const filteredAgents=agentList.filter(agent =>
+agent.toLowerCase().includes(filter.toLowerCase())
+)
 
-list.innerHTML=result.map(a=>`<div class="dropdown-item">${a}</div>`).join("")
+if(filteredAgents.length===0){
+list.innerHTML='<div class="no-results">Tidak ada agent</div>'
+}else{
+list.innerHTML=filteredAgents.map(agent =>
+`<div class="dropdown-item">${agent}</div>`
+).join('')
+}
 
-list.classList.add("show")
+list.classList.add('show')
 
 }
 
-input.addEventListener("focus",()=>showList())
+input.addEventListener('focus',()=>showDropdown(input.value))
+input.addEventListener('input',(e)=>showDropdown(e.target.value))
 
-input.addEventListener("input",e=>showList(e.target.value))
-
-list.addEventListener("click",e=>{
-if(e.target.classList.contains("dropdown-item")){
-input.value=e.target.textContent
-list.classList.remove("show")
+list.addEventListener('click',(e)=>{
+const item=e.target.closest('.dropdown-item')
+if(item){
+input.value=item.textContent
+hidden.value=item.textContent
+list.classList.remove('show')
 }
 })
 
 }
 
+document.querySelectorAll(".agentBox").forEach(initDropdown)
 
-document.getElementById("hp").addEventListener("input",function(){
-
-let v=this.value.replace(/\D/g,"")
-
-if(!v.startsWith("62")){
-v="62"+v.replace(/^0+/,"")
-}
-
-this.value=v
-
+document.querySelectorAll('.quick-option').forEach(option=>{
+option.addEventListener('click',function(){
+document.getElementById('biaya').value=this.dataset.value
 })
-
+})
 
 document.getElementById("orderForm").addEventListener("submit",async function(e){
 
 e.preventDefault()
 
+const submitBtn=document.getElementById("submitBtn")
+
+submitBtn.disabled=true
+submitBtn.textContent="⏳ Mengirim..."
+
 const form=new FormData(this)
 
 const agents=[]
-
-document.querySelectorAll(".agentInput").forEach(i=>{
-if(i.value.trim())agents.push(i.value)
+document.querySelectorAll(".agentHidden").forEach(a=>{
+if(a.value)agents.push(a.value)
 })
 
 for(const ag of agents){
@@ -357,7 +382,6 @@ const data={}
 form.forEach((v,k)=>data[k]=v)
 
 const template=`
-
 🟦 ORDER MASUK
 
 📦 Biaya: ${data.biaya}
@@ -365,34 +389,36 @@ const template=`
 👤 Nama: ${data.nama}
 📱 https://wa.me/${data.hp}
 
-📝 Deskripsi: ${data.deskripsi||"-"}
+📝 Deskripsi: ${data.deskripsi || "-"}
 
-📍 Jemput: ${data.jemput||"-"}
-📍 Antar: ${data.antar||"-"}
+📍 Jemput: ${data.jemput || "-"}
+📍 Antar: ${data.antar || "-"}
 
-🧑‍💼 Agent: ${agents.join(", ")}
-
+👷 Agent: ${agents.join(", ")}
 `.trim()
 
 document.getElementById("templateBox").textContent=template
 
 document.getElementById("resultContainer").style.display="block"
 
-document.getElementById("chatBtn").href="https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc"
+document.getElementById("chatBtn").href="https://chat.whatsapp.com/"
+
+submitBtn.disabled=false
+submitBtn.textContent="SUBMIT"
+
+this.reset()
 
 })
 
-document.getElementById("copyBtn").onclick=async()=>{
+document.getElementById("copyBtn").addEventListener("click",async()=>{
 
 await navigator.clipboard.writeText(
 document.getElementById("templateBox").textContent
 )
 
-alert("Template tersalin!")
+alert("Template berhasil disalin")
 
-}
-
-addAgent()
+})
 
 </script>
 

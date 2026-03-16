@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Form Order - SuruhBoy</title>
+  <title>Form Order - SuruhBoy (Final)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <style>
@@ -25,104 +25,40 @@
     textarea{min-height:90px}
     .primary{display:inline-block; margin-top:14px; background:var(--primary); color:#fff; border:none; padding:12px 16px; border-radius:10px; cursor:pointer; font-weight:700}
     .secondary-btn{display:inline-block; margin-top:8px; margin-bottom:4px; background:#6c757d; color:#fff; border:none; padding:8px 16px; border-radius:20px; cursor:pointer; font-weight:500; font-size:0.9rem; border:1px solid #5a6268;}
-    .center{display:flex; justify-content:center}
     .result-card{max-width:600px; padding:24px; border-radius:16px; box-shadow:0 8px 20px rgb(0 0 0 / 0.08); background:white; margin:auto}
     h2{margin-top:0; text-align:center; font-size:22px; font-weight:700}
     #templateBox{background:#f0f2f4; padding:16px; border-radius:10px; white-space:pre-wrap; font-size:15px; line-height:1.55; border:1px solid #e3e6e8}
-    .btn{display:block; margin-top:16px; padding:14px; color:white; text-align:center; border-radius:10px; text-decoration:none; font-weight:600; transition:0.15s; cursor:pointer; user-select:none}
+    .btn{display:block; margin-top:16px; padding:14px; color:white; text-align:center; border-radius:10px; text-decoration:none; font-weight:600}
     #chatBtn{background:#007bff}
-    #chatBtn:hover{opacity:0.9}
     #copyBtn{background:#28a745; border:none}
-    #copyBtn:active{transform:scale(0.98)}
     .quick-options{display:flex; gap:10px; margin-top:8px; flex-wrap:wrap}
-    .quick-option{background:#e9ecef; padding:8px 12px; border-radius:20px; font-size:14px; cursor:pointer; border:1px solid #ced4da; transition:all 0.2s}
-    .quick-option:hover{background:#007bff; color:white; border-color:#007bff}
+    .quick-option{background:#e9ecef; padding:8px 12px; border-radius:20px; font-size:14px; cursor:pointer; border:1px solid #ced4da}
+    .quick-option:hover{background:#007bff; color:white}
     
-    /* Style untuk searchable dropdown */
-    .dropdown-wrapper {
-      position: relative;
-      width: 100%;
-    }
-    .dropdown-input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #e6eef6;
-      border-radius: 10px;
-      background: #fbfdff;
-      cursor: pointer;
-    }
-    .dropdown-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      max-height: 250px;
-      overflow-y: auto;
-      background: white;
-      border: 1px solid #e6eef6;
-      border-radius: 10px;
-      margin-top: 4px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      display: none;
-      z-index: 1000;
-    }
-    .dropdown-list.show {
-      display: block;
-    }
-    .dropdown-item {
-      padding: 10px 12px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .dropdown-item:hover {
-      background: #f0f2f4;
-    }
-    .dropdown-item.selected {
-      background: #e3f2fd;
-      color: #1976d2;
-    }
-    .no-results {
-      padding: 10px 12px;
-      color: var(--muted);
-      font-style: italic;
-    }
+    /* Dropdown styles */
+    .dropdown-wrapper { position: relative; width: 100%; }
+    .dropdown-input { width:100%; padding:12px; border:1px solid #e6eef6; border-radius:10px; background:#fbfdff; cursor:pointer; }
+    .dropdown-list { position:absolute; top:100%; left:0; right:0; max-height:250px; overflow-y:auto; background:white; border:1px solid #e6eef6; border-radius:10px; margin-top:4px; box-shadow:0 4px 12px rgba(0,0,0,0.1); display:none; z-index:1000; }
+    .dropdown-list.show { display:block; }
+    .dropdown-item { padding:10px 12px; cursor:pointer; }
+    .dropdown-item:hover { background:#f0f2f4; }
+    .no-results { padding:10px 12px; color:var(--muted); font-style:italic; }
 
-    /* Style untuk dynamic fields */
-    .dynamic-field-group {
-      margin-top: 12px;
-      padding: 12px;
-      border: 1px dashed #ccc;
-      border-radius: 8px;
-      background-color: #f9f9f9;
-    }
-    .dynamic-field-group:last-child {
-      margin-bottom: 4px;
-    }
-    .remove-btn {
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      font-size: 16px;
-      line-height: 1;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    /* Dynamic fields */
+    .dynamic-field-group { margin-top:12px; padding:12px; border:1px dashed #ccc; border-radius:8px; background:#f9f9f9; }
+    .remove-btn { background:#dc3545; color:white; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .biaya-row { display:flex; gap:8px; align-items:center; }
+    .biaya-row input { flex:1; margin:0; }
   </style>
 </head>
 
 <body>
-
 <div class="container">
   <div class="header">
     <div class="logo">SB</div>
     <div>
       <h2 style="margin:0">SuruhBoy</h2>
-      <p class="muted">Form Order</p>
+      <p class="muted">Form Order (Final)</p>
     </div>
   </div>
 
@@ -137,7 +73,6 @@
         <span class="quick-option" data-value="12.000">12.000</span>
       </div>
       
-      <!-- Tempat untuk biaya jasa tambahan -->
       <div id="extraBiayaContainer"></div>
       <button type="button" id="tambahBiayaBtn" class="secondary-btn">➕ Tambah Biaya Jasa</button>
 
@@ -160,14 +95,12 @@
       <input name="antar">
 
       <label>Agent Utama</label>
-      <!-- Searchable dropdown untuk Agent Utama -->
       <div class="dropdown-wrapper" id="agentDropdown">
         <input type="text" class="dropdown-input" id="agentInput" placeholder="Ketik atau pilih agent..." autocomplete="off" required>
         <input type="hidden" name="agent" id="agentHidden">
         <div class="dropdown-list" id="dropdownList"></div>
       </div>
 
-      <!-- Tempat untuk agent tambahan -->
       <div id="extraAgentContainer"></div>
       <button type="button" id="tambahAgentBtn" class="secondary-btn">➕ Tambah Agent</button>
 
@@ -179,7 +112,6 @@
   </div>
 </div>
 
-<!-- HASIL TEMPLATE -->
 <div class="container" id="resultContainer" style="display:none">
   <div class="result-card">
     <h2>🟦 ORDER MASUK</h2>
@@ -281,8 +213,8 @@ document.getElementById('tambahBiayaBtn').addEventListener('click', () => {
   div.className = 'dynamic-field-group';
   div.innerHTML = `
     <label>Biaya Tambahan ${biayaCounter}</label>
-    <div style="display:flex; gap:8px;">
-      <input type="text" name="extra_biaya[]" placeholder="Contoh: 10rb" style="margin:0; flex:1;">
+    <div class="biaya-row">
+      <input type="text" name="extra_biaya[]" placeholder="Contoh: 10rb" style="margin:0;">
       <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()">✕</button>
     </div>
   `;
@@ -294,7 +226,6 @@ document.getElementById('tambahAgentBtn').addEventListener('click', () => {
   agentCounter++;
   const div = document.createElement('div');
   div.className = 'dynamic-field-group';
-  div.id = `agent-group-${agentCounter}`;
   
   const label = document.createElement('label');
   label.textContent = `Agent Tambahan ${agentCounter}`;
@@ -334,8 +265,7 @@ document.getElementById('tambahAgentBtn').addEventListener('click', () => {
   div.append(label, row);
   extraAgentContainer.appendChild(div);
   
-  // Fungsi dropdown untuk agent tambahan
-  function showDropdownDynamic(filter = "") {
+  function showDynamic(filter = "") {
     const filtered = agentList.filter(a => a.toLowerCase().includes(filter.toLowerCase()));
     listDiv.innerHTML = filtered.length ? 
       filtered.map(a => `<div class="dropdown-item" data-value="${a}">${a}</div>`).join('') : 
@@ -343,8 +273,8 @@ document.getElementById('tambahAgentBtn').addEventListener('click', () => {
     listDiv.classList.add('show');
   }
   
-  input.addEventListener('focus', () => showDropdownDynamic(input.value));
-  input.addEventListener('input', (e) => showDropdownDynamic(e.target.value));
+  input.addEventListener('focus', () => showDynamic(input.value));
+  input.addEventListener('input', (e) => showDynamic(e.target.value));
   
   document.addEventListener('click', function close(e) {
     if (!wrapper.contains(e.target)) listDiv.classList.remove('show');
@@ -375,15 +305,17 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
   submitBtn.disabled = true;
   submitBtn.textContent = "⏳ Mengirim...";
   
-  // Hitung total biaya
+  // Ambil data dari form
   const formData = new FormData(this);
+  
+  // Hitung TOTAL BIAYA (dalam angka)
   const biayaUtama = formData.get('biaya') || '0';
   const biayaTambahan = formData.getAll('extra_biaya[]');
   
   let totalAngka = biayaKeAngka(biayaUtama);
   biayaTambahan.forEach(b => { if (b.trim()) totalAngka += biayaKeAngka(b); });
   
-  // Format total untuk tampilan
+  // Format total untuk tampilan (template)
   let totalTampilan = (totalAngka >= 1000 && totalAngka % 1000 === 0) ? 
     (totalAngka / 1000) + 'rb' : totalAngka.toString();
   
@@ -393,10 +325,9 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
     if (inp.value.trim()) agents.push(inp.value.trim());
   });
   
-  // Data dasar
+  // Data yang akan dikirim ke spreadsheet
+  // Catatan: biaya_utama dan extra_biaya[] TIDAK dikirim, hanya biaya_total
   const baseData = {
-    biaya_utama: biayaUtama,
-    biaya_total: totalAngka, // INI YANG AKAN MASUK KE SPREADSHEET
     kapan: formData.get('kapan'),
     nama: formData.get('nama'),
     hp: formData.get('hp'),
@@ -406,11 +337,9 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
     admin: formData.get('admin') || ''
   };
   
-  // Kirim untuk setiap agent
+  // Kirim untuk SETIAP agent (dengan biaya_total yang SAMA)
   for (let agent of agents) {
     const payload = new FormData();
-    payload.append('biaya_utama', baseData.biaya_utama);
-    payload.append('biaya_total', baseData.biaya_total); // PASTIKAN INI ADA
     payload.append('kapan', baseData.kapan);
     payload.append('nama', baseData.nama);
     payload.append('hp', baseData.hp);
@@ -419,12 +348,12 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
     payload.append('antar', baseData.antar);
     payload.append('admin', baseData.admin);
     payload.append('agent', agent);
+    payload.append('biaya_total', totalAngka.toString()); // INI SATU-SATUNYA DATA BIAYA YANG DIKIRIM
     
-    // Kirim
     await fetch(SCRIPT_URL, { method: 'POST', body: payload });
   }
   
-  // Tampilkan template
+  // Buat template untuk ditampilkan (dengan rincian biaya)
   let rincian = `Biaya : ${biayaUtama}`;
   biayaTambahan.forEach((b, i) => { if (b.trim()) rincian += `\nBiaya tambahan ${i+1} : ${b}`; });
   rincian += `\nTotal : ${totalTampilan}`;
@@ -451,7 +380,7 @@ ${rincian}
   document.getElementById("chatBtn").href = "https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc";
   document.getElementById("resultContainer").scrollIntoView({ behavior: "smooth" });
   
-  // Reset
+  // Reset form
   this.reset();
   extraBiayaContainer.innerHTML = '';
   extraAgentContainer.innerHTML = '';
@@ -464,7 +393,7 @@ ${rincian}
   submitBtn.textContent = "SUBMIT";
 });
 
-// COPY
+// COPY TEMPLATE
 document.getElementById("copyBtn").addEventListener("click", async () => {
   await navigator.clipboard.writeText(document.getElementById("templateBox").textContent);
   const btn = document.getElementById("copyBtn");

@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Form Order - SuruhBoy (Flexible + Searchable Agent)</title>
+  <title>Form Order - SuruhBoy</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <style>
@@ -112,15 +112,6 @@
       align-items: center;
       justify-content: center;
     }
-    .biaya-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .biaya-row input {
-      flex-grow: 1;
-      margin-top: 0;
-    }
   </style>
 </head>
 
@@ -131,7 +122,7 @@
     <div class="logo">SB</div>
     <div>
       <h2 style="margin:0">SuruhBoy</h2>
-      <p class="muted">Form Order (Flexible + Searchable Agent)</p>
+      <p class="muted">Form Order</p>
     </div>
   </div>
 
@@ -149,10 +140,6 @@
       <!-- Tempat untuk biaya jasa tambahan -->
       <div id="extraBiayaContainer"></div>
       <button type="button" id="tambahBiayaBtn" class="secondary-btn">➕ Tambah Biaya Jasa</button>
-
-      <!-- Hidden fields untuk menyimpan total biaya -->
-      <input type="hidden" name="biaya_total_hidden" id="biayaTotalHidden">
-      <input type="hidden" name="biaya_total_angka" id="biayaTotalAngka">
 
       <label>Kapan</label>
       <input name="kapan" type="date" required>
@@ -180,9 +167,9 @@
         <div class="dropdown-list" id="dropdownList"></div>
       </div>
 
-      <!-- Tempat untuk agent tambahan (searchable dropdown) -->
+      <!-- Tempat untuk agent tambahan -->
       <div id="extraAgentContainer"></div>
-      <button type="button" id="tambahAgentBtn" class="secondary-btn">➕ Tambah Agent (Searchable)</button>
+      <button type="button" id="tambahAgentBtn" class="secondary-btn">➕ Tambah Agent</button>
 
       <label>admin</label>
       <input name="admin">
@@ -192,7 +179,7 @@
   </div>
 </div>
 
-<!-- HASIL TEMPLATE (awalnya tersembunyi) -->
+<!-- HASIL TEMPLATE -->
 <div class="container" id="resultContainer" style="display:none">
   <div class="result-card">
     <h2>🟦 ORDER MASUK</h2>
@@ -203,8 +190,7 @@
 </div>
 
 <script>
-const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbwinE9yP9HTE4WWdnvMpu0PJUGPnpBaWg9ENNdtQGMpaIE4bYcTHEyxRE1atiFWCTRv/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwinE9yP9HTE4WWdnvMpu0PJUGPnpBaWg9ENNdtQGMpaIE4bYcTHEyxRE1atiFWCTRv/exec";
 
 // Daftar agent
 const agentList = [
@@ -212,129 +198,110 @@ const agentList = [
   "Malek", "Mbak Yuni", "Naily", "Nia", "Panji", "Restu", "Akhmad Rifki",
   "Yosi", "Yusuf", "Ilham", "Barkah", "Mukhlis", "Kharisma", "Ardi",
   "Acil", "Defita", "Fajar", "Ichsan", "Gilang", "Angga Aji", "Putri Utami",
-  "Arif Ahmadi", "Hana", "Indah Rahayu","Angga Mobil","Muhammad Aan Pickup"
+  "Arif Ahmadi", "Hana", "Indah Rahayu", "Angga Mobil", "Muhammad Aan Pickup"
 ];
 
+// ========== ELEMEN ==========
 const hpInput = document.getElementById("hp");
 const agentInput = document.getElementById("agentInput");
 const agentHidden = document.getElementById("agentHidden");
 const dropdownList = document.getElementById("dropdownList");
 const dropdownWrapper = document.getElementById("agentDropdown");
-const biayaTotalHidden = document.getElementById("biayaTotalHidden");
-const biayaTotalAngka = document.getElementById("biayaTotalAngka");
 
-// Format nomor HP → harus 62xxxx tanpa spasi
-hpInput.addEventListener("input", function () {
-  let v = this.value.replace(/\D/g, ""); // angka saja
-
-  if (!v.startsWith("62")) {
-    v = "62" + v.replace(/^0+/, "");
-  }
-
+// ========== FORMAT HP ==========
+hpInput.addEventListener("input", function() {
+  let v = this.value.replace(/\D/g, "");
+  if (!v.startsWith("62")) v = "62" + v.replace(/^0+/, "");
   this.value = v;
 });
 
-// Quick options untuk biaya
+// ========== QUICK OPTIONS ==========
 document.querySelectorAll('.quick-option').forEach(option => {
   option.addEventListener('click', function() {
     document.getElementById('biaya').value = this.dataset.value;
   });
 });
 
-// Fungsi untuk menampilkan dropdown utama
+// ========== DROPDOWN AGENT UTAMA ==========
 function showDropdown(filter = "") {
-  const filteredAgents = agentList.filter(agent => 
-    agent.toLowerCase().includes(filter.toLowerCase())
-  );
-  
-  if (filteredAgents.length === 0) {
-    dropdownList.innerHTML = '<div class="no-results">Tidak ada agent</div>';
-  } else {
-    dropdownList.innerHTML = filteredAgents.map(agent => 
-      `<div class="dropdown-item" data-value="${agent}">${agent}</div>`
-    ).join('');
-  }
-  
+  const filtered = agentList.filter(a => a.toLowerCase().includes(filter.toLowerCase()));
+  dropdownList.innerHTML = filtered.length ? 
+    filtered.map(a => `<div class="dropdown-item" data-value="${a}">${a}</div>`).join('') : 
+    '<div class="no-results">Tidak ada agent</div>';
   dropdownList.classList.add('show');
 }
 
-// Event listener untuk input agent utama
-agentInput.addEventListener('focus', () => {
-  showDropdown(agentInput.value);
-});
+agentInput.addEventListener('focus', () => showDropdown(agentInput.value));
+agentInput.addEventListener('input', (e) => showDropdown(e.target.value));
 
-agentInput.addEventListener('input', (e) => {
-  showDropdown(e.target.value);
-});
-
-// Klik di luar dropdown utama untuk menutup
 document.addEventListener('click', (e) => {
-  if (!dropdownWrapper.contains(e.target)) {
-    dropdownList.classList.remove('show');
-  }
+  if (!dropdownWrapper.contains(e.target)) dropdownList.classList.remove('show');
 });
 
-// Event delegation untuk item dropdown utama
 dropdownList.addEventListener('click', (e) => {
   const item = e.target.closest('.dropdown-item');
   if (item) {
-    const value = item.dataset.value;
-    agentInput.value = value;
-    agentHidden.value = value;
+    agentInput.value = item.dataset.value;
+    agentHidden.value = item.dataset.value;
     dropdownList.classList.remove('show');
   }
 });
 
-// Fungsi untuk mengkonversi string biaya ke angka (untuk perhitungan di spreadsheet)
-function parseBiayaToNumber(value) {
+// ========== FUNGSI KONVERSI BIAYA KE ANGKA ==========
+function biayaKeAngka(value) {
   if (!value) return 0;
+  let str = value.toString().toLowerCase();
   
-  // Konversi ke string dan lowercase
-  let str = value.toString().toLowerCase().trim();
-  
-  // Handle format "10rb" atau "10rb diluar parkir"
+  // Format: 10rb atau 10rb diluar parkir
   if (str.includes('rb')) {
-    // Ambil angka sebelum 'rb'
-    const match = str.match(/(\d+(?:\.\d+)?)\s*rb/);
-    if (match) {
-      // Hilangkan titik jika ada, lalu kalikan 1000
-      const angka = parseFloat(match[1].replace(/\./g, ''));
-      return isNaN(angka) ? 0 : angka * 1000;
-    }
+    let match = str.match(/(\d+(?:\.\d+)?)\s*rb/);
+    if (match) return (parseFloat(match[1].replace(/\./g, '')) || 0) * 1000;
   }
   
-  // Handle format dengan titik (10.000)
+  // Format: 10.000
   if (str.includes('.')) {
-    // Hilangkan titik dan parse
-    const tanpaTitik = str.replace(/\./g, '');
-    const match = tanpaTitik.match(/\d+/);
-    if (match) {
-      return parseInt(match[0], 10) || 0;
-    }
+    let angka = parseInt(str.replace(/\./g, '').match(/\d+/)?.[0] || '0');
+    return angka;
   }
   
-  // Handle format angka biasa
-  const match = str.match(/\d+/);
-  if (match) {
-    return parseInt(match[0], 10) || 0;
-  }
+  // Format angka biasa
+  return parseInt(str.match(/\d+/)?.[0] || '0');
+}
+
+// ========== DYNAMIC FIELDS ==========
+const extraBiayaContainer = document.getElementById('extraBiayaContainer');
+const extraAgentContainer = document.getElementById('extraAgentContainer');
+let biayaCounter = 0;
+let agentCounter = 0;
+
+// Tambah Biaya
+document.getElementById('tambahBiayaBtn').addEventListener('click', () => {
+  biayaCounter++;
+  const div = document.createElement('div');
+  div.className = 'dynamic-field-group';
+  div.innerHTML = `
+    <label>Biaya Tambahan ${biayaCounter}</label>
+    <div style="display:flex; gap:8px;">
+      <input type="text" name="extra_biaya[]" placeholder="Contoh: 10rb" style="margin:0; flex:1;">
+      <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()">✕</button>
+    </div>
+  `;
+  extraBiayaContainer.appendChild(div);
+});
+
+// Tambah Agent (searchable)
+document.getElementById('tambahAgentBtn').addEventListener('click', () => {
+  agentCounter++;
+  const div = document.createElement('div');
+  div.className = 'dynamic-field-group';
+  div.id = `agent-group-${agentCounter}`;
   
-  return 0;
-}
-
-// Fungsi untuk mengkonversi angka ke format rb (misal 20000 -> 20rb)
-function formatNumberToRb(angka) {
-  if (angka >= 1000 && angka % 1000 === 0) {
-    return (angka / 1000) + 'rb';
-  }
-  return angka.toString();
-}
-
-// --- FUNGSI UNTUK MEMBUAT SEARCHABLE DROPDOWN DINAMIS ---
-function createSearchableDropdown(container, index) {
+  const label = document.createElement('label');
+  label.textContent = `Agent Tambahan ${agentCounter}`;
+  
   const wrapper = document.createElement('div');
   wrapper.className = 'dropdown-wrapper';
-  wrapper.id = `agent-dropdown-${index}`;
+  wrapper.style.flex = '1';
   
   const input = document.createElement('input');
   input.type = 'text';
@@ -346,373 +313,167 @@ function createSearchableDropdown(container, index) {
   const hidden = document.createElement('input');
   hidden.type = 'hidden';
   hidden.name = 'extra_agent[]';
-  hidden.id = `agent-hidden-${index}`;
   
   const listDiv = document.createElement('div');
   listDiv.className = 'dropdown-list';
-  listDiv.id = `dropdown-list-${index}`;
   
-  wrapper.appendChild(input);
-  wrapper.appendChild(hidden);
-  wrapper.appendChild(listDiv);
-  
-  // Fungsi untuk menampilkan dropdown dinamis
-  function showDynamicDropdown(filter = "") {
-    const filteredAgents = agentList.filter(agent => 
-      agent.toLowerCase().includes(filter.toLowerCase())
-    );
-    
-    if (filteredAgents.length === 0) {
-      listDiv.innerHTML = '<div class="no-results">Tidak ada agent</div>';
-    } else {
-      listDiv.innerHTML = filteredAgents.map(agent => 
-        `<div class="dropdown-item" data-value="${agent}">${agent}</div>`
-      ).join('');
-    }
-    
-    listDiv.classList.add('show');
-  }
-  
-  // Event listener untuk input dinamis
-  input.addEventListener('focus', () => {
-    showDynamicDropdown(input.value);
-  });
-  
-  input.addEventListener('input', (e) => {
-    showDynamicDropdown(e.target.value);
-  });
-  
-  // Klik di luar dropdown dinamis untuk menutup
-  document.addEventListener('click', function closeDropdown(e) {
-    if (!wrapper.contains(e.target)) {
-      listDiv.classList.remove('show');
-    }
-  });
-  
-  // Event delegation untuk item dropdown dinamis
-  listDiv.addEventListener('click', (e) => {
-    const item = e.target.closest('.dropdown-item');
-    if (item) {
-      const value = item.dataset.value;
-      input.value = value;
-      hidden.value = value;
-      listDiv.classList.remove('show');
-    }
-  });
-  
-  return { wrapper, input, hidden };
-}
-
-// --- LOGIKA UNTUK DYNAMIC FIELDS ---
-
-// Container dan Tombol
-const extraBiayaContainer = document.getElementById('extraBiayaContainer');
-const tambahBiayaBtn = document.getElementById('tambahBiayaBtn');
-const extraAgentContainer = document.getElementById('extraAgentContainer');
-const tambahAgentBtn = document.getElementById('tambahAgentBtn');
-
-// Hitungan untuk memberikan ID unik
-let biayaCounter = 0;
-let agentCounter = 0;
-
-// Fungsi untuk menambah field biaya jasa
-tambahBiayaBtn.addEventListener('click', () => {
-  biayaCounter++;
-  const div = document.createElement('div');
-  div.className = 'dynamic-field-group';
-  div.id = `biaya-group-${biayaCounter}`;
-  div.innerHTML = `
-    <label style="margin-top: 0;">Biaya Jasa Tambahan ${biayaCounter}</label>
-    <div class="biaya-row">
-      <input type="text" name="extra_biaya[]" placeholder="Contoh: 5000 / 10rb / 10rb diluar parkir" style="margin-top: 0;">
-      <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()">✕</button>
-    </div>
-  `;
-  extraBiayaContainer.appendChild(div);
-});
-
-// Fungsi untuk menambah field agent dengan searchable dropdown
-tambahAgentBtn.addEventListener('click', () => {
-  agentCounter++;
-  const div = document.createElement('div');
-  div.className = 'dynamic-field-group';
-  div.id = `agent-group-${agentCounter}`;
-  
-  const label = document.createElement('label');
-  label.style.marginTop = '0';
-  label.textContent = `Agent Tambahan ${agentCounter}`;
+  wrapper.append(input, hidden, listDiv);
   
   const row = document.createElement('div');
   row.style.display = 'flex';
-  row.style.alignItems = 'flex-start';
   row.style.gap = '8px';
+  row.appendChild(wrapper);
   
-  // Buat searchable dropdown
-  const { wrapper, input, hidden } = createSearchableDropdown(div, agentCounter);
-  
-  // Tombol hapus
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.className = 'remove-btn';
   removeBtn.textContent = '✕';
-  removeBtn.onclick = function() { div.remove(); };
-  
-  row.appendChild(wrapper);
+  removeBtn.onclick = () => div.remove();
   row.appendChild(removeBtn);
   
-  div.appendChild(label);
-  div.appendChild(row);
-  
+  div.append(label, row);
   extraAgentContainer.appendChild(div);
+  
+  // Fungsi dropdown untuk agent tambahan
+  function showDropdownDynamic(filter = "") {
+    const filtered = agentList.filter(a => a.toLowerCase().includes(filter.toLowerCase()));
+    listDiv.innerHTML = filtered.length ? 
+      filtered.map(a => `<div class="dropdown-item" data-value="${a}">${a}</div>`).join('') : 
+      '<div class="no-results">Tidak ada agent</div>';
+    listDiv.classList.add('show');
+  }
+  
+  input.addEventListener('focus', () => showDropdownDynamic(input.value));
+  input.addEventListener('input', (e) => showDropdownDynamic(e.target.value));
+  
+  document.addEventListener('click', function close(e) {
+    if (!wrapper.contains(e.target)) listDiv.classList.remove('show');
+  });
+  
+  listDiv.addEventListener('click', (e) => {
+    const item = e.target.closest('.dropdown-item');
+    if (item) {
+      input.value = item.dataset.value;
+      hidden.value = item.dataset.value;
+      listDiv.classList.remove('show');
+    }
+  });
 });
 
-// --- LOGIKA SUBMIT YANG DIMODIFIKASI ---
-
-document.getElementById("orderForm").addEventListener("submit", async function (e) {
+// ========== SUBMIT ==========
+document.getElementById("orderForm").addEventListener("submit", async function(e) {
   e.preventDefault();
   
-  // Validasi agent utama tidak kosong
   if (!agentInput.value.trim()) {
-    alert("Pilih atau ketik nama agent utama!");
+    alert("Pilih agent utama!");
     return;
   }
   
-  // Set hidden input dengan nilai dari agentInput
   agentHidden.value = agentInput.value;
-
+  
   const submitBtn = document.getElementById("submitBtn");
   submitBtn.disabled = true;
   submitBtn.textContent = "⏳ Mengirim...";
-
-  // Ambil semua data dari form (termasuk dynamic fields)
+  
+  // Hitung total biaya
   const formData = new FormData(this);
+  const biayaUtama = formData.get('biaya') || '0';
+  const biayaTambahan = formData.getAll('extra_biaya[]');
   
-  // Kumpulkan semua nilai biaya untuk dijumlah (dalam bentuk angka)
-  let totalBiayaAngka = 0;
+  let totalAngka = biayaKeAngka(biayaUtama);
+  biayaTambahan.forEach(b => { if (b.trim()) totalAngka += biayaKeAngka(b); });
   
-  // Simpan nilai asli untuk ditampilkan di template
-  const biayaUtamaAsli = formData.get('biaya') || '0';
-  const biayaTambahanAsli = [];
+  // Format total untuk tampilan
+  let totalTampilan = (totalAngka >= 1000 && totalAngka % 1000 === 0) ? 
+    (totalAngka / 1000) + 'rb' : totalAngka.toString();
   
-  // Hitung biaya utama dalam angka
-  const biayaUtamaAngka = parseBiayaToNumber(biayaUtamaAsli);
-  totalBiayaAngka += biayaUtamaAngka;
-  
-  // Ambil semua biaya tambahan (extra_biaya[])
-  const extraBiayaValues = formData.getAll('extra_biaya[]');
-  extraBiayaValues.forEach(val => {
-    if (val.trim()) {
-      biayaTambahanAsli.push(val);
-      const biayaTambahanAngka = parseBiayaToNumber(val);
-      totalBiayaAngka += biayaTambahanAngka;
-    }
+  // Kumpulkan semua agent
+  const agents = [agentHidden.value];
+  document.querySelectorAll('input[name="extra_agent[]"]').forEach(inp => {
+    if (inp.value.trim()) agents.push(inp.value.trim());
   });
   
-  // Set hidden fields dengan total biaya
-  biayaTotalAngka.value = totalBiayaAngka;
-  
-  // Format total biaya untuk ditampilkan di template
-  let totalBiayaTampilan;
-  if (totalBiayaAngka >= 1000 && totalBiayaAngka % 1000 === 0) {
-    totalBiayaTampilan = (totalBiayaAngka / 1000) + 'rb';
-  } else {
-    totalBiayaTampilan = totalBiayaAngka.toString();
-  }
-  biayaTotalHidden.value = totalBiayaTampilan;
-  
-  // Buat object data utama yang akan dikirim
+  // Data dasar
   const baseData = {
-    biaya_utama: biayaUtamaAsli,
-    biaya_total_angka: totalBiayaAngka, // Untuk dikirim ke spreadsheet (kolom B)
-    biaya_total_tampilan: totalBiayaTampilan,
+    biaya_utama: biayaUtama,
+    biaya_total: totalAngka, // INI YANG AKAN MASUK KE SPREADSHEET
     kapan: formData.get('kapan'),
     nama: formData.get('nama'),
     hp: formData.get('hp'),
-    deskripsi: formData.get('deskripsi'),
-    jemput: formData.get('jemput'),
-    antar: formData.get('antar'),
-    admin: formData.get('admin')
+    deskripsi: formData.get('deskripsi') || '-',
+    jemput: formData.get('jemput') || '-',
+    antar: formData.get('antar') || '-',
+    admin: formData.get('admin') || ''
   };
   
-  // Kumpulkan semua agent: utama + tambahan
-  const agents = [];
-  
-  // Agent utama
-  if (agentHidden.value.trim()) {
-    agents.push(agentHidden.value.trim());
+  // Kirim untuk setiap agent
+  for (let agent of agents) {
+    const payload = new FormData();
+    payload.append('biaya_utama', baseData.biaya_utama);
+    payload.append('biaya_total', baseData.biaya_total); // PASTIKAN INI ADA
+    payload.append('kapan', baseData.kapan);
+    payload.append('nama', baseData.nama);
+    payload.append('hp', baseData.hp);
+    payload.append('deskripsi', baseData.deskripsi);
+    payload.append('jemput', baseData.jemput);
+    payload.append('antar', baseData.antar);
+    payload.append('admin', baseData.admin);
+    payload.append('agent', agent);
+    
+    // Kirim
+    await fetch(SCRIPT_URL, { method: 'POST', body: payload });
   }
   
-  // Agent tambahan dari hidden inputs
-  const extraAgentInputs = document.querySelectorAll('input[name="extra_agent[]"]');
-  extraAgentInputs.forEach(input => {
-    if (input.value.trim()) {
-      agents.push(input.value.trim());
-    }
-  });
+  // Tampilkan template
+  let rincian = `Biaya : ${biayaUtama}`;
+  biayaTambahan.forEach((b, i) => { if (b.trim()) rincian += `\nBiaya tambahan ${i+1} : ${b}`; });
+  rincian += `\nTotal : ${totalTampilan}`;
   
-  // Validasi minimal ada 1 agent
-  if (agents.length === 0) {
-    alert("Setidaknya harus ada 1 agent (utama atau tambahan)!");
-    submitBtn.disabled = false;
-    submitBtn.textContent = "SUBMIT";
-    return;
-  }
-  
-  // Kirim data ke Apps Script sebanyak jumlah agent
-  const sendPromises = agents.map(async (agentName) => {
-    // Buat FormData baru untuk setiap pengiriman
-    const formDataToSend = new FormData();
-    
-    // Tambahkan semua field
-    formDataToSend.append('biaya_utama', baseData.biaya_utama);
-    formDataToSend.append('biaya_total', baseData.biaya_total_angka); // PASTIKAN INI TERKIRIM
-    formDataToSend.append('kapan', baseData.kapan);
-    formDataToSend.append('nama', baseData.nama);
-    formDataToSend.append('hp', baseData.hp);
-    formDataToSend.append('deskripsi', baseData.deskripsi || '');
-    formDataToSend.append('jemput', baseData.jemput || '');
-    formDataToSend.append('antar', baseData.antar || '');
-    formDataToSend.append('admin', baseData.admin || '');
-    formDataToSend.append('agent', agentName);
-    formDataToSend.append('is_multi_agent', agents.length > 1 ? 'yes' : 'no');
-    formDataToSend.append('agent_count', agents.length.toString());
-    
-    // Tambahkan juga field tambahan untuk debugging
-    formDataToSend.append('biaya_total_tampilan', baseData.biaya_total_tampilan);
-    
-    // Log untuk debugging
-    console.log('Mengirim data untuk agent:', agentName);
-    console.log('biaya_total:', baseData.biaya_total_angka);
-    
-    // Kirim ke Apps Script
-    try {
-      const response = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: formDataToSend,
-        mode: 'no-cors' // Tambahkan mode no-cors untuk menghindari CORS issues
-      });
-      
-      console.log('Response status:', response.status);
-      return response;
-    } catch (error) {
-      console.error('Error sending data:', error);
-      throw error;
-    }
-  });
-  
-  try {
-    // Tunggu semua pengiriman selesai
-    await Promise.all(sendPromises);
-    
-    // Buat template untuk ditampilkan
-    const agentListDisplay = agents.join(', ');
-    
-    // Buat bagian rincian biaya untuk template
-    let rincianBiayaTemplate = `Biaya : ${biayaUtamaAsli}`;
-    
-    biayaTambahanAsli.forEach((biaya, index) => {
-      rincianBiayaTemplate += `\nBiaya tambahan ${index + 1} : ${biaya}`;
-    });
-    
-    rincianBiayaTemplate += `\nTotal : ${totalBiayaTampilan}`;
-    
-    const template = `
+  const template = `
 🟦 ORDER MASUK
 
 💰 RINCIAN BIAYA:
-${rincianBiayaTemplate}
+${rincian}
 
 📅 Kapan: ${baseData.kapan}
 👤 Nama: ${baseData.nama}
-📱 https://wa.me/${baseData.hp}?text=${encodeURIComponent("Hai kak, dengan Suruhboy disini")}
-📝 Deskripsi: ${baseData.deskripsi || "-"}
+📱 https://wa.me/${baseData.hp}?text=Hai%20kak%2C%20dengan%20Suruhboy%20disini
+📝 Deskripsi: ${baseData.deskripsi}
 
-📍 Jemput: ${baseData.jemput || "-"}
-📍 Antar: ${baseData.antar || "-"}
+📍 Jemput: ${baseData.jemput}
+📍 Antar: ${baseData.antar}
 
-🧑‍💼 Agent: ${agentListDisplay}
-    `.trim();
+🧑‍💼 Agent: ${agents.join(', ')}
+  `;
   
-    document.getElementById("templateBox").textContent = template;
-    document.getElementById("resultContainer").style.display = "block";
+  document.getElementById("templateBox").textContent = template;
+  document.getElementById("resultContainer").style.display = "block";
+  document.getElementById("chatBtn").href = "https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc";
+  document.getElementById("resultContainer").scrollIntoView({ behavior: "smooth" });
   
-    document.getElementById("chatBtn").href =
-      "https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc";
+  // Reset
+  this.reset();
+  extraBiayaContainer.innerHTML = '';
+  extraAgentContainer.innerHTML = '';
+  agentInput.value = '';
+  agentHidden.value = '';
+  biayaCounter = 0;
+  agentCounter = 0;
   
-    // Scroll ke hasil
-    document.getElementById("resultContainer").scrollIntoView({ behavior: "smooth" });
-  
-    // Reset form
-    this.reset();
-    extraBiayaContainer.innerHTML = '';
-    extraAgentContainer.innerHTML = '';
-    agentInput.value = "";
-    agentHidden.value = "";
-    biayaTotalHidden.value = "";
-    biayaTotalAngka.value = "";
-    biayaCounter = 0;
-    agentCounter = 0;
-    
-    alert('Data berhasil dikirim!');
-  
-  } catch (error) {
-    console.error('Gagal mengirim data:', error);
-    alert('Data tetap terkirim meskipun ada error. Silakan cek spreadsheet.');
-    
-    // Tetap tampilkan template
-    const agentListDisplay = agents.join(', ');
-    
-    let rincianBiayaTemplate = `Biaya : ${biayaUtamaAsli}`;
-    biayaTambahanAsli.forEach((biaya, index) => {
-      rincianBiayaTemplate += `\nBiaya tambahan ${index + 1} : ${biaya}`;
-    });
-    rincianBiayaTemplate += `\nTotal : ${totalBiayaTampilan}`;
-    
-    const template = `
-🟦 ORDER MASUK
-
-💰 RINCIAN BIAYA:
-${rincianBiayaTemplate}
-
-📅 Kapan: ${baseData.kapan}
-👤 Nama: ${baseData.nama}
-📱 https://wa.me/${baseData.hp}?text=${encodeURIComponent("Hai kak, dengan Suruhboy disini")}
-📝 Deskripsi: ${baseData.deskripsi || "-"}
-
-📍 Jemput: ${baseData.jemput || "-"}
-📍 Antar: ${baseData.antar || "-"}
-
-🧑‍💼 Agent: ${agentListDisplay}
-    `.trim();
-  
-    document.getElementById("templateBox").textContent = template;
-    document.getElementById("resultContainer").style.display = "block";
-    
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "SUBMIT";
-  }
+  submitBtn.disabled = false;
+  submitBtn.textContent = "SUBMIT";
 });
 
-// COPY BUTTON
+// COPY
 document.getElementById("copyBtn").addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(
-      document.getElementById("templateBox").textContent
-    );
-
-    const copyBtn = document.getElementById("copyBtn");
-    copyBtn.textContent = "✔ TERSALIN!";
-    copyBtn.style.background = "#1e7c33";
-
-    setTimeout(() => {
-      copyBtn.textContent = "COPY TEMPLATE";
-      copyBtn.style.background = "#28a745";
-    }, 1500);
-
-  } catch {
-    alert("Gagal menyalin!");
-  }
+  await navigator.clipboard.writeText(document.getElementById("templateBox").textContent);
+  const btn = document.getElementById("copyBtn");
+  btn.textContent = "✔ TERSALIN!";
+  btn.style.background = "#1e7c33";
+  setTimeout(() => {
+    btn.textContent = "COPY TEMPLATE";
+    btn.style.background = "#28a745";
+  }, 1500);
 });
 </script>
 

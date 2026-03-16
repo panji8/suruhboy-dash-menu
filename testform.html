@@ -279,8 +279,8 @@ dropdownList.addEventListener('click', (e) => {
   }
 });
 
-// Fungsi untuk mengkonversi string biaya (misal "10rb" atau "10.000") ke angka
-function parseBiaya(value) {
+// Fungsi untuk mengkonversi string biaya ke angka (untuk perhitungan di spreadsheet)
+function parseBiayaToNumber(value) {
   if (!value) return 0;
   
   // Konversi ke string dan lowercase
@@ -316,9 +316,12 @@ function parseBiaya(value) {
   return 0;
 }
 
-// Fungsi untuk format angka ke rupiah (opsional, untuk tampilan)
-function formatRupiah(angka) {
-  return new Intl.NumberFormat('id-ID').format(angka);
+// Fungsi untuk mengkonversi angka ke format rb (misal 20000 -> 20rb)
+function formatNumberToRb(angka) {
+  if (angka >= 1000 && angka % 1000 === 0) {
+    return (angka / 1000) + 'rb';
+  }
+  return angka.toString();
 }
 
 // --- FUNGSI UNTUK MEMBUAT SEARCHABLE DROPDOWN DINAMIS ---
@@ -478,32 +481,39 @@ document.getElementById("orderForm").addEventListener("submit", async function (
   // Ambil semua data dari form (termasuk dynamic fields)
   const formData = new FormData(this);
   
-  // Kumpulkan semua nilai biaya untuk dijumlah
-  let totalBiaya = 0;
-  let rincianBiaya = [];
+  // Kumpulkan semua nilai biaya untuk dijumlah (dalam bentuk angka)
+  let totalBiayaAngka = 0;
   
-  // Ambil biaya utama
-  const biayaUtamaStr = formData.get('biaya') || '0';
-  const biayaUtamaNum = parseBiaya(biayaUtamaStr);
-  totalBiaya += biayaUtamaNum;
-  rincianBiaya.push(`Biaya utama: ${biayaUtamaStr} = ${formatRupiah(biayaUtamaNum)}`);
+  // Simpan nilai asli untuk ditampilkan di template
+  const biayaUtamaAsli = formData.get('biaya') || '0';
+  const biayaTambahanAsli = [];
+  
+  // Hitung biaya utama dalam angka
+  const biayaUtamaAngka = parseBiayaToNumber(biayaUtamaAsli);
+  totalBiayaAngka += biayaUtamaAngka;
   
   // Ambil semua biaya tambahan (extra_biaya[])
   const extraBiayaValues = formData.getAll('extra_biaya[]');
-  extraBiayaValues.forEach((val, index) => {
+  extraBiayaValues.forEach(val => {
     if (val.trim()) {
-      const biayaTambahanNum = parseBiaya(val);
-      totalBiaya += biayaTambahanNum;
-      rincianBiaya.push(`Biaya tambahan ${index + 1}: ${val} = ${formatRupiah(biayaTambahanNum)}`);
+      biayaTambahanAsli.push(val);
+      const biayaTambahanAngka = parseBiayaToNumber(val);
+      totalBiayaAngka += biayaTambahanAngka;
     }
   });
   
+  // Format total biaya untuk ditampilkan di template (dalam format rb jika memungkinkan)
+  let totalBiayaTampilan;
+  if (totalBiayaAngka >= 1000 && totalBiayaAngka % 1000 === 0) {
+    totalBiayaTampilan = (totalBiayaAngka / 1000) + 'rb';
+  } else {
+    totalBiayaTampilan = totalBiayaAngka.toString();
+  }
+  
   // Buat object data utama yang akan dikirim (tanpa agent dulu)
   const baseData = {
-    biaya_utama: biayaUtamaStr,
-    biaya_utama_numeric: biayaUtamaNum,
-    biaya_total: totalBiaya, // Kirim sebagai number
-    biaya_total_formatted: formatRupiah(totalBiaya),
+    biaya_utama: biayaUtamaAsli,
+    biaya_total_angka: totalBiayaAngka, // Untuk dikirim ke spreadsheet (kolom B)
     kapan: formData.get('kapan'),
     nama: formData.get('nama'),
     hp: formData.get('hp'),
@@ -540,10 +550,9 @@ document.getElementById("orderForm").addEventListener("submit", async function (
   // Kirim data ke Apps Script sebanyak jumlah agent
   const sendPromises = agents.map(agentName => {
     const payload = new FormData();
-    // Tambahkan semua field base (dalam format string untuk dikirim)
+    // Tambahkan semua field base
     payload.append('biaya_utama', baseData.biaya_utama);
-    payload.append('biaya_total', baseData.biaya_total.toString()); // Kirim sebagai string
-    payload.append('biaya_total_formatted', baseData.biaya_total_formatted);
+    payload.append('biaya_total', baseData.biaya_total_angka); // KOLOM B SPREADSHEET: angka murni
     payload.append('kapan', baseData.kapan);
     payload.append('nama', baseData.nama);
     payload.append('hp', baseData.hp);
@@ -554,9 +563,6 @@ document.getElementById("orderForm").addEventListener("submit", async function (
     
     // Tambahkan agent
     payload.append('agent', agentName);
-    
-    // Tambahkan rincian biaya (opsional, untuk debugging)
-    payload.append('rincian_biaya', rincianBiaya.join('\n'));
     
     // Tambahkan flag untuk menandai ini adalah data dengan multiple agent
     payload.append('is_multi_agent', agents.length > 1 ? 'yes' : 'no');
@@ -569,15 +575,23 @@ document.getElementById("orderForm").addEventListener("submit", async function (
   // Tunggu semua pengiriman selesai
   await Promise.allSettled(sendPromises);
   
-  // Buat template untuk ditampilkan
+  // Buat template untuk ditampilkan (dengan format asli)
   const agentListDisplay = agents.join(', ');
+  
+  // Buat bagian rincian biaya untuk template
+  let rincianBiayaTemplate = `Biaya : ${biayaUtamaAsli}`;
+  
+  biayaTambahanAsli.forEach((biaya, index) => {
+    rincianBiayaTemplate += `\nBiaya tambahan ${index + 1} : ${biaya}`;
+  });
+  
+  rincianBiayaTemplate += `\nTotal : ${totalBiayaTampilan}`;
   
   const template = `
 🟦 ORDER MASUK
 
 💰 RINCIAN BIAYA:
-${rincianBiaya.join('\n')}
-📊 TOTAL: Rp ${baseData.biaya_total_formatted}
+${rincianBiayaTemplate}
 
 📅 Kapan: ${baseData.kapan}
 👤 Nama: ${baseData.nama}

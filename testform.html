@@ -112,14 +112,14 @@
       align-items: center;
       justify-content: center;
     }
-    .agent-dynamic-row {
+    .biaya-row {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 8px;
-      margin-top: 8px;
     }
-    .agent-dynamic-row .dropdown-wrapper {
+    .biaya-row input {
       flex-grow: 1;
+      margin-top: 0;
     }
   </style>
 </head>
@@ -279,6 +279,48 @@ dropdownList.addEventListener('click', (e) => {
   }
 });
 
+// Fungsi untuk mengkonversi string biaya (misal "10rb" atau "10.000") ke angka
+function parseBiaya(value) {
+  if (!value) return 0;
+  
+  // Konversi ke string dan lowercase
+  let str = value.toString().toLowerCase().trim();
+  
+  // Handle format "10rb" atau "10rb diluar parkir"
+  if (str.includes('rb')) {
+    // Ambil angka sebelum 'rb'
+    const match = str.match(/(\d+(?:\.\d+)?)\s*rb/);
+    if (match) {
+      // Hilangkan titik jika ada, lalu kalikan 1000
+      const angka = parseFloat(match[1].replace(/\./g, ''));
+      return isNaN(angka) ? 0 : angka * 1000;
+    }
+  }
+  
+  // Handle format dengan titik (10.000)
+  if (str.includes('.')) {
+    // Hilangkan titik dan parse
+    const tanpaTitik = str.replace(/\./g, '');
+    const match = tanpaTitik.match(/\d+/);
+    if (match) {
+      return parseInt(match[0], 10) || 0;
+    }
+  }
+  
+  // Handle format angka biasa
+  const match = str.match(/\d+/);
+  if (match) {
+    return parseInt(match[0], 10) || 0;
+  }
+  
+  return 0;
+}
+
+// Fungsi untuk format angka ke rupiah (opsional, untuk tampilan)
+function formatRupiah(angka) {
+  return new Intl.NumberFormat('id-ID').format(angka);
+}
+
 // --- FUNGSI UNTUK MEMBUAT SEARCHABLE DROPDOWN DINAMIS ---
 function createSearchableDropdown(container, index) {
   const wrapper = document.createElement('div');
@@ -372,8 +414,8 @@ tambahBiayaBtn.addEventListener('click', () => {
   div.id = `biaya-group-${biayaCounter}`;
   div.innerHTML = `
     <label style="margin-top: 0;">Biaya Jasa Tambahan ${biayaCounter}</label>
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <input type="text" name="extra_biaya[]" placeholder="Contoh: 5000 / 10rb" style="margin-top: 0; flex-grow: 1;">
+    <div class="biaya-row">
+      <input type="text" name="extra_biaya[]" placeholder="Contoh: 5000 / 10rb / 10rb diluar parkir" style="margin-top: 0;">
       <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()">✕</button>
     </div>
   `;
@@ -438,34 +480,30 @@ document.getElementById("orderForm").addEventListener("submit", async function (
   
   // Kumpulkan semua nilai biaya untuk dijumlah
   let totalBiaya = 0;
-  
-  // Fungsi untuk mengkonversi string biaya (misal "10rb" atau "10.000") ke angka
-  function parseBiaya(value) {
-    if (!value) return 0;
-    // Hapus titik dan "rb" (case insensitive), lalu parse integer
-    let cleaned = value.toString().toLowerCase().replace(/\./g, '').replace('rb', '000').trim();
-    // Jika masih ada huruf (selain rb yang sudah diganti), abaikan
-    let match = cleaned.match(/\d+/g);
-    if (match) {
-      return parseInt(match.join(''), 10) || 0;
-    }
-    return 0;
-  }
+  let rincianBiaya = [];
   
   // Ambil biaya utama
   const biayaUtamaStr = formData.get('biaya') || '0';
-  totalBiaya += parseBiaya(biayaUtamaStr);
+  const biayaUtamaNum = parseBiaya(biayaUtamaStr);
+  totalBiaya += biayaUtamaNum;
+  rincianBiaya.push(`Biaya utama: ${biayaUtamaStr} = ${formatRupiah(biayaUtamaNum)}`);
   
   // Ambil semua biaya tambahan (extra_biaya[])
   const extraBiayaValues = formData.getAll('extra_biaya[]');
-  extraBiayaValues.forEach(val => {
-    totalBiaya += parseBiaya(val);
+  extraBiayaValues.forEach((val, index) => {
+    if (val.trim()) {
+      const biayaTambahanNum = parseBiaya(val);
+      totalBiaya += biayaTambahanNum;
+      rincianBiaya.push(`Biaya tambahan ${index + 1}: ${val} = ${formatRupiah(biayaTambahanNum)}`);
+    }
   });
   
   // Buat object data utama yang akan dikirim (tanpa agent dulu)
   const baseData = {
     biaya_utama: biayaUtamaStr,
-    biaya_total: totalBiaya.toString(), // Kirim sebagai string
+    biaya_utama_numeric: biayaUtamaNum,
+    biaya_total: totalBiaya, // Kirim sebagai number
+    biaya_total_formatted: formatRupiah(totalBiaya),
     kapan: formData.get('kapan'),
     nama: formData.get('nama'),
     hp: formData.get('hp'),
@@ -502,14 +540,27 @@ document.getElementById("orderForm").addEventListener("submit", async function (
   // Kirim data ke Apps Script sebanyak jumlah agent
   const sendPromises = agents.map(agentName => {
     const payload = new FormData();
-    // Tambahkan semua field base
-    Object.keys(baseData).forEach(key => {
-      payload.append(key, baseData[key]);
-    });
+    // Tambahkan semua field base (dalam format string untuk dikirim)
+    payload.append('biaya_utama', baseData.biaya_utama);
+    payload.append('biaya_total', baseData.biaya_total.toString()); // Kirim sebagai string
+    payload.append('biaya_total_formatted', baseData.biaya_total_formatted);
+    payload.append('kapan', baseData.kapan);
+    payload.append('nama', baseData.nama);
+    payload.append('hp', baseData.hp);
+    payload.append('deskripsi', baseData.deskripsi || '');
+    payload.append('jemput', baseData.jemput || '');
+    payload.append('antar', baseData.antar || '');
+    payload.append('admin', baseData.admin || '');
+    
     // Tambahkan agent
     payload.append('agent', agentName);
-    // Tambahkan flag untuk menandai ini adalah data dengan multiple agent (opsional)
+    
+    // Tambahkan rincian biaya (opsional, untuk debugging)
+    payload.append('rincian_biaya', rincianBiaya.join('\n'));
+    
+    // Tambahkan flag untuk menandai ini adalah data dengan multiple agent
     payload.append('is_multi_agent', agents.length > 1 ? 'yes' : 'no');
+    payload.append('agent_count', agents.length.toString());
     
     // Kirim ke Apps Script
     return fetch(SCRIPT_URL, { method: "POST", body: payload });
@@ -524,8 +575,10 @@ document.getElementById("orderForm").addEventListener("submit", async function (
   const template = `
 🟦 ORDER MASUK
 
-💰 Biaya Utama: ${baseData.biaya_utama}
-➕ Total Biaya: ${baseData.biaya_total}
+💰 RINCIAN BIAYA:
+${rincianBiaya.join('\n')}
+📊 TOTAL: Rp ${baseData.biaya_total_formatted}
+
 📅 Kapan: ${baseData.kapan}
 👤 Nama: ${baseData.nama}
 📱 https://wa.me/${baseData.hp}?text=${encodeURIComponent("Hai kak, dengan Suruhboy disini")}

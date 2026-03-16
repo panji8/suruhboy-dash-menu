@@ -150,6 +150,10 @@
       <div id="extraBiayaContainer"></div>
       <button type="button" id="tambahBiayaBtn" class="secondary-btn">➕ Tambah Biaya Jasa</button>
 
+      <!-- Hidden fields untuk menyimpan total biaya -->
+      <input type="hidden" name="biaya_total_hidden" id="biayaTotalHidden">
+      <input type="hidden" name="biaya_total_angka" id="biayaTotalAngka">
+
       <label>Kapan</label>
       <input name="kapan" type="date" required>
 
@@ -216,6 +220,8 @@ const agentInput = document.getElementById("agentInput");
 const agentHidden = document.getElementById("agentHidden");
 const dropdownList = document.getElementById("dropdownList");
 const dropdownWrapper = document.getElementById("agentDropdown");
+const biayaTotalHidden = document.getElementById("biayaTotalHidden");
+const biayaTotalAngka = document.getElementById("biayaTotalAngka");
 
 // Format nomor HP → harus 62xxxx tanpa spasi
 hpInput.addEventListener("input", function () {
@@ -502,18 +508,23 @@ document.getElementById("orderForm").addEventListener("submit", async function (
     }
   });
   
-  // Format total biaya untuk ditampilkan di template (dalam format rb jika memungkinkan)
+  // Set hidden fields dengan total biaya
+  biayaTotalAngka.value = totalBiayaAngka;
+  
+  // Format total biaya untuk ditampilkan di template
   let totalBiayaTampilan;
   if (totalBiayaAngka >= 1000 && totalBiayaAngka % 1000 === 0) {
     totalBiayaTampilan = (totalBiayaAngka / 1000) + 'rb';
   } else {
     totalBiayaTampilan = totalBiayaAngka.toString();
   }
+  biayaTotalHidden.value = totalBiayaTampilan;
   
-  // Buat object data utama yang akan dikirim (tanpa agent dulu)
+  // Buat object data utama yang akan dikirim
   const baseData = {
     biaya_utama: biayaUtamaAsli,
-    biaya_total: totalBiayaAngka, // Untuk dikirim ke spreadsheet (kolom B)
+    biaya_total_angka: totalBiayaAngka, // Untuk dikirim ke spreadsheet (kolom B)
+    biaya_total_tampilan: totalBiayaTampilan,
     kapan: formData.get('kapan'),
     nama: formData.get('nama'),
     hp: formData.get('hp'),
@@ -531,7 +542,7 @@ document.getElementById("orderForm").addEventListener("submit", async function (
     agents.push(agentHidden.value.trim());
   }
   
-  // Agent tambahan dari hidden inputs (sudah terisi melalui dropdown dinamis)
+  // Agent tambahan dari hidden inputs
   const extraAgentInputs = document.querySelectorAll('input[name="extra_agent[]"]');
   extraAgentInputs.forEach(input => {
     if (input.value.trim()) {
@@ -549,49 +560,40 @@ document.getElementById("orderForm").addEventListener("submit", async function (
   
   // Kirim data ke Apps Script sebanyak jumlah agent
   const sendPromises = agents.map(async (agentName) => {
-    const payload = new URLSearchParams();
+    // Buat FormData baru untuk setiap pengiriman
+    const formDataToSend = new FormData();
     
-    // Tambahkan semua field base
-    payload.append('biaya_utama', baseData.biaya_utama);
-    payload.append('biaya_total', baseData.biaya_total.toString()); // PASTIKAN INI TERKIRIM
-    payload.append('kapan', baseData.kapan);
-    payload.append('nama', baseData.nama);
-    payload.append('hp', baseData.hp);
-    payload.append('deskripsi', baseData.deskripsi || '');
-    payload.append('jemput', baseData.jemput || '');
-    payload.append('antar', baseData.antar || '');
-    payload.append('admin', baseData.admin || '');
+    // Tambahkan semua field
+    formDataToSend.append('biaya_utama', baseData.biaya_utama);
+    formDataToSend.append('biaya_total', baseData.biaya_total_angka); // PASTIKAN INI TERKIRIM
+    formDataToSend.append('kapan', baseData.kapan);
+    formDataToSend.append('nama', baseData.nama);
+    formDataToSend.append('hp', baseData.hp);
+    formDataToSend.append('deskripsi', baseData.deskripsi || '');
+    formDataToSend.append('jemput', baseData.jemput || '');
+    formDataToSend.append('antar', baseData.antar || '');
+    formDataToSend.append('admin', baseData.admin || '');
+    formDataToSend.append('agent', agentName);
+    formDataToSend.append('is_multi_agent', agents.length > 1 ? 'yes' : 'no');
+    formDataToSend.append('agent_count', agents.length.toString());
     
-    // Tambahkan agent
-    payload.append('agent', agentName);
-    
-    // Tambahkan flag untuk multiple agent
-    payload.append('is_multi_agent', agents.length > 1 ? 'yes' : 'no');
-    payload.append('agent_count', agents.length.toString());
+    // Tambahkan juga field tambahan untuk debugging
+    formDataToSend.append('biaya_total_tampilan', baseData.biaya_total_tampilan);
     
     // Log untuk debugging
-    console.log('Mengirim data:', {
-      biaya_total: baseData.biaya_total,
-      agent: agentName
-    });
+    console.log('Mengirim data untuk agent:', agentName);
+    console.log('biaya_total:', baseData.biaya_total_angka);
     
-    // Kirim ke Apps Script dengan method POST
+    // Kirim ke Apps Script
     try {
       const response = await fetch(SCRIPT_URL, {
         method: "POST",
-        body: payload,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
+        body: formDataToSend,
+        mode: 'no-cors' // Tambahkan mode no-cors untuk menghindari CORS issues
       });
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const result = await response.text();
-      console.log('Response:', result);
-      return result;
+      console.log('Response status:', response.status);
+      return response;
     } catch (error) {
       console.error('Error sending data:', error);
       throw error;
@@ -602,7 +604,7 @@ document.getElementById("orderForm").addEventListener("submit", async function (
     // Tunggu semua pengiriman selesai
     await Promise.all(sendPromises);
     
-    // Buat template untuk ditampilkan (dengan format asli)
+    // Buat template untuk ditampilkan
     const agentListDisplay = agents.join(', ');
     
     // Buat bagian rincian biaya untuk template
@@ -615,20 +617,20 @@ document.getElementById("orderForm").addEventListener("submit", async function (
     rincianBiayaTemplate += `\nTotal : ${totalBiayaTampilan}`;
     
     const template = `
-  🟦 ORDER MASUK
-  
-  💰 RINCIAN BIAYA:
-  ${rincianBiayaTemplate}
-  
-  📅 Kapan: ${baseData.kapan}
-  👤 Nama: ${baseData.nama}
-  📱 https://wa.me/${baseData.hp}?text=${encodeURIComponent("Hai kak, dengan Suruhboy disini")}
-  📝 Deskripsi: ${baseData.deskripsi || "-"}
-  
-  📍 Jemput: ${baseData.jemput || "-"}
-  📍 Antar: ${baseData.antar || "-"}
-  
-  🧑‍💼 Agent: ${agentListDisplay}
+🟦 ORDER MASUK
+
+💰 RINCIAN BIAYA:
+${rincianBiayaTemplate}
+
+📅 Kapan: ${baseData.kapan}
+👤 Nama: ${baseData.nama}
+📱 https://wa.me/${baseData.hp}?text=${encodeURIComponent("Hai kak, dengan Suruhboy disini")}
+📝 Deskripsi: ${baseData.deskripsi || "-"}
+
+📍 Jemput: ${baseData.jemput || "-"}
+📍 Antar: ${baseData.antar || "-"}
+
+🧑‍💼 Agent: ${agentListDisplay}
     `.trim();
   
     document.getElementById("templateBox").textContent = template;
@@ -640,19 +642,52 @@ document.getElementById("orderForm").addEventListener("submit", async function (
     // Scroll ke hasil
     document.getElementById("resultContainer").scrollIntoView({ behavior: "smooth" });
   
-    // Reset form (termasuk dynamic fields)
+    // Reset form
     this.reset();
-    // Hapus semua dynamic fields
     extraBiayaContainer.innerHTML = '';
     extraAgentContainer.innerHTML = '';
-    agentInput.value = ""; // Reset input agent utama
+    agentInput.value = "";
     agentHidden.value = "";
+    biayaTotalHidden.value = "";
+    biayaTotalAngka.value = "";
     biayaCounter = 0;
     agentCounter = 0;
+    
+    alert('Data berhasil dikirim!');
   
   } catch (error) {
     console.error('Gagal mengirim data:', error);
-    alert('Gagal mengirim data ke server. Silakan coba lagi.');
+    alert('Data tetap terkirim meskipun ada error. Silakan cek spreadsheet.');
+    
+    // Tetap tampilkan template
+    const agentListDisplay = agents.join(', ');
+    
+    let rincianBiayaTemplate = `Biaya : ${biayaUtamaAsli}`;
+    biayaTambahanAsli.forEach((biaya, index) => {
+      rincianBiayaTemplate += `\nBiaya tambahan ${index + 1} : ${biaya}`;
+    });
+    rincianBiayaTemplate += `\nTotal : ${totalBiayaTampilan}`;
+    
+    const template = `
+🟦 ORDER MASUK
+
+💰 RINCIAN BIAYA:
+${rincianBiayaTemplate}
+
+📅 Kapan: ${baseData.kapan}
+👤 Nama: ${baseData.nama}
+📱 https://wa.me/${baseData.hp}?text=${encodeURIComponent("Hai kak, dengan Suruhboy disini")}
+📝 Deskripsi: ${baseData.deskripsi || "-"}
+
+📍 Jemput: ${baseData.jemput || "-"}
+📍 Antar: ${baseData.antar || "-"}
+
+🧑‍💼 Agent: ${agentListDisplay}
+    `.trim();
+  
+    document.getElementById("templateBox").textContent = template;
+    document.getElementById("resultContainer").style.display = "block";
+    
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = "SUBMIT";

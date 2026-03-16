@@ -513,7 +513,7 @@ document.getElementById("orderForm").addEventListener("submit", async function (
   // Buat object data utama yang akan dikirim (tanpa agent dulu)
   const baseData = {
     biaya_utama: biayaUtamaAsli,
-    biaya_total_angka: totalBiayaAngka, // Untuk dikirim ke spreadsheet (kolom B)
+    biaya_total: totalBiayaAngka, // Untuk dikirim ke spreadsheet (kolom B)
     kapan: formData.get('kapan'),
     nama: formData.get('nama'),
     hp: formData.get('hp'),
@@ -548,11 +548,12 @@ document.getElementById("orderForm").addEventListener("submit", async function (
   }
   
   // Kirim data ke Apps Script sebanyak jumlah agent
-  const sendPromises = agents.map(agentName => {
-    const payload = new FormData();
+  const sendPromises = agents.map(async (agentName) => {
+    const payload = new URLSearchParams();
+    
     // Tambahkan semua field base
     payload.append('biaya_utama', baseData.biaya_utama);
-    payload.append('biaya_total', baseData.biaya_total_angka); // KOLOM B SPREADSHEET: angka murni
+    payload.append('biaya_total', baseData.biaya_total.toString()); // PASTIKAN INI TERKIRIM
     payload.append('kapan', baseData.kapan);
     payload.append('nama', baseData.nama);
     payload.append('hp', baseData.hp);
@@ -564,67 +565,98 @@ document.getElementById("orderForm").addEventListener("submit", async function (
     // Tambahkan agent
     payload.append('agent', agentName);
     
-    // Tambahkan flag untuk menandai ini adalah data dengan multiple agent
+    // Tambahkan flag untuk multiple agent
     payload.append('is_multi_agent', agents.length > 1 ? 'yes' : 'no');
     payload.append('agent_count', agents.length.toString());
     
-    // Kirim ke Apps Script
-    return fetch(SCRIPT_URL, { method: "POST", body: payload });
+    // Log untuk debugging
+    console.log('Mengirim data:', {
+      biaya_total: baseData.biaya_total,
+      agent: agentName
+    });
+    
+    // Kirim ke Apps Script dengan method POST
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: payload,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.text();
+      console.log('Response:', result);
+      return result;
+    } catch (error) {
+      console.error('Error sending data:', error);
+      throw error;
+    }
   });
   
-  // Tunggu semua pengiriman selesai
-  await Promise.allSettled(sendPromises);
+  try {
+    // Tunggu semua pengiriman selesai
+    await Promise.all(sendPromises);
+    
+    // Buat template untuk ditampilkan (dengan format asli)
+    const agentListDisplay = agents.join(', ');
+    
+    // Buat bagian rincian biaya untuk template
+    let rincianBiayaTemplate = `Biaya : ${biayaUtamaAsli}`;
+    
+    biayaTambahanAsli.forEach((biaya, index) => {
+      rincianBiayaTemplate += `\nBiaya tambahan ${index + 1} : ${biaya}`;
+    });
+    
+    rincianBiayaTemplate += `\nTotal : ${totalBiayaTampilan}`;
+    
+    const template = `
+  🟦 ORDER MASUK
   
-  // Buat template untuk ditampilkan (dengan format asli)
-  const agentListDisplay = agents.join(', ');
+  💰 RINCIAN BIAYA:
+  ${rincianBiayaTemplate}
   
-  // Buat bagian rincian biaya untuk template
-  let rincianBiayaTemplate = `Biaya : ${biayaUtamaAsli}`;
+  📅 Kapan: ${baseData.kapan}
+  👤 Nama: ${baseData.nama}
+  📱 https://wa.me/${baseData.hp}?text=${encodeURIComponent("Hai kak, dengan Suruhboy disini")}
+  📝 Deskripsi: ${baseData.deskripsi || "-"}
   
-  biayaTambahanAsli.forEach((biaya, index) => {
-    rincianBiayaTemplate += `\nBiaya tambahan ${index + 1} : ${biaya}`;
-  });
+  📍 Jemput: ${baseData.jemput || "-"}
+  📍 Antar: ${baseData.antar || "-"}
   
-  rincianBiayaTemplate += `\nTotal : ${totalBiayaTampilan}`;
+  🧑‍💼 Agent: ${agentListDisplay}
+    `.trim();
   
-  const template = `
-🟦 ORDER MASUK
-
-💰 RINCIAN BIAYA:
-${rincianBiayaTemplate}
-
-📅 Kapan: ${baseData.kapan}
-👤 Nama: ${baseData.nama}
-📱 https://wa.me/${baseData.hp}?text=${encodeURIComponent("Hai kak, dengan Suruhboy disini")}
-📝 Deskripsi: ${baseData.deskripsi || "-"}
-
-📍 Jemput: ${baseData.jemput || "-"}
-📍 Antar: ${baseData.antar || "-"}
-
-🧑‍💼 Agent: ${agentListDisplay}
-  `.trim();
-
-  document.getElementById("templateBox").textContent = template;
-  document.getElementById("resultContainer").style.display = "block";
-
-  document.getElementById("chatBtn").href =
-    "https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc";
-
-  // Scroll ke hasil
-  document.getElementById("resultContainer").scrollIntoView({ behavior: "smooth" });
-
-  // Reset form (termasuk dynamic fields)
-  this.reset();
-  // Hapus semua dynamic fields
-  extraBiayaContainer.innerHTML = '';
-  extraAgentContainer.innerHTML = '';
-  agentInput.value = ""; // Reset input agent utama
-  agentHidden.value = "";
-  biayaCounter = 0;
-  agentCounter = 0;
-
-  submitBtn.disabled = false;
-  submitBtn.textContent = "SUBMIT";
+    document.getElementById("templateBox").textContent = template;
+    document.getElementById("resultContainer").style.display = "block";
+  
+    document.getElementById("chatBtn").href =
+      "https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc";
+  
+    // Scroll ke hasil
+    document.getElementById("resultContainer").scrollIntoView({ behavior: "smooth" });
+  
+    // Reset form (termasuk dynamic fields)
+    this.reset();
+    // Hapus semua dynamic fields
+    extraBiayaContainer.innerHTML = '';
+    extraAgentContainer.innerHTML = '';
+    agentInput.value = ""; // Reset input agent utama
+    agentHidden.value = "";
+    biayaCounter = 0;
+    agentCounter = 0;
+  
+  } catch (error) {
+    console.error('Gagal mengirim data:', error);
+    alert('Gagal mengirim data ke server. Silakan coba lagi.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "SUBMIT";
+  }
 });
 
 // COPY BUTTON

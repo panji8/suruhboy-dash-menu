@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Form Order - SuruhBoy (Multi Titik)</title>
+  <title>Form Order - SuruhBoy (Multi Biaya)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <style>
@@ -69,30 +69,30 @@
     .biaya-row { display:flex; gap:8px; align-items:center; }
     .biaya-row input { flex:1; margin:0; }
     
-    /* Multi titik styles */
-    .titik-container {
+    /* Multi titik & multi biaya styles */
+    .multi-container {
       margin-top: 10px;
-      padding: 10px;
+      padding: 15px;
       background: white;
       border-radius: 8px;
       border: 1px solid #e6eef6;
     }
-    .titik-item {
+    .multi-item {
       display: flex;
       gap: 8px;
       margin-bottom: 8px;
       align-items: center;
     }
-    .titik-item input {
+    .multi-item input {
       flex: 1;
       margin: 0;
     }
-    .titik-label {
+    .multi-label {
       font-weight: 600;
       margin-bottom: 8px;
       color: var(--primary);
     }
-    .add-titik-btn {
+    .add-multi-btn {
       background: #28a745;
       color: white;
       border: none;
@@ -102,13 +102,20 @@
       cursor: pointer;
       margin-top: 5px;
     }
-    .add-titik-btn:hover {
+    .add-multi-btn:hover {
       background: #218838;
     }
-    .titik-counter {
+    .multi-counter {
       font-size: 12px;
       color: var(--muted);
       margin-left: 8px;
+    }
+    .biaya-utama-row {
+      background: #e3f2fd;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #90caf9;
     }
   </style>
 </head>
@@ -119,25 +126,38 @@
     <div class="logo">SB</div>
     <div>
       <h2 style="margin:0">SuruhBoy</h2>
-      <p class="muted">Form Order (Multi Titik)</p>
+      <p class="muted">Form Order (Multi Biaya)</p>
     </div>
   </div>
 
   <div class="card">
     <form id="orderForm">
-      <!-- BIAYA UTAMA (Kolom B) -->
-      <label>Biaya Utama</label>
-      <input name="biaya" required id="biaya">
-      <div class="quick-options">
-        <span class="quick-option" data-value="10rb diluar parkir">10rb diluar parkir</span>
-        <span class="quick-option" data-value="12rb diluar parkir">12rb diluar parkir</span>
-        <span class="quick-option" data-value="10.000">10.000</span>
-        <span class="quick-option" data-value="12.000">12.000</span>
+      <!-- MULTI BIAYA (Semua masuk ke Kolom B) -->
+      <div class="multi-container" id="biayaContainer">
+        <div class="multi-label">💰 Rincian Biaya</div>
+        
+        <!-- Biaya Utama (wajib) -->
+        <div class="biaya-utama-row">
+          <label style="margin-top:0; color:var(--primary);">Biaya Utama (wajib)</label>
+          <div class="multi-item">
+            <input type="text" name="biaya_utama" required id="biayaUtama" placeholder="Contoh: 50rb / 50.000">
+            <div class="quick-options" style="margin-top:0;">
+              <span class="quick-option" data-value="10rb diluar parkir">10rb diluar parkir</span>
+              <span class="quick-option" data-value="12rb diluar parkir">12rb diluar parkir</span>
+              <span class="quick-option" data-value="10.000">10.000</span>
+              <span class="quick-option" data-value="12.000">12.000</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Container untuk biaya tambahan -->
+        <div id="biayaTambahanContainer"></div>
+        
+        <!-- Tombol tambah biaya jasa -->
+        <button type="button" class="add-multi-btn" id="tambahBiayaBtn">➕ Tambah Biaya Jasa</button>
+        <span class="multi-counter" id="biayaCounter">0/3</span>
+        <small style="display:block; margin-top:5px; color:var(--muted);">Maksimal 3 biaya jasa tambahan</small>
       </div>
-      
-      <!-- BIAYA JASA TAMBAHAN (Kolom K) -->
-      <div id="extraBiayaContainer"></div>
-      <button type="button" id="tambahBiayaBtn" class="secondary-btn">➕ Tambah Biaya Jasa</button>
 
       <label>Kapan</label>
       <input name="kapan" type="date" required>
@@ -151,28 +171,28 @@
       <label>Deskripsi</label>
       <textarea name="deskripsi"></textarea>
 
-      <!-- JEMPUT dengan multi titik (max 3) -->
-      <div class="titik-container" id="jemputContainer">
-        <div class="titik-label">📍 Titik Jemput</div>
+      <!-- MULTI TITIK JEMPUT (max 3) -->
+      <div class="multi-container" id="jemputContainer">
+        <div class="multi-label">📍 Titik Jemput</div>
         <div id="jemputItems">
-          <div class="titik-item">
+          <div class="multi-item">
             <input type="text" name="jemput[]" placeholder="Alamat jemput 1">
           </div>
         </div>
-        <button type="button" class="add-titik-btn" id="tambahJemputBtn">➕ Tambah Titik Jemput</button>
-        <span class="titik-counter" id="jemputCounter">1/3</span>
+        <button type="button" class="add-multi-btn" id="tambahJemputBtn">➕ Tambah Titik Jemput</button>
+        <span class="multi-counter" id="jemputCounter">1/3</span>
       </div>
 
-      <!-- ANTAR dengan multi titik (max 3) -->
-      <div class="titik-container" id="antarContainer">
-        <div class="titik-label">📍 Titik Antar</div>
+      <!-- MULTI TITIK ANTAR (max 3) -->
+      <div class="multi-container" id="antarContainer">
+        <div class="multi-label">📍 Titik Antar</div>
         <div id="antarItems">
-          <div class="titik-item">
+          <div class="multi-item">
             <input type="text" name="antar[]" placeholder="Alamat antar 1">
           </div>
         </div>
-        <button type="button" class="add-titik-btn" id="tambahAntarBtn">➕ Tambah Titik Antar</button>
-        <span class="titik-counter" id="antarCounter">1/3</span>
+        <button type="button" class="add-multi-btn" id="tambahAntarBtn">➕ Tambah Titik Antar</button>
+        <span class="multi-counter" id="antarCounter">1/3</span>
       </div>
 
       <!-- AGENT UTAMA -->
@@ -223,6 +243,7 @@ const agentInput = document.getElementById("agentInput");
 const agentHidden = document.getElementById("agentHidden");
 const dropdownList = document.getElementById("dropdownList");
 const dropdownWrapper = document.getElementById("agentDropdown");
+const biayaUtama = document.getElementById("biayaUtama");
 
 // ========== FORMAT HP ==========
 hpInput.addEventListener("input", function() {
@@ -234,7 +255,7 @@ hpInput.addEventListener("input", function() {
 // ========== QUICK OPTIONS ==========
 document.querySelectorAll('.quick-option').forEach(option => {
   option.addEventListener('click', function() {
-    document.getElementById('biaya').value = this.dataset.value;
+    biayaUtama.value = this.dataset.value;
   });
 });
 
@@ -281,6 +302,46 @@ function biayaKeAngka(value) {
   return parseInt(str.match(/\d+/)?.[0] || '0');
 }
 
+// ========== MULTI BIAYA ==========
+const biayaTambahanContainer = document.getElementById('biayaTambahanContainer');
+const biayaCounter = document.getElementById('biayaCounter');
+let biayaTambahanCount = 0;
+
+function updateBiayaCounter() {
+  biayaCounter.textContent = `${biayaTambahanCount}/3`;
+  document.getElementById('tambahBiayaBtn').disabled = biayaTambahanCount >= 3;
+}
+
+// Tambah Biaya Jasa
+document.getElementById('tambahBiayaBtn').addEventListener('click', () => {
+  if (biayaTambahanCount < 3) {
+    biayaTambahanCount++;
+    const div = document.createElement('div');
+    div.className = 'multi-item';
+    div.id = `biaya-tambahan-${biayaTambahanCount}`;
+    div.innerHTML = `
+      <input type="text" name="biaya_tambahan[]" placeholder="Biaya jasa ${biayaTambahanCount} (contoh: 10rb)">
+      <button type="button" class="remove-btn" onclick="removeBiayaTambahan(${biayaTambahanCount})">✕</button>
+    `;
+    biayaTambahanContainer.appendChild(div);
+    updateBiayaCounter();
+  }
+});
+
+// Hapus Biaya Jasa
+window.removeBiayaTambahan = (id) => {
+  document.getElementById(`biaya-tambahan-${id}`).remove();
+  biayaTambahanCount--;
+  // Renumber ulang
+  const items = biayaTambahanContainer.children;
+  for (let i = 0; i < items.length; i++) {
+    items[i].id = `biaya-tambahan-${i+1}`;
+    items[i].querySelector('input').placeholder = `Biaya jasa ${i+1} (contoh: 10rb)`;
+    items[i].querySelector('.remove-btn').setAttribute('onclick', `removeBiayaTambahan(${i+1})`);
+  }
+  updateBiayaCounter();
+};
+
 // ========== MULTI TITIK (JEMPUT & ANTAR) ==========
 const jemputContainer = document.getElementById('jemputItems');
 const antarContainer = document.getElementById('antarItems');
@@ -304,7 +365,7 @@ document.getElementById('tambahJemputBtn').addEventListener('click', () => {
   const count = jemputContainer.children.length;
   if (count < 3) {
     const div = document.createElement('div');
-    div.className = 'titik-item';
+    div.className = 'multi-item';
     div.innerHTML = `
       <input type="text" name="jemput[]" placeholder="Alamat jemput ${count + 1}">
       <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updateJemputCounter();">✕</button>
@@ -319,7 +380,7 @@ document.getElementById('tambahAntarBtn').addEventListener('click', () => {
   const count = antarContainer.children.length;
   if (count < 3) {
     const div = document.createElement('div');
-    div.className = 'titik-item';
+    div.className = 'multi-item';
     div.innerHTML = `
       <input type="text" name="antar[]" placeholder="Alamat antar ${count + 1}">
       <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updateAntarCounter();">✕</button>
@@ -329,28 +390,10 @@ document.getElementById('tambahAntarBtn').addEventListener('click', () => {
   }
 });
 
-// ========== DYNAMIC FIELDS ==========
-const extraBiayaContainer = document.getElementById('extraBiayaContainer');
+// ========== AGENT TAMBAHAN ==========
 const extraAgentContainer = document.getElementById('extraAgentContainer');
-let biayaCounter = 0;
 let agentCounter = 0;
 
-// Tambah Biaya Jasa (akan masuk ke Kolom K)
-document.getElementById('tambahBiayaBtn').addEventListener('click', () => {
-  biayaCounter++;
-  const div = document.createElement('div');
-  div.className = 'dynamic-field-group';
-  div.innerHTML = `
-    <label>Biaya Jasa ${biayaCounter}</label>
-    <div class="biaya-row">
-      <input type="text" name="extra_biaya[]" placeholder="Contoh: 10rb" style="margin:0;">
-      <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()">✕</button>
-    </div>
-  `;
-  extraBiayaContainer.appendChild(div);
-});
-
-// Tambah Agent
 document.getElementById('tambahAgentBtn').addEventListener('click', () => {
   agentCounter++;
   const div = document.createElement('div');
@@ -437,19 +480,25 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
   // Ambil data dari form
   const formData = new FormData(this);
   
-  // BIAYA UTAMA (tetap masuk Kolom B)
-  const biayaUtama = formData.get('biaya') || '0';
+  // ===== BIAYA (Semua masuk ke Kolom B) =====
+  const biayaUtamaValue = biayaUtama.value || '0';
+  const biayaTambahan = Array.from(document.querySelectorAll('input[name="biaya_tambahan[]"]'))
+    .map(inp => inp.value)
+    .filter(v => v.trim());
   
-  // BIAYA JASA (masuk Kolom K)
-  const biayaJasa = formData.getAll('extra_biaya[]').filter(b => b.trim());
+  // Gabungkan semua biaya untuk Kolom B
+  let biayaKolomB = `Biaya Utama: ${biayaUtamaValue}`;
+  biayaTambahan.forEach((b, i) => {
+    biayaKolomB += ` | Biaya Jasa ${i+1}: ${b}`;
+  });
   
-  // Hitung TOTAL untuk template (opsional)
-  let totalAngka = biayaKeAngka(biayaUtama);
-  biayaJasa.forEach(b => totalAngka += biayaKeAngka(b));
+  // Hitung total untuk template
+  let totalAngka = biayaKeAngka(biayaUtamaValue);
+  biayaTambahan.forEach(b => totalAngka += biayaKeAngka(b));
   let totalTampilan = (totalAngka >= 1000 && totalAngka % 1000 === 0) ? 
     (totalAngka / 1000) + 'rb' : totalAngka.toString();
   
-  // Ambil semua titik jemput dan antar
+  // ===== TITIK JEMPUT & ANTAR =====
   const jemputTitik = formData.getAll('jemput[]').filter(j => j.trim());
   const antarTitik = formData.getAll('antar[]').filter(a => a.trim());
   
@@ -457,16 +506,15 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
   const jemputDisplay = jemputTitik.map((j, i) => `${i+1}. ${j}`).join('\n     ');
   const antarDisplay = antarTitik.map((a, i) => `${i+1}. ${a}`).join('\n     ');
   
-  // Kumpulkan semua agent
+  // ===== AGENT =====
   const agents = [agentHidden.value];
   document.querySelectorAll('input[name="extra_agent[]"]').forEach(inp => {
     if (inp.value.trim()) agents.push(inp.value.trim());
   });
   
-  // Data yang akan dikirim ke spreadsheet
+  // ===== DATA LAIN =====
   const baseData = {
-    biaya: biayaUtama,                    // Kolom B
-    biaya_jasa: biayaJasa.join(' | '),    // Kolom K (digabung dengan pipe)
+    biaya: biayaKolomB,                    // Kolom B (gabungan semua biaya)
     kapan: formData.get('kapan'),
     nama: formData.get('nama'),
     hp: formData.get('hp'),
@@ -479,8 +527,7 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
   // Kirim untuk SETIAP agent
   for (let agent of agents) {
     const payload = new FormData();
-    payload.append('biaya', baseData.biaya);                 // Kolom B
-    payload.append('biaya_jasa', baseData.biaya_jasa);       // Kolom K
+    payload.append('biaya', baseData.biaya);                 // Kolom B (gabungan)
     payload.append('kapan', baseData.kapan);
     payload.append('nama', baseData.nama);
     payload.append('hp', baseData.hp);
@@ -493,9 +540,9 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
     await fetch(SCRIPT_URL, { method: 'POST', body: payload });
   }
   
-  // Buat template untuk ditampilkan
-  let rincianBiaya = `Biaya Utama : ${biayaUtama}`;
-  biayaJasa.forEach((b, i) => rincianBiaya += `\nBiaya Jasa ${i+1} : ${b}`);
+  // ===== TEMPLATE =====
+  let rincianBiaya = `Biaya Utama : ${biayaUtamaValue}`;
+  biayaTambahan.forEach((b, i) => rincianBiaya += `\nBiaya Jasa ${i+1} : ${b}`);
   rincianBiaya += `\nTotal : ${totalTampilan}`;
   
   const template = `
@@ -525,16 +572,17 @@ ${antarDisplay || '-'}
   
   // Reset form
   this.reset();
-  extraBiayaContainer.innerHTML = '';
+  biayaTambahanContainer.innerHTML = '';
   extraAgentContainer.innerHTML = '';
   agentInput.value = '';
   agentHidden.value = '';
-  biayaCounter = 0;
+  biayaTambahanCount = 0;
   agentCounter = 0;
+  updateBiayaCounter();
   
   // Reset multi titik
-  jemputContainer.innerHTML = '<div class="titik-item"><input type="text" name="jemput[]" placeholder="Alamat jemput 1"></div>';
-  antarContainer.innerHTML = '<div class="titik-item"><input type="text" name="antar[]" placeholder="Alamat antar 1"></div>';
+  jemputContainer.innerHTML = '<div class="multi-item"><input type="text" name="jemput[]" placeholder="Alamat jemput 1"></div>';
+  antarContainer.innerHTML = '<div class="multi-item"><input type="text" name="antar[]" placeholder="Alamat antar 1"></div>';
   updateJemputCounter();
   updateAntarCounter();
   

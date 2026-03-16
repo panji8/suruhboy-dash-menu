@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Form Order - SuruhBoy (Final)</title>
+  <title>Form Order - SuruhBoy (Multi Titik)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <style>
@@ -45,10 +45,71 @@
     .no-results { padding:10px 12px; color:var(--muted); font-style:italic; }
 
     /* Dynamic fields */
-    .dynamic-field-group { margin-top:12px; padding:12px; border:1px dashed #ccc; border-radius:8px; background:#f9f9f9; }
-    .remove-btn { background:#dc3545; color:white; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .dynamic-field-group { 
+      margin-top:12px; 
+      padding:15px; 
+      border:1px dashed #ccc; 
+      border-radius:8px; 
+      background:#f9f9f9;
+      position: relative;
+    }
+    .remove-btn { 
+      background:#dc3545; 
+      color:white; 
+      border:none; 
+      border-radius:50%; 
+      width:28px; 
+      height:28px; 
+      cursor:pointer; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center;
+      font-weight:bold;
+    }
     .biaya-row { display:flex; gap:8px; align-items:center; }
     .biaya-row input { flex:1; margin:0; }
+    
+    /* Multi titik styles */
+    .titik-container {
+      margin-top: 10px;
+      padding: 10px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e6eef6;
+    }
+    .titik-item {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    .titik-item input {
+      flex: 1;
+      margin: 0;
+    }
+    .titik-label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--primary);
+    }
+    .add-titik-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    .add-titik-btn:hover {
+      background: #218838;
+    }
+    .titik-counter {
+      font-size: 12px;
+      color: var(--muted);
+      margin-left: 8px;
+    }
   </style>
 </head>
 
@@ -58,12 +119,13 @@
     <div class="logo">SB</div>
     <div>
       <h2 style="margin:0">SuruhBoy</h2>
-      <p class="muted">Form Order (Final)</p>
+      <p class="muted">Form Order (Multi Titik)</p>
     </div>
   </div>
 
   <div class="card">
     <form id="orderForm">
+      <!-- BIAYA UTAMA (Kolom B) -->
       <label>Biaya Utama</label>
       <input name="biaya" required id="biaya">
       <div class="quick-options">
@@ -73,6 +135,7 @@
         <span class="quick-option" data-value="12.000">12.000</span>
       </div>
       
+      <!-- BIAYA JASA TAMBAHAN (Kolom K) -->
       <div id="extraBiayaContainer"></div>
       <button type="button" id="tambahBiayaBtn" class="secondary-btn">➕ Tambah Biaya Jasa</button>
 
@@ -88,12 +151,31 @@
       <label>Deskripsi</label>
       <textarea name="deskripsi"></textarea>
 
-      <label>Jemput</label>
-      <input name="jemput">
+      <!-- JEMPUT dengan multi titik (max 3) -->
+      <div class="titik-container" id="jemputContainer">
+        <div class="titik-label">📍 Titik Jemput</div>
+        <div id="jemputItems">
+          <div class="titik-item">
+            <input type="text" name="jemput[]" placeholder="Alamat jemput 1">
+          </div>
+        </div>
+        <button type="button" class="add-titik-btn" id="tambahJemputBtn">➕ Tambah Titik Jemput</button>
+        <span class="titik-counter" id="jemputCounter">1/3</span>
+      </div>
 
-      <label>Antar</label>
-      <input name="antar">
+      <!-- ANTAR dengan multi titik (max 3) -->
+      <div class="titik-container" id="antarContainer">
+        <div class="titik-label">📍 Titik Antar</div>
+        <div id="antarItems">
+          <div class="titik-item">
+            <input type="text" name="antar[]" placeholder="Alamat antar 1">
+          </div>
+        </div>
+        <button type="button" class="add-titik-btn" id="tambahAntarBtn">➕ Tambah Titik Antar</button>
+        <span class="titik-counter" id="antarCounter">1/3</span>
+      </div>
 
+      <!-- AGENT UTAMA -->
       <label>Agent Utama</label>
       <div class="dropdown-wrapper" id="agentDropdown">
         <input type="text" class="dropdown-input" id="agentInput" placeholder="Ketik atau pilih agent..." autocomplete="off" required>
@@ -101,6 +183,7 @@
         <div class="dropdown-list" id="dropdownList"></div>
       </div>
 
+      <!-- AGENT TAMBAHAN -->
       <div id="extraAgentContainer"></div>
       <button type="button" id="tambahAgentBtn" class="secondary-btn">➕ Tambah Agent</button>
 
@@ -112,6 +195,7 @@
   </div>
 </div>
 
+<!-- HASIL TEMPLATE -->
 <div class="container" id="resultContainer" style="display:none">
   <div class="result-card">
     <h2>🟦 ORDER MASUK</h2>
@@ -184,21 +268,66 @@ function biayaKeAngka(value) {
   if (!value) return 0;
   let str = value.toString().toLowerCase();
   
-  // Format: 10rb atau 10rb diluar parkir
   if (str.includes('rb')) {
     let match = str.match(/(\d+(?:\.\d+)?)\s*rb/);
     if (match) return (parseFloat(match[1].replace(/\./g, '')) || 0) * 1000;
   }
   
-  // Format: 10.000
   if (str.includes('.')) {
     let angka = parseInt(str.replace(/\./g, '').match(/\d+/)?.[0] || '0');
     return angka;
   }
   
-  // Format angka biasa
   return parseInt(str.match(/\d+/)?.[0] || '0');
 }
+
+// ========== MULTI TITIK (JEMPUT & ANTAR) ==========
+const jemputContainer = document.getElementById('jemputItems');
+const antarContainer = document.getElementById('antarItems');
+const jemputCounter = document.getElementById('jemputCounter');
+const antarCounter = document.getElementById('antarCounter');
+
+function updateJemputCounter() {
+  const count = jemputContainer.children.length;
+  jemputCounter.textContent = `${count}/3`;
+  document.getElementById('tambahJemputBtn').disabled = count >= 3;
+}
+
+function updateAntarCounter() {
+  const count = antarContainer.children.length;
+  antarCounter.textContent = `${count}/3`;
+  document.getElementById('tambahAntarBtn').disabled = count >= 3;
+}
+
+// Tambah titik jemput
+document.getElementById('tambahJemputBtn').addEventListener('click', () => {
+  const count = jemputContainer.children.length;
+  if (count < 3) {
+    const div = document.createElement('div');
+    div.className = 'titik-item';
+    div.innerHTML = `
+      <input type="text" name="jemput[]" placeholder="Alamat jemput ${count + 1}">
+      <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updateJemputCounter();">✕</button>
+    `;
+    jemputContainer.appendChild(div);
+    updateJemputCounter();
+  }
+});
+
+// Tambah titik antar
+document.getElementById('tambahAntarBtn').addEventListener('click', () => {
+  const count = antarContainer.children.length;
+  if (count < 3) {
+    const div = document.createElement('div');
+    div.className = 'titik-item';
+    div.innerHTML = `
+      <input type="text" name="antar[]" placeholder="Alamat antar ${count + 1}">
+      <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updateAntarCounter();">✕</button>
+    `;
+    antarContainer.appendChild(div);
+    updateAntarCounter();
+  }
+});
 
 // ========== DYNAMIC FIELDS ==========
 const extraBiayaContainer = document.getElementById('extraBiayaContainer');
@@ -206,13 +335,13 @@ const extraAgentContainer = document.getElementById('extraAgentContainer');
 let biayaCounter = 0;
 let agentCounter = 0;
 
-// Tambah Biaya
+// Tambah Biaya Jasa (akan masuk ke Kolom K)
 document.getElementById('tambahBiayaBtn').addEventListener('click', () => {
   biayaCounter++;
   const div = document.createElement('div');
   div.className = 'dynamic-field-group';
   div.innerHTML = `
-    <label>Biaya Tambahan ${biayaCounter}</label>
+    <label>Biaya Jasa ${biayaCounter}</label>
     <div class="biaya-row">
       <input type="text" name="extra_biaya[]" placeholder="Contoh: 10rb" style="margin:0;">
       <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()">✕</button>
@@ -221,7 +350,7 @@ document.getElementById('tambahBiayaBtn').addEventListener('click', () => {
   extraBiayaContainer.appendChild(div);
 });
 
-// Tambah Agent (searchable)
+// Tambah Agent
 document.getElementById('tambahAgentBtn').addEventListener('click', () => {
   agentCounter++;
   const div = document.createElement('div');
@@ -308,16 +437,25 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
   // Ambil data dari form
   const formData = new FormData(this);
   
-  // Hitung TOTAL BIAYA (dalam angka)
+  // BIAYA UTAMA (tetap masuk Kolom B)
   const biayaUtama = formData.get('biaya') || '0';
-  const biayaTambahan = formData.getAll('extra_biaya[]');
   
+  // BIAYA JASA (masuk Kolom K)
+  const biayaJasa = formData.getAll('extra_biaya[]').filter(b => b.trim());
+  
+  // Hitung TOTAL untuk template (opsional)
   let totalAngka = biayaKeAngka(biayaUtama);
-  biayaTambahan.forEach(b => { if (b.trim()) totalAngka += biayaKeAngka(b); });
-  
-  // Format total untuk tampilan (template)
+  biayaJasa.forEach(b => totalAngka += biayaKeAngka(b));
   let totalTampilan = (totalAngka >= 1000 && totalAngka % 1000 === 0) ? 
     (totalAngka / 1000) + 'rb' : totalAngka.toString();
+  
+  // Ambil semua titik jemput dan antar
+  const jemputTitik = formData.getAll('jemput[]').filter(j => j.trim());
+  const antarTitik = formData.getAll('antar[]').filter(a => a.trim());
+  
+  // Format untuk ditampilkan di template
+  const jemputDisplay = jemputTitik.map((j, i) => `${i+1}. ${j}`).join('\n     ');
+  const antarDisplay = antarTitik.map((a, i) => `${i+1}. ${a}`).join('\n     ');
   
   // Kumpulkan semua agent
   const agents = [agentHidden.value];
@@ -326,20 +464,23 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
   });
   
   // Data yang akan dikirim ke spreadsheet
-  // Catatan: biaya_utama dan extra_biaya[] TIDAK dikirim, hanya biaya_total
   const baseData = {
+    biaya: biayaUtama,                    // Kolom B
+    biaya_jasa: biayaJasa.join(' | '),    // Kolom K (digabung dengan pipe)
     kapan: formData.get('kapan'),
     nama: formData.get('nama'),
     hp: formData.get('hp'),
     deskripsi: formData.get('deskripsi') || '-',
-    jemput: formData.get('jemput') || '-',
-    antar: formData.get('antar') || '-',
+    jemput: jemputDisplay,
+    antar: antarDisplay,
     admin: formData.get('admin') || ''
   };
   
-  // Kirim untuk SETIAP agent (dengan biaya_total yang SAMA)
+  // Kirim untuk SETIAP agent
   for (let agent of agents) {
     const payload = new FormData();
+    payload.append('biaya', baseData.biaya);                 // Kolom B
+    payload.append('biaya_jasa', baseData.biaya_jasa);       // Kolom K
     payload.append('kapan', baseData.kapan);
     payload.append('nama', baseData.nama);
     payload.append('hp', baseData.hp);
@@ -348,29 +489,31 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
     payload.append('antar', baseData.antar);
     payload.append('admin', baseData.admin);
     payload.append('agent', agent);
-    payload.append('biaya_total', totalAngka.toString()); // INI SATU-SATUNYA DATA BIAYA YANG DIKIRIM
     
     await fetch(SCRIPT_URL, { method: 'POST', body: payload });
   }
   
-  // Buat template untuk ditampilkan (dengan rincian biaya)
-  let rincian = `Biaya : ${biayaUtama}`;
-  biayaTambahan.forEach((b, i) => { if (b.trim()) rincian += `\nBiaya tambahan ${i+1} : ${b}`; });
-  rincian += `\nTotal : ${totalTampilan}`;
+  // Buat template untuk ditampilkan
+  let rincianBiaya = `Biaya Utama : ${biayaUtama}`;
+  biayaJasa.forEach((b, i) => rincianBiaya += `\nBiaya Jasa ${i+1} : ${b}`);
+  rincianBiaya += `\nTotal : ${totalTampilan}`;
   
   const template = `
 🟦 ORDER MASUK
 
 💰 RINCIAN BIAYA:
-${rincian}
+${rincianBiaya}
 
 📅 Kapan: ${baseData.kapan}
 👤 Nama: ${baseData.nama}
 📱 https://wa.me/${baseData.hp}?text=Hai%20kak%2C%20dengan%20Suruhboy%20disini
 📝 Deskripsi: ${baseData.deskripsi}
 
-📍 Jemput: ${baseData.jemput}
-📍 Antar: ${baseData.antar}
+📍 Titik Jemput:
+${jemputDisplay || '-'}
+
+📍 Titik Antar:
+${antarDisplay || '-'}
 
 🧑‍💼 Agent: ${agents.join(', ')}
   `;
@@ -388,6 +531,12 @@ ${rincian}
   agentHidden.value = '';
   biayaCounter = 0;
   agentCounter = 0;
+  
+  // Reset multi titik
+  jemputContainer.innerHTML = '<div class="titik-item"><input type="text" name="jemput[]" placeholder="Alamat jemput 1"></div>';
+  antarContainer.innerHTML = '<div class="titik-item"><input type="text" name="antar[]" placeholder="Alamat antar 1"></div>';
+  updateJemputCounter();
+  updateAntarCounter();
   
   submitBtn.disabled = false;
   submitBtn.textContent = "SUBMIT";

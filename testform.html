@@ -70,14 +70,17 @@
 
     label {
       display: block;
-      font-weight: 600;
+      font-weight: 700;  /* Dari 600 ke 700 (lebih bold) */
       margin-bottom: 8px;
-      color: #2c3e50;
+      color: #1e293b;  /* Lebih gelap sedikit */
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
     }
 
     .required {
       color: #e53e3e;
       margin-left: 4px;
+      font-weight: 700;
     }
 
     input, textarea {
@@ -133,7 +136,7 @@
       padding: 10px 16px;
       border-radius: 30px;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -179,13 +182,6 @@
     .remove-btn:hover {
       background: #dc2626;
       color: white;
-    }
-
-    /* Counter */
-    .counter {
-      font-size: 13px;
-      color: #6b7280;
-      margin-left: 10px;
     }
 
     /* Dropdown */
@@ -238,10 +234,11 @@
       border: none;
       padding: 16px;
       border-radius: 14px;
-      font-weight: 600;
+      font-weight: 700;  /* Dari 600 ke 700 */
       font-size: 16px;
       cursor: pointer;
       margin-top: 20px;
+      letter-spacing: 0.5px;
     }
 
     .submit-btn:hover {
@@ -272,7 +269,7 @@
       border-radius: 12px;
       text-align: center;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
       margin-top: 10px;
     }
 
@@ -308,8 +305,8 @@
           <label>💰 Biaya Utama <span class="required">*</span></label>
           <input type="text" name="biaya_utama" id="biayaUtama" placeholder="Contoh: 50rb / 50000" required>
           <div class="quick-options">
-            <span class="quick-option" data-value="10rb diluar parkir">10rb diluar parkir</span>
-            <span class="quick-option" data-value="12rb diluar parkir">12rb diluar parkir</span>
+            <span class="quick-option" data-value="10rb">10rb</span>
+            <span class="quick-option" data-value="12rb">12rb</span>
             <span class="quick-option" data-value="15rb">15rb</span>
             <span class="quick-option" data-value="20rb">20rb</span>
           </div>
@@ -318,7 +315,7 @@
         <!-- Biaya Tambahan (langsung di bawah biaya utama) -->
         <div id="biayaTambahanContainer"></div>
         <button type="button" class="add-btn" id="tambahBiayaBtn">
-          <span>+</span> Tambah biaya jasa (misal 15rb/jam)
+          <span>+</span> Tambah biaya jasa
         </button>
 
         <div class="divider"></div>

@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>SuruhBoy - Agent Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 12px;
+        }
+
+        /* Login Page */
+        .login-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 32px;
+            width: 100%;
+            max-width: 380px;
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 28px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .login-header h1 { font-size: 1.8rem; margin-bottom: 6px; }
+        .login-content { padding: 24px 20px; }
+
+        /* Dashboard */
+        .dashboard {
+            max-width: 500px;
+            margin: 0 auto;
+            padding-bottom: 30px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1F4F59, #2E6B73);
+            color: white;
+            border-radius: 24px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 { font-size: 1.3rem; }
+        .user-badge { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 44px; height: 44px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; }
+        .logout-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 16px; border-radius: 40px; font-size: 0.8rem; font-weight: 500; cursor: pointer; }
+
+        /* Card Style */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e293b;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .stat-item {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #1F4F59;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Status Row */
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eef2f6;
+            margin-bottom: 12px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-available { background: #dcfce7; color: #15803d; }
+        .status-offline { background: #fee2e2; color: #b91c1c; }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider { background-color: #10b981; }
+        input:checked + .toggle-slider:before { transform: translateX(24px); }
+
+        /* Week Filter */
+        .week-filter {
+            background: white;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .week-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            background: white;
+        }
+
+        /* Area Tags */
+        .area-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .area-tag {
+            background: #e2e8f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #334155;
+        }
+
+        /* Order Item */
+        .order-item {
+            border: 1px solid #eef2f6;
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .order-customer {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1e293b;
+        }
+        .order-fee {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        .order-detail {
+            font-size: 0.7rem;
+            color: #64748b;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* Modal Popup Multi Select */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 400px;
+            padding: 24px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-content h3 {
+            margin-bottom: 8px;
+            color: #1e293b;
+            text-align: center;
+        }
+        .modal-subtitle {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+        .area-checkbox-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .area-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 12px;
+            background: #f8fafc;
+            cursor: pointer;
+        }
+        .area-checkbox input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .area-checkbox label {
+            font-size: 0.85rem;
+            color: #334155;
+            cursor: pointer;
+            flex: 1;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .btn-confirm {
+            flex: 2;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            flex: 1;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .btn-primary { background: linear-gradient(135deg, #1F4F59, #2E6B73); color: white; }
+
+        .hidden { display: none; }
+        .message {
+            padding: 12px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            font-size: 0.8rem;
+        }
+        .info { background: #dbeafe; color: #1e40af; }
+        .success { background: #dcfce7; color: #16a34a; }
+        .error { background: #fee2e2; color: #dc2626; }
+        .area-info {
+            background: #f1f5f9;
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: #475569;
+        }
+
+        .loading-small {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-page">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>🤖 SuruhBoy</h1>
+                <p>Agent Dashboard</p>
+            </div>
+            <div class="login-content">
+                <div id="loginStatus" class="message info">⏳ Menghubungkan ke database...</div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>👤 Username</label>
+                        <input type="text" id="username" placeholder="Masukkan username" required style="width:100%; padding:12px; border:1px solid #e2e8f0; border-radius:14px; margin-bottom:12px;">
+                    </div>
+                    <div class="form-group">
+                        <label>🔒 Password</label>
+                        <input type="password" id="password" placeholder="Masukkan password" required style="width:100%; padding:12px; border:1px solid #e2e8f0; border-radius:14px; margin-bottom:16px;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">Login</button>
+                </form>
+                <div id="userListContainer" style="margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 14px; font-size: 0.7rem;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard hidden">
+        <div class="header">
+            <h1>🤖 SuruhBoy</h1>
+            <div class="user-badge">
+                <div class="avatar" id="avatar">👤</div>
+                <button class="logout-btn" onclick="logout()">Keluar</button>
+            </div>
+        </div>
+
+        <!-- HOME + STATUS -->
+        <div class="card">
+            <div class="card-title">🏠 Halo, <span id="agentName"></span>!</div>
+            <div class="status-row">
+                <span>Status Siap Kerja</span>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span id="statusText" class="status-badge status-offline">⚫ Offline</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="statusToggle" onchange="onStatusToggle()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div id="areaDisplay" class="area-info" style="display: none;">
+                <div style="margin-bottom: 6px;">📍 Area kerja aktif:</div>
+                <div class="area-tags" id="areaTags"></div>
+            </div>
+        </div>
+
+        <!-- WEEK FILTER -->
+        <div class="week-filter">
+            <label style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px; display: block;">📅 Pilih Periode Minggu</label>
+            <select class="week-select" id="weekSelect">
+                <option value="">Loading weeks...</option>
+            </select>
+        </div>
+
+        <!-- RINGKASAN PENGHASILAN -->
+        <div class="card">
+            <div class="card-title">💰 Ringkasan Penghasilan</div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalOrders">0</div>
+                    <div class="stat-label">Total Order</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalAdminFee">Rp0</div>
+                    <div class="stat-label">Admin Fee</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalEarnings">Rp0</div>
+                    <div class="stat-label">Pendapatan Kotor</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIWAYAT ORDER -->
+        <div class="card">
+            <div class="card-title">📜 Riwayat Order</div>
+            <div id="historyList">
+                <div class="loading-small">Pilih minggu untuk melihat data...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pilih Area (Multi Select) -->
+    <div id="areaModal" class="modal">
+        <div class="modal-content">
+            <h3>📍 Pilih Area Kerja</h3>
+            <div class="modal-subtitle">Anda bisa memilih lebih dari satu kecamatan</div>
+            <div class="area-checkbox-list" id="areaCheckboxList"></div>
+            <div class="modal-actions">
+                <button class="btn-confirm" onclick="confirmAreas()">✅ Konfirmasi</button>
+                <button class="btn-cancel" onclick="closeAreaModal()">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // KONFIGURASI GOOGLE SHEETS
+        // ============================================
+        const SPREADSHEET_ID_LOGIN = '1FgWiv56J2w7A0WprwqOKJMU7BO4mX3jotW3IC397rWg';
+        const SPREADSHEET_ID_ORDER = '1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c';
+        const ORDER_SHEET_NAME = 'Mirroring';  // Sheet yang berisi data order
+        
+        const LOGIN_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID_LOGIN}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+        const ORDER_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID_ORDER}/gviz/tq?tqx=out:csv&sheet=${ORDER_SHEET_NAME}`;
+
+        // Mapping kolom berdasarkan indeks (0-based)
+        // Kolom C = index 2 (Tanggal Order)
+        // Kolom D = index 3 (Nama Customer)
+        // Kolom I = index 8 (Nama Agent)
+        // Kolom K = index 10 (Nominal)
+        // Kolom P = index 15 (Periode Minggu)
+        const COL_INDEX = {
+            TANGGAL: 2,
+            CUSTOMER: 3,
+            AGENT: 8,
+            NOMINAL: 10,
+            MINGGU: 15
+        };
+
+        // Daftar Kecamatan Boyolali
+        const KECAMATAN_BOYOLALI = [
+            "Ampel", "Andong", "Banyudono", "Boyolali Kota", "Cepogo",
+            "Juwangi", "Karanggede", "Kemusu", "Klego", "Mojosongo",
+            "Musuk", "Ngemplak", "Nogosari", "Sambi", "Sawit",
+            "Selo", "Simo", "Tamansari", "Teras", "Wonosegoro"
+        ];
+
+        let usersDatabase = [];
+        let currentUser = null;
+        let selectedAreas = [];
+        
+        // Data dari sheet order
+        let rawOrders = [];
+        let aggregatedData = {};
+        let availableWeeks = [];
+        let currentWeekIndex = 0;
+        let detailOrders = [];
+
+        let agentData = {
+            status: 'offline',
+            areas: []
+        };
+
+        // ============================================
+        // PARSE CSV (dengan handling kutip)
+        // ============================================
+        function parseCSV(csvText) {
+            const lines = [];
+            let currentLine = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < csvText.length; i++) {
+                const char = csvText[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                }
+                currentLine += char;
+                if (char === '\n' && !inQuotes) {
+                    lines.push(currentLine);
+                    currentLine = '';
+                }
+            }
+            if (currentLine.trim()) lines.push(currentLine);
+            
+            const data = [];
+            for (let i = 0; i < lines.length; i++) {
+                try {
+                    let columns = [], col = '', inQuote = false;
+                    for (let j = 0; j < lines[i].length; j++) {
+                        const c = lines[i][j];
+                        if (c === '"') {
+                            inQuote = !inQuote;
+                        } else if (c === ',' && !inQuote) {
+                            columns.push(col.trim());
+                            col = '';
+                        } else {
+                            col += c;
+                        }
+                    }
+                    columns.push(col.trim());
+                    columns = columns.map(col => col.replace(/^"|"$/g, ''));
+                    
+                    // Skip header row (i === 0)
+                    if (i > 0 && columns.length > COL_INDEX.MINGGU) {
+                        const agent = columns[COL_INDEX.AGENT] || '';
+                        const nominal = parseInt(columns[COL_INDEX.NOMINAL]?.replace(/[^0-9-]/g, '')) || 0;
+                        const minggu = columns[COL_INDEX.MINGGU] || '';
+                        const customer = columns[COL_INDEX.CUSTOMER] || '-';
+                        const tanggal = columns[COL_INDEX.TANGGAL] || '-';
+                        
+                        // Hanya ambil data yang valid (ada agent dan minggu)
+                        if (agent && agent.trim() && minggu && minggu.trim()) {
+                            data.push({ 
+                                agent: agent.trim(), 
+                                nominal: nominal,
+                                week: minggu.trim(),
+                                customer: customer,
+                                tanggal: tanggal
+                            });
+                        }
+                    }
+                } catch (e) { 
+                    console.warn('Parse error on line', i, e); 
+                }
+            }
+            return data;
+        }
+
+        // ============================================
+        // AGGREGATE DATA PER MINGGU
+        // ============================================
+        function aggregateData(data) {
+            const agg = {};
+            const details = {};
+            
+            data.forEach(({ agent, nominal, week, customer, tanggal }) => {
+                if (!week || !week.trim()) return;
+                
+                // Aggregasi nominal per minggu
+                if (!agg[week]) agg[week] = {};
+                if (!agg[week][agent]) agg[week][agent] = 0;
+                agg[week][agent] += nominal;
+                
+                // Simpan detail order
+                if (!details[week]) details[week] = [];
+                details[week].push({
+                    agent, nominal, customer, tanggal, week
+                });
+            });
+            
+            return { aggregated: agg, details };
+        }
+
+        function extractAndSortWeeks(agg) {
+            const weeks = Object.keys(agg);
+            return weeks.sort((a, b) => {
+                // Simple string comparison for date format like "8 Feb - 14 Feb"
+                return a.localeCompare(b);
+            });
+        }
+
+        // ============================================
+        // LOAD ORDERS FROM SHEET
+        // ============================================
+        async function loadOrders() {
+            try {
+                const response = await fetch(ORDER_CSV_URL);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const csv = await response.text();
+                rawOrders = parseCSV(csv);
+                
+                if (rawOrders.length === 0) {
+                    showNoDataMessage();
+                } else {
+                    const { aggregated, details } = aggregateData(rawOrders);
+                    aggregatedData = aggregated;
+                    detailOrders = details;
+                    availableWeeks = extractAndSortWeeks(aggregatedData);
+                    
+                    if (availableWeeks.length > 0) {
+                        currentWeekIndex = availableWeeks.length - 1;
+                        populateWeekSelect();
+                        renderCurrentWeekData();
+                    } else {
+                        showNoDataMessage();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                showErrorMessage(error.message);
+            }
+        }
+        
+        function showNoDataMessage() {
+            document.getElementById('weekSelect').innerHTML = '<option value="">Tidak ada data</option>';
+            document.getElementById('totalOrders').innerText = '0';
+            document.getElementById('totalAdminFee').innerText = 'Rp0';
+            document.getElementById('totalEarnings').innerText = 'Rp0';
+            document.getElementById('historyList').innerHTML = '<div class="empty-state">📭 Belum ada data order dari Google Sheets</div>';
+        }
+        
+        function showErrorMessage(message) {
+            document.getElementById('historyList').innerHTML = `<div class="empty-state">❌ Gagal memuat data: ${message}</div>`;
+        }
+
+        // ============================================
+        // RENDER DATA PER MINGGU
+        // ============================================
+        function renderWeekData(weekIndex) {
+            const week = availableWeeks[weekIndex];
+            if (!week) return;
+            
+            const weekData = aggregatedData[week];
+            if (!weekData) return;
+            
+            // Filter untuk agent yang login
+            const adminFee = weekData[currentUser?.name] || 0;
+            const totalOrder = adminFee;
+            const totalEarnings = totalOrder;
+            
+            // Update summary
+            document.getElementById('totalOrders').innerText = totalOrder.toLocaleString();
+            document.getElementById('totalAdminFee').innerText = `Rp${adminFee.toLocaleString()}`;
+            document.getElementById('totalEarnings').innerText = `Rp${totalEarnings.toLocaleString()}`;
+            
+            // Ambil detail order untuk minggu ini dan agent ini
+            const weekDetails = detailOrders[week] || [];
+            const agentOrders = weekDetails.filter(o => o.agent === currentUser?.name);
+            
+            // Render riwayat order
+            const historyDiv = document.getElementById('historyList');
+            if (agentOrders.length === 0) {
+                historyDiv.innerHTML = '<div class="empty-state">📭 Tidak ada order pada minggu ini</div>';
+            } else {
+                historyDiv.innerHTML = agentOrders.map((order) => `
+                    <div class="order-item">
+                        <div class="order-row">
+                            <span class="order-customer">👤 ${order.customer || 'Customer'}</span>
+                            <span class="order-fee">Rp${order.nominal.toLocaleString()}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span>📅 ${order.tanggal || order.week}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        function renderCurrentWeekData() {
+            if (availableWeeks.length > 0 && currentWeekIndex < availableWeeks.length) {
+                renderWeekData(currentWeekIndex);
+            }
+        }
+        
+        function populateWeekSelect() {
+            const weekSelect = document.getElementById('weekSelect');
+            weekSelect.innerHTML = availableWeeks.map((week, i) => 
+                `<option value="${i}" ${i === currentWeekIndex ? 'selected' : ''}>${week}</option>`
+            ).join('');
+        }
+        
+        function onWeekSelectChange() {
+            const weekSelect = document.getElementById('weekSelect');
+            const newIndex = parseInt(weekSelect.value);
+            if (!isNaN(newIndex)) {
+                currentWeekIndex = newIndex;
+                renderWeekData(currentWeekIndex);
+            }
+        }
+
+        // ============================================
+        // LOAD USERS (LOGIN)
+        // ============================================
+        async function loadUsers() {
+            const statusDiv = document.getElementById('loginStatus');
+            const userListDiv = document.getElementById('userListContainer');
+            try {
+                const response = await fetch(LOGIN_URL);
+                const text = await response.text();
+                const jsonString = text.match(/({.*})/)[1];
+                const data = JSON.parse(jsonString);
+                const rows = data.table.rows;
+                const cols = data.table.cols;
+                
+                let nameIdx = 0, usernameIdx = 1, passwordIdx = 2;
+                for (let i = 0; i < cols.length; i++) {
+                    const label = cols[i].label?.toLowerCase() || '';
+                    if (label === 'user') nameIdx = i;
+                    if (label === 'username') usernameIdx = i;
+                    if (label === 'password') passwordIdx = i;
+                }
+                
+                usersDatabase = [];
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i].c;
+                    if (!row) continue;
+                    const name = row[nameIdx]?.v || '';
+                    const username = row[usernameIdx]?.v || '';
+                    const password = row[passwordIdx]?.v || '';
+                    if (username && password && username !== 'Username') {
+                        usersDatabase.push({ name: String(name), username: String(username).toLowerCase(), password: String(password) });
+                    }
+                }
+                
+                if (usersDatabase.length) {
+                    let listHtml = '<strong>📋 Pengguna:</strong><ul style="margin-top:6px; margin-left:16px;">';
+                    usersDatabase.forEach(u => listHtml += `<li>👤 ${u.name}</li>`);
+                    listHtml += '</ul>';
+                    userListDiv.innerHTML = listHtml;
+                    statusDiv.innerHTML = '✅ Siap login!';
+                    statusDiv.className = 'message success';
+                }
+            } catch(e) {
+                statusDiv.innerHTML = '❌ Gagal ambil data';
+                statusDiv.className = 'message error';
+            }
+        }
+
+        function attemptLogin(username, password) {
+            return usersDatabase.find(u => u.username === username.toLowerCase() && u.password === password);
+        }
+
+        // ============================================
+        // STATUS & AREA FUNCTIONS (MULTI SELECT)
+        // ============================================
+        function showAreaModal() {
+            const modal = document.getElementById('areaModal');
+            const checkboxList = document.getElementById('areaCheckboxList');
+            
+            checkboxList.innerHTML = KECAMATAN_BOYOLALI.map(kec => `
+                <div class="area-checkbox" onclick="toggleCheckbox('${kec}')">
+                    <input type="checkbox" id="chk_${kec.replace(/\s/g, '_')}" value="${kec}" ${selectedAreas.includes(kec) ? 'checked' : ''}>
+                    <label for="chk_${kec.replace(/\s/g, '_')}">${kec}</label>
+                </div>
+            `).join('');
+            
+            modal.style.display = 'flex';
+        }
+        
+        window.toggleCheckbox = function(area) {
+            const checkbox = document.getElementById(`chk_${area.replace(/\s/g, '_')}`);
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+            }
+        };
+        
+        function closeAreaModal() {
+            document.getElementById('areaModal').style.display = 'none';
+            const toggle = document.getElementById('statusToggle');
+            if (selectedAreas.length === 0 && agentData.status === 'offline') {
+                toggle.checked = false;
+            }
+        }
+        
+        window.confirmAreas = function() {
+            const selected = [];
+            KECAMATAN_BOYOLALI.forEach(kec => {
+                const checkbox = document.getElementById(`chk_${kec.replace(/\s/g, '_')}`);
+                if (checkbox && checkbox.checked) {
+                    selected.push(kec);
+                }
+            });
+            
+            if (selected.length === 0) {
+                alert('⚠️ Pilih minimal 1 area kerja!');
+                return;
+            }
+            
+            selectedAreas = selected;
+            agentData.areas = selected;
+            agentData.status = 'available';
+            closeAreaModal();
+            updateStatusUI();
+            
+            const areaList = selected.join(', ');
+            alert(`✅ Anda sekarang ONLINE di ${selected.length} area:\n${areaList}\nSiap menerima order!`);
+        };
+        
+        window.onStatusToggle = function() {
+            const toggle = document.getElementById('statusToggle');
+            if (toggle.checked) {
+                if (agentData.status === 'offline' || selectedAreas.length === 0) {
+                    showAreaModal();
+                } else {
+                    agentData.status = 'available';
+                    updateStatusUI();
+                    alert(`✅ Anda ONLINE di ${selectedAreas.length} area yang dipilih`);
+                }
+            } else {
+                agentData.status = 'offline';
+                updateStatusUI();
+                alert('⚫ Anda telah OFFLINE');
+            }
+        };
+        
+        function updateStatusUI() {
+            const statusText = document.getElementById('statusText');
+            const statusToggle = document.getElementById('statusToggle');
+            const areaDisplay = document.getElementById('areaDisplay');
+            const areaTags = document.getElementById('areaTags');
+            
+            if (agentData.status === 'available' && selectedAreas.length > 0) {
+                statusText.innerHTML = '🟢 Available';
+                statusText.className = 'status-badge status-available';
+                statusToggle.checked = true;
+                areaDisplay.style.display = 'block';
+                areaTags.innerHTML = selectedAreas.map(area => `<span class="area-tag">${area}</span>`).join('');
+            } else {
+                statusText.innerHTML = '⚫ Offline';
+                statusText.className = 'status-badge status-offline';
+                statusToggle.checked = false;
+                areaDisplay.style.display = 'none';
+            }
+        }
+        
+        // ============================================
+        // DASHBOARD & LOGIN
+        // ============================================
+        function updateDashboardUI() {
+            if (!currentUser) return;
+            document.getElementById('agentName').innerText = currentUser.name;
+            document.getElementById('avatar').innerText = currentUser.name.charAt(0).toUpperCase();
+            updateStatusUI();
+        }
+        
+        async function showDashboard() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            updateDashboardUI();
+            
+            // Load data dari sheet order
+            await loadOrders();
+        }
+        
+        function logout() {
+            currentUser = null;
+            agentData.status = 'offline';
+            selectedAreas = [];
+            agentData.areas = [];
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+        }
+        
+        // Login handler
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const user = attemptLogin(username, password);
+            if (user) {
+                currentUser = user;
+                showDashboard();
+            } else {
+                alert('❌ Login gagal! Username atau password salah.');
+            }
+        });
+        
+        // Event listeners
+        document.getElementById('weekSelect').addEventListener('change', onWeekSelectChange);
+        
+        loadUsers();
+    </script>
+</body>
+</html>

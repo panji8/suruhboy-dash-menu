@@ -4,17 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>SuruhBoy - Agent Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background: #F7F9FC;
             min-height: 100vh;
         }
@@ -44,14 +39,9 @@
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
         }
 
-        .login-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
+        .login-header { text-align: center; margin-bottom: 32px; }
         .login-icon {
-            width: 70px;
-            height: 70px;
+            width: 70px; height: 70px;
             background: linear-gradient(135deg, #FF6B4A, #FF3B2F);
             border-radius: 28px;
             display: flex;
@@ -60,24 +50,10 @@
             margin: 0 auto 16px;
             font-size: 36px;
         }
+        .login-header h1 { font-size: 28px; font-weight: 800; color: #0F172A; }
+        .login-header p { color: #64748B; font-size: 14px; margin-top: 4px; }
 
-        .login-header h1 {
-            font-size: 28px;
-            font-weight: 800;
-            color: #0F172A;
-            letter-spacing: -0.5px;
-        }
-
-        .login-header p {
-            color: #64748B;
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
+        .form-group { margin-bottom: 20px; }
         .form-group label {
             display: block;
             font-size: 13px;
@@ -85,7 +61,6 @@
             color: #334155;
             margin-bottom: 8px;
         }
-
         .form-group input {
             width: 100%;
             padding: 14px 16px;
@@ -94,9 +69,7 @@
             border-radius: 20px;
             font-size: 15px;
             font-family: inherit;
-            transition: all 0.2s;
         }
-
         .form-group input:focus {
             outline: none;
             border-color: #FF6B4A;
@@ -113,13 +86,8 @@
             font-weight: 600;
             color: white;
             cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
         }
-
-        .btn-login:active {
-            transform: scale(0.98);
-        }
+        .btn-login:active { transform: scale(0.98); }
 
         .message {
             padding: 12px;
@@ -128,7 +96,6 @@
             font-size: 13px;
             text-align: center;
         }
-
         .info { background: #EFF6FF; color: #1E40AF; }
         .success { background: #DCFCE7; color: #15803D; }
         .error { background: #FEE2E2; color: #B91C1C; }
@@ -136,43 +103,25 @@
         .hidden { display: none; }
 
         /* Dashboard */
-        .dashboard {
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 20px 16px 100px;
-        }
+        .dashboard { max-width: 480px; margin: 0 auto; padding: 20px 16px 100px; }
 
-        /* Header */
         .dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
         }
-
         .logo-area h2 {
             font-size: 24px;
             font-weight: 800;
             background: linear-gradient(135deg, #FF6B4A, #FF3B2F);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
-
-        .logo-area p {
-            font-size: 12px;
-            color: #94A3B8;
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
+        .logo-area p { font-size: 12px; color: #94A3B8; }
+        .user-menu { display: flex; align-items: center; gap: 12px; }
         .user-avatar {
-            width: 48px;
-            height: 48px;
+            width: 48px; height: 48px;
             background: linear-gradient(135deg, #FF6B4A, #FF3B2F);
             border-radius: 24px;
             display: flex;
@@ -182,10 +131,8 @@
             font-size: 18px;
             color: white;
         }
-
         .logout-icon {
-            width: 44px;
-            height: 44px;
+            width: 44px; height: 44px;
             background: #F1F5F9;
             border-radius: 22px;
             display: flex;
@@ -193,15 +140,9 @@
             justify-content: center;
             color: #64748B;
             cursor: pointer;
-            transition: all 0.2s;
         }
+        .logout-icon:active { background: #E2E8F0; transform: scale(0.95); }
 
-        .logout-icon:active {
-            background: #E2E8F0;
-            transform: scale(0.95);
-        }
-
-        /* Welcome Card */
         .welcome-card {
             background: linear-gradient(135deg, #0F172A, #1E293B);
             border-radius: 32px;
@@ -209,27 +150,14 @@
             margin-bottom: 20px;
             color: white;
         }
-
-        .welcome-text {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
+        .welcome-text { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
         .welcome-text span {
             background: linear-gradient(135deg, #FF6B4A, #FF3B2F);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
+        .welcome-sub { font-size: 13px; color: #94A3B8; margin-bottom: 20px; }
 
-        .welcome-sub {
-            font-size: 13px;
-            color: #94A3B8;
-            margin-bottom: 20px;
-        }
-
-        /* Status Toggle */
         .status-container {
             display: flex;
             justify-content: space-between;
@@ -238,13 +166,7 @@
             border-top: 1px solid rgba(255,255,255,0.1);
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-
-        .status-label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #CBD5E1;
-        }
-
+        .status-label { font-size: 14px; font-weight: 500; color: #CBD5E1; }
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -254,28 +176,15 @@
             font-size: 13px;
             font-weight: 600;
         }
+        .status-on { background: rgba(16,185,129,0.2); color: #34D399; }
+        .status-off { background: rgba(239,68,68,0.2); color: #F87171; }
 
-        .status-on {
-            background: rgba(16,185,129,0.2);
-            color: #34D399;
-        }
-
-        .status-off {
-            background: rgba(239,68,68,0.2);
-            color: #F87171;
-        }
-
-        /* Toggle Switch */
         .toggle {
             position: relative;
             width: 48px;
             height: 26px;
         }
-        .toggle input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .toggle input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
             position: absolute;
             cursor: pointer;
@@ -298,48 +207,21 @@
             transition: 0.3s;
             border-radius: 50%;
         }
-        input:checked + .toggle-slider {
-            background-color: #10B981;
-        }
-        input:checked + .toggle-slider:before {
-            transform: translateX(22px);
-        }
+        input:checked + .toggle-slider { background-color: #10B981; }
+        input:checked + .toggle-slider:before { transform: translateX(22px); }
 
-        /* Area Tags */
-        .area-section {
-            margin-top: 16px;
-        }
+        .area-section { margin-top: 16px; }
+        .area-label { font-size: 12px; color: #94A3B8; margin-bottom: 8px; }
+        .area-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .area-tag { background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #CBD5E1; }
 
-        .area-label {
-            font-size: 12px;
-            color: #94A3B8;
-            margin-bottom: 8px;
-        }
-
-        .area-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .area-tag {
-            background: rgba(255,255,255,0.1);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            color: #CBD5E1;
-        }
-
-        /* Section Cards */
         .section-card {
             background: white;
             border-radius: 28px;
             padding: 20px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
             border: 1px solid #EDF2F7;
         }
-
         .section-title {
             font-size: 16px;
             font-weight: 700;
@@ -349,10 +231,7 @@
             align-items: center;
             gap: 8px;
         }
-
-        .section-title i {
-            color: #FF6B4A;
-        }
+        .section-title i { color: #FF6B4A; }
 
         .week-select {
             width: 100%;
@@ -361,14 +240,7 @@
             border: 1px solid #E9EDF2;
             border-radius: 20px;
             font-size: 14px;
-            font-family: inherit;
-            font-weight: 500;
             cursor: pointer;
-        }
-
-        .week-select:focus {
-            outline: none;
-            border-color: #FF6B4A;
         }
 
         .stats-grid {
@@ -376,91 +248,35 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
         }
-
         .stat-block {
             background: #F8FAFE;
             border-radius: 20px;
             padding: 14px 8px;
             text-align: center;
         }
+        .stat-number { font-size: 20px; font-weight: 800; color: #0F172A; }
+        .stat-label { font-size: 11px; color: #64748B; margin-top: 4px; }
 
-        .stat-number {
-            font-size: 20px;
-            font-weight: 800;
-            color: #0F172A;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: #64748B;
-            margin-top: 4px;
-            font-weight: 500;
-        }
-
-        .order-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
+        .order-list { display: flex; flex-direction: column; gap: 12px; }
         .order-card {
             background: #F8FAFE;
             border-radius: 20px;
             padding: 16px;
-            transition: all 0.2s;
         }
-
-        .order-card:active {
-            background: #F1F5F9;
-        }
-
         .order-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
+        .customer-name { font-weight: 700; font-size: 15px; color: #0F172A; display: flex; align-items: center; gap: 8px; }
+        .customer-name i { color: #FF6B4A; }
+        .order-amount { font-weight: 700; font-size: 15px; color: #10B981; }
+        .order-date { font-size: 12px; color: #94A3B8; display: flex; align-items: center; gap: 6px; }
 
-        .customer-name {
-            font-weight: 700;
-            font-size: 15px;
-            color: #0F172A;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .empty-state { text-align: center; padding: 40px 20px; color: #94A3B8; }
+        .empty-state i { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
 
-        .customer-name i {
-            color: #FF6B4A;
-        }
-
-        .order-amount {
-            font-weight: 700;
-            font-size: 15px;
-            color: #10B981;
-        }
-
-        .order-date {
-            font-size: 12px;
-            color: #94A3B8;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #94A3B8;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -475,7 +291,6 @@
             align-items: center;
             padding: 20px;
         }
-
         .modal-container {
             background: white;
             border-radius: 32px;
@@ -485,28 +300,13 @@
             overflow: hidden;
             animation: modalIn 0.2s ease;
         }
-
         @keyframes modalIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
-
-        .modal-header {
-            padding: 24px 20px 12px;
-            text-align: center;
-        }
-
-        .modal-header h3 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #0F172A;
-        }
-
-        .modal-header p {
-            font-size: 13px;
-            color: #64748B;
-            margin-top: 4px;
-        }
+        .modal-header { padding: 24px 20px 12px; text-align: center; }
+        .modal-header h3 { font-size: 20px; font-weight: 700; color: #0F172A; }
+        .modal-header p { font-size: 13px; color: #64748B; margin-top: 4px; }
 
         .area-list {
             padding: 8px 20px;
@@ -516,7 +316,6 @@
             max-height: 400px;
             overflow-y: auto;
         }
-
         .area-option {
             display: flex;
             align-items: center;
@@ -526,20 +325,8 @@
             border-radius: 40px;
             cursor: pointer;
         }
-
-        .area-option input {
-            width: 18px;
-            height: 18px;
-            accent-color: #FF6B4A;
-            cursor: pointer;
-        }
-
-        .area-option label {
-            font-size: 14px;
-            color: #334155;
-            cursor: pointer;
-            flex: 1;
-        }
+        .area-option input { width: 18px; height: 18px; accent-color: #FF6B4A; cursor: pointer; }
+        .area-option label { font-size: 14px; color: #334155; cursor: pointer; flex: 1; }
 
         .modal-footer {
             padding: 16px 20px 24px;
@@ -547,7 +334,6 @@
             gap: 12px;
             border-top: 1px solid #F1F5F9;
         }
-
         .btn-primary-modal {
             flex: 2;
             background: linear-gradient(135deg, #FF6B4A, #FF3B2F);
@@ -558,7 +344,6 @@
             color: white;
             cursor: pointer;
         }
-
         .btn-secondary-modal {
             flex: 1;
             background: #F1F5F9;
@@ -570,11 +355,7 @@
             cursor: pointer;
         }
 
-        .loading-small {
-            text-align: center;
-            padding: 30px;
-            color: #94A3B8;
-        }
+        .loading-small { text-align: center; padding: 30px; color: #94A3B8; }
     </style>
 </head>
 <body>
@@ -618,7 +399,6 @@
             </div>
         </div>
 
-        <!-- Welcome Card -->
         <div class="welcome-card">
             <div class="welcome-text">
                 Halo, <span id="agentName"></span>
@@ -642,7 +422,6 @@
             </div>
         </div>
 
-        <!-- Week Filter -->
         <div class="section-card">
             <div class="section-title">
                 <i class="fas fa-calendar-week"></i> Periode Minggu
@@ -652,7 +431,6 @@
             </select>
         </div>
 
-        <!-- Earnings Summary -->
         <div class="section-card">
             <div class="section-title">
                 <i class="fas fa-chart-simple"></i> Ringkasan Penghasilan
@@ -673,7 +451,6 @@
             </div>
         </div>
 
-        <!-- Order History -->
         <div class="section-card">
             <div class="section-title">
                 <i class="fas fa-clock"></i> Riwayat Order
@@ -684,7 +461,6 @@
         </div>
     </div>
 
-    <!-- Modal Area -->
     <div id="areaModal" class="modal">
         <div class="modal-container">
             <div class="modal-header">
@@ -703,15 +479,23 @@
         // ============================================
         // KONFIGURASI
         // ============================================
+        // ✅ URL Web App Anda sudah diisi
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyznnkHQmUkfNjz4NXt0TcpwPb2or-JZhaKb0X8AknJbo7D10rtRz2rJHZCpr7CFueeZg/exec';
+        
+        // Spreadsheet Login (data user)
         const SPREADSHEET_ID_LOGIN = '1FgWiv56J2w7A0WprwqOKJMU7BO4mX3jotW3IC397rWg';
+        
+        // Spreadsheet Order (data order)
         const SPREADSHEET_ID_ORDER = '1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c';
         const ORDER_SHEET_NAME = 'Mirroring';
         
         const LOGIN_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID_LOGIN}/gviz/tq?tqx=out:json&sheet=Sheet1`;
         const ORDER_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID_ORDER}/gviz/tq?tqx=out:csv&sheet=${ORDER_SHEET_NAME}`;
 
+        // Mapping kolom untuk sheet Mirroring (0-based index)
         const COL = { TANGGAL: 2, CUSTOMER: 3, AGENT: 8, NOMINAL: 10, MINGGU: 15 };
-
+        
+        // Daftar Kecamatan Boyolali
         const KECAMATAN = [
             "Ampel", "Andong", "Banyudono", "Boyolali Kota", "Cepogo",
             "Juwangi", "Karanggede", "Kemusu", "Klego", "Mojosongo",
@@ -724,7 +508,50 @@
         let agentStatus = { status: 'offline', areas: [] };
 
         // ============================================
-        // LOAD USERS DARI GOOGLE SHEETS
+        // FUNGSI LOG KE GOOGLE SHEETS VIA APPS SCRIPT
+        // ============================================
+        async function saveLoginLog(namaAgent, username, status, deviceInfo = '') {
+            try {
+                const params = new URLSearchParams();
+                params.append('type', 'login');
+                params.append('timestamp', new Date().toLocaleString('id-ID'));
+                params.append('namaAgent', namaAgent);
+                params.append('username', username);
+                params.append('status', status);
+                params.append('deviceInfo', deviceInfo || navigator.userAgent);
+                
+                await fetch(`${WEB_APP_URL}?${params.toString()}`, { 
+                    method: 'GET', 
+                    mode: 'no-cors' 
+                });
+                console.log('✅ Login log terkirim');
+            } catch(e) {
+                console.warn('Gagal kirim login log:', e);
+            }
+        }
+
+        async function saveOnlineLog(namaAgent, username, action, areas) {
+            try {
+                const params = new URLSearchParams();
+                params.append('type', 'online');
+                params.append('timestamp', new Date().toLocaleString('id-ID'));
+                params.append('namaAgent', namaAgent);
+                params.append('username', username);
+                params.append('action', action);
+                params.append('areas', areas || '-');
+                
+                await fetch(`${WEB_APP_URL}?${params.toString()}`, { 
+                    method: 'GET', 
+                    mode: 'no-cors' 
+                });
+                console.log(`✅ Online log terkirim: ${action}`);
+            } catch(e) {
+                console.warn('Gagal kirim online log:', e);
+            }
+        }
+
+        // ============================================
+        // LOAD USERS DARI SHEET LOGIN
         // ============================================
         async function loadUsers() {
             const statusDiv = document.getElementById('loginStatus');
@@ -737,7 +564,6 @@
                 const rows = data.table.rows;
                 const cols = data.table.cols;
                 
-                // Cari indeks kolom
                 let nameIdx = 0, usernameIdx = 1, passwordIdx = 2;
                 for (let i = 0; i < cols.length; i++) {
                     const label = cols[i].label?.toLowerCase() || '';
@@ -763,18 +589,16 @@
                     }
                 }
                 
-                console.log('Users loaded:', users.length);
-                
                 if (users.length > 0) {
                     statusDiv.innerHTML = '✅ Siap login';
                     statusDiv.className = 'message success';
                 } else {
-                    statusDiv.innerHTML = '⚠️ Tidak ada data user, cek spreadsheet login';
+                    statusDiv.innerHTML = '⚠️ Tidak ada data user';
                     statusDiv.className = 'message error';
                 }
                 
             } catch(error) {
-                console.error('Error loading users:', error);
+                console.error(error);
                 statusDiv.innerHTML = '❌ Gagal mengambil data login';
                 statusDiv.className = 'message error';
             }
@@ -785,7 +609,7 @@
         }
 
         // ============================================
-        // PARSE CSV ORDER
+        // LOAD ORDERS DARI SHEET MIRRORING
         // ============================================
         function parseCSV(csv) {
             const lines = [];
@@ -865,7 +689,7 @@
                     showEmpty();
                 }
             } catch(e) {
-                console.error('Error loading orders:', e);
+                console.error(e);
                 showError();
             }
         }
@@ -873,19 +697,14 @@
         function showEmpty() {
             const weekSelect = document.getElementById('weekSelect');
             if (weekSelect) weekSelect.innerHTML = '<option>Tidak ada data</option>';
-            const totalOrders = document.getElementById('totalOrders');
-            if (totalOrders) totalOrders.innerText = '0';
-            const totalAdminFee = document.getElementById('totalAdminFee');
-            if (totalAdminFee) totalAdminFee.innerText = 'Rp0';
-            const totalEarnings = document.getElementById('totalEarnings');
-            if (totalEarnings) totalEarnings.innerText = 'Rp0';
-            const historyList = document.getElementById('historyList');
-            if (historyList) historyList.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><div>Belum ada data order</div></div>';
+            document.getElementById('totalOrders').innerText = '0';
+            document.getElementById('totalAdminFee').innerText = 'Rp0';
+            document.getElementById('totalEarnings').innerText = 'Rp0';
+            document.getElementById('historyList').innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><div>Belum ada data order</div></div>';
         }
 
         function showError() {
-            const historyList = document.getElementById('historyList');
-            if (historyList) historyList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><div>Gagal memuat data order</div></div>';
+            document.getElementById('historyList').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><div>Gagal memuat data order</div></div>';
         }
 
         function renderWeek(idx) {
@@ -894,16 +713,12 @@
             if (!week) return;
             const fee = aggregated[week]?.[currentUser.name] || 0;
             
-            const totalOrders = document.getElementById('totalOrders');
-            const totalAdminFee = document.getElementById('totalAdminFee');
-            const totalEarnings = document.getElementById('totalEarnings');
-            if (totalOrders) totalOrders.innerText = fee.toLocaleString();
-            if (totalAdminFee) totalAdminFee.innerText = `Rp${fee.toLocaleString()}`;
-            if (totalEarnings) totalEarnings.innerText = `Rp${fee.toLocaleString()}`;
+            document.getElementById('totalOrders').innerText = fee.toLocaleString();
+            document.getElementById('totalAdminFee').innerText = `Rp${fee.toLocaleString()}`;
+            document.getElementById('totalEarnings').innerText = `Rp${fee.toLocaleString()}`;
             
             const orders = (orderDetails[week] || []).filter(o => o.agent === currentUser.name);
             const container = document.getElementById('historyList');
-            if (!container) return;
             
             if (!orders.length) {
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><div>Tidak ada order minggu ini</div></div>';
@@ -936,7 +751,7 @@
         }
 
         // ============================================
-        // STATUS & AREA
+        // STATUS & AREA (MULTI SELECT)
         // ============================================
         function showAreaModal() {
             const modal = document.getElementById('areaModal');
@@ -965,27 +780,40 @@
             }
         }
 
-        window.confirmAreas = function() {
+        window.confirmAreas = async function() {
             const selected = KECAMATAN.filter(k => {
                 const chk = document.getElementById(`chk_${k.replace(/\s/g,'_')}`);
                 return chk && chk.checked;
             });
             if (!selected.length) { alert('Pilih minimal 1 area'); return; }
+            
             selectedAreas = selected;
             agentStatus.areas = selected;
             agentStatus.status = 'available';
             closeAreaModal();
             updateStatusUI();
-            alert(`✅ ONLINE di ${selected.length} area`);
+            
+            await saveOnlineLog(currentUser.name, currentUser.username, 'Online', selected.join(', '));
+            alert(`✅ ONLINE di ${selected.length} area: ${selected.join(', ')}`);
         };
 
-        window.onStatusToggle = function() {
+        window.onStatusToggle = async function() {
             const toggle = document.getElementById('statusToggle');
             if (!toggle) return;
+            
             if (toggle.checked) {
-                if (agentStatus.status === 'offline' || !selectedAreas.length) showAreaModal();
-                else { agentStatus.status = 'available'; updateStatusUI(); alert('✅ Anda ONLINE'); }
+                if (agentStatus.status === 'offline' || !selectedAreas.length) {
+                    showAreaModal();
+                } else {
+                    agentStatus.status = 'available';
+                    updateStatusUI();
+                    await saveOnlineLog(currentUser.name, currentUser.username, 'Online', selectedAreas.join(', '));
+                    alert('✅ Anda ONLINE');
+                }
             } else {
+                if (agentStatus.status === 'available') {
+                    await saveOnlineLog(currentUser.name, currentUser.username, 'Offline', selectedAreas.join(', '));
+                }
                 agentStatus.status = 'offline';
                 updateStatusUI();
                 alert('⚫ Anda OFFLINE');
@@ -1017,64 +845,63 @@
         }
 
         // ============================================
-        // DASHBOARD
+        // DASHBOARD & LOGIN
         // ============================================
         function updateUI() {
             if (!currentUser) return;
-            const agentName = document.getElementById('agentName');
-            const avatar = document.getElementById('avatar');
-            if (agentName) agentName.innerText = currentUser.name;
-            if (avatar) avatar.innerText = currentUser.name.charAt(0).toUpperCase();
+            document.getElementById('agentName').innerText = currentUser.name;
+            document.getElementById('avatar').innerText = currentUser.name.charAt(0).toUpperCase();
             updateStatusUI();
         }
 
         async function showDashboard() {
-            const loginPage = document.getElementById('loginPage');
-            const dashboard = document.getElementById('dashboard');
-            if (loginPage) loginPage.classList.add('hidden');
-            if (dashboard) dashboard.classList.remove('hidden');
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
             updateUI();
             await loadOrders();
         }
 
-        function logout() {
+        async function logout() {
+            if (currentUser && agentStatus.status === 'available') {
+                await saveOnlineLog(currentUser.name, currentUser.username, 'Offline', selectedAreas.join(', '));
+            }
             currentUser = null;
             agentStatus = { status: 'offline', areas: [] };
             selectedAreas = [];
-            const loginPage = document.getElementById('loginPage');
-            const dashboard = document.getElementById('dashboard');
-            if (loginPage) loginPage.classList.remove('hidden');
-            if (dashboard) dashboard.classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
             
-            // Reset form
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
             if (usernameInput) usernameInput.value = '';
             if (passwordInput) passwordInput.value = '';
         }
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            const loginForm = document.getElementById('loginForm');
-            if (loginForm) {
-                loginForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const username = document.getElementById('username')?.value.trim() || '';
-                    const password = document.getElementById('password')?.value || '';
-                    const found = login(username, password);
-                    if (found) {
-                        currentUser = found;
-                        showDashboard();
-                    } else {
-                        alert('❌ Login gagal! Username atau password salah.');
-                    }
-                });
-            }
+        // Login Handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const found = login(username, password);
             
-            const weekSelect = document.getElementById('weekSelect');
-            if (weekSelect) weekSelect.addEventListener('change', onWeekChange);
+            if (found) {
+                currentUser = found;
+                await saveLoginLog(found.name, found.username, 'Berhasil');
+                showDashboard();
+            } else {
+                const failedUser = users.find(u => u.username === username.toLowerCase());
+                if (failedUser) {
+                    await saveLoginLog(failedUser.name, username, 'Gagal (password salah)');
+                } else {
+                    await saveLoginLog('-', username, 'Gagal (username tidak ditemukan)');
+                }
+                alert('❌ Login gagal! Username atau password salah.');
+            }
         });
 
+        // Event listeners
+        document.getElementById('weekSelect').addEventListener('change', onWeekChange);
+        
         loadUsers();
     </script>
 </body>

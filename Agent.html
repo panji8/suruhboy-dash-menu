@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>SuruhBoy - Agent Dashboard</title>
+    <title>SuruhBoy - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -102,7 +102,7 @@
 
         .hidden { display: none; }
 
-        /* Dashboard */
+        /* Dashboard Common */
         .dashboard { max-width: 480px; margin: 0 auto; padding: 20px 16px 100px; }
 
         .dashboard-header {
@@ -143,6 +143,54 @@
         }
         .logout-icon:active { background: #E2E8F0; transform: scale(0.95); }
 
+        /* Admin Dashboard Specific */
+        .admin-dashboard { max-width: 800px; margin: 0 auto; padding: 20px 16px 100px; }
+        .admin-title { margin-bottom: 20px; }
+        .admin-title h2 { font-size: 24px; font-weight: 700; color: #0F172A; }
+        .admin-title p { color: #64748B; }
+
+        .agent-list-card {
+            background: white;
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #EDF2F7;
+        }
+
+        .agent-item-admin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .agent-item-admin:last-child { border-bottom: none; }
+        .agent-info h4 { font-size: 16px; font-weight: 700; color: #0F172A; }
+        .agent-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-online { background: #DCFCE7; color: #15803D; }
+        .status-offline { background: #FEE2E2; color: #B91C1C; }
+        .agent-areas { font-size: 12px; color: #64748B; margin-top: 4px; }
+        .agent-last-active { font-size: 11px; color: #94A3B8; margin-top: 2px; }
+        .btn-offline {
+            background: #FEE2E2;
+            color: #B91C1C;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-offline:active { transform: scale(0.96); background: #FECACA; }
+
+        /* Agent Dashboard */
         .welcome-card {
             background: linear-gradient(135deg, #0F172A, #1E293B);
             border-radius: 32px;
@@ -166,7 +214,6 @@
             border-top: 1px solid rgba(255,255,255,0.1);
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .status-label { font-size: 14px; font-weight: 500; color: #CBD5E1; }
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -211,7 +258,6 @@
         input:checked + .toggle-slider:before { transform: translateX(22px); }
 
         .area-section { margin-top: 16px; }
-        .area-label { font-size: 12px; color: #94A3B8; margin-bottom: 8px; }
         .area-tags { display: flex; flex-wrap: wrap; gap: 8px; }
         .area-tag { background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #CBD5E1; }
 
@@ -270,12 +316,10 @@
             margin-bottom: 10px;
         }
         .customer-name { font-weight: 700; font-size: 15px; color: #0F172A; display: flex; align-items: center; gap: 8px; }
-        .customer-name i { color: #FF6B4A; }
         .order-amount { font-weight: 700; font-size: 15px; color: #10B981; }
         .order-date { font-size: 12px; color: #94A3B8; display: flex; align-items: center; gap: 6px; }
 
         .empty-state { text-align: center; padding: 40px 20px; color: #94A3B8; }
-        .empty-state i { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
 
         .modal {
             display: none;
@@ -306,8 +350,6 @@
         }
         .modal-header { padding: 24px 20px 12px; text-align: center; }
         .modal-header h3 { font-size: 20px; font-weight: 700; color: #0F172A; }
-        .modal-header p { font-size: 13px; color: #64748B; margin-top: 4px; }
-
         .area-list {
             padding: 8px 20px;
             display: grid;
@@ -326,8 +368,6 @@
             cursor: pointer;
         }
         .area-option input { width: 18px; height: 18px; accent-color: #FF6B4A; cursor: pointer; }
-        .area-option label { font-size: 14px; color: #334155; cursor: pointer; flex: 1; }
-
         .modal-footer {
             padding: 16px 20px 24px;
             display: flex;
@@ -354,7 +394,6 @@
             color: #475569;
             cursor: pointer;
         }
-
         .loading-small { text-align: center; padding: 30px; color: #94A3B8; }
     </style>
 </head>
@@ -384,15 +423,15 @@
         </div>
     </div>
 
-    <!-- Dashboard -->
-    <div id="dashboard" class="dashboard hidden">
+    <!-- Agent Dashboard -->
+    <div id="agentDashboard" class="dashboard hidden">
         <div class="dashboard-header">
             <div class="logo-area">
                 <h2>SuruhBoy</h2>
                 <p>Agent Portal</p>
             </div>
             <div class="user-menu">
-                <div class="user-avatar" id="avatar">👤</div>
+                <div class="user-avatar" id="agentAvatar">👤</div>
                 <div class="logout-icon" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i>
                 </div>
@@ -400,73 +439,73 @@
         </div>
 
         <div class="welcome-card">
-            <div class="welcome-text">
-                Halo, <span id="agentName"></span>
-            </div>
-            <div class="welcome-sub">
-                Kelola order dan pantau penghasilan Anda
-            </div>
+            <div class="welcome-text">Halo, <span id="agentName"></span></div>
+            <div class="welcome-sub">Kelola order dan pantau penghasilan Anda</div>
             <div class="status-container">
                 <span class="status-label"><i class="fas fa-circle"></i> Status Siap Kerja</span>
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <span id="statusText" class="status-badge status-off"><i class="fas fa-power-off"></i> Offline</span>
+                    <span id="agentStatusText" class="status-badge status-off"><i class="fas fa-power-off"></i> Offline</span>
                     <label class="toggle">
-                        <input type="checkbox" id="statusToggle" onchange="onStatusToggle()">
+                        <input type="checkbox" id="agentStatusToggle" onchange="onAgentStatusToggle()">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
             </div>
-            <div id="areaDisplay" class="area-section" style="display: none;">
+            <div id="agentAreaDisplay" class="area-section" style="display: none;">
                 <div class="area-label"><i class="fas fa-map-marker-alt"></i> Area kerja aktif</div>
-                <div class="area-tags" id="areaTags"></div>
+                <div class="area-tags" id="agentAreaTags"></div>
             </div>
         </div>
 
         <div class="section-card">
-            <div class="section-title">
-                <i class="fas fa-calendar-week"></i> Periode Minggu
-            </div>
-            <select class="week-select" id="weekSelect">
-                <option value="">Loading...</option>
-            </select>
+            <div class="section-title"><i class="fas fa-calendar-week"></i> Periode Minggu</div>
+            <select class="week-select" id="weekSelect"><option>Loading...</option></select>
         </div>
 
         <div class="section-card">
-            <div class="section-title">
-                <i class="fas fa-chart-simple"></i> Ringkasan Penghasilan
-            </div>
+            <div class="section-title"><i class="fas fa-chart-simple"></i> Ringkasan Penghasilan</div>
             <div class="stats-grid">
-                <div class="stat-block">
-                    <div class="stat-number" id="totalOrders">0</div>
-                    <div class="stat-label">Total Order</div>
-                </div>
-                <div class="stat-block">
-                    <div class="stat-number" id="totalAdminFee">Rp0</div>
-                    <div class="stat-label">Admin Fee</div>
-                </div>
-                <div class="stat-block">
-                    <div class="stat-number" id="totalEarnings">Rp0</div>
-                    <div class="stat-label">Pendapatan</div>
-                </div>
+                <div class="stat-block"><div class="stat-number" id="totalOrders">0</div><div class="stat-label">Total Order</div></div>
+                <div class="stat-block"><div class="stat-number" id="totalAdminFee">Rp0</div><div class="stat-label">Admin Fee</div></div>
+                <div class="stat-block"><div class="stat-number" id="totalEarnings">Rp0</div><div class="stat-label">Pendapatan</div></div>
             </div>
         </div>
 
         <div class="section-card">
-            <div class="section-title">
-                <i class="fas fa-clock"></i> Riwayat Order
+            <div class="section-title"><i class="fas fa-clock"></i> Riwayat Order</div>
+            <div id="historyList" class="order-list"><div class="loading-small">Pilih minggu untuk melihat data</div></div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="admin-dashboard hidden">
+        <div class="dashboard-header">
+            <div class="logo-area">
+                <h2>SuruhBoy Admin</h2>
+                <p>Monitor Agent</p>
             </div>
-            <div id="historyList" class="order-list">
-                <div class="loading-small"><i class="fas fa-spinner fa-pulse"></i> Pilih minggu untuk melihat data</div>
+            <div class="user-menu">
+                <div class="user-avatar" id="adminAvatar">👤</div>
+                <div class="logout-icon" onclick="logout()"><i class="fas fa-sign-out-alt"></i></div>
+            </div>
+        </div>
+
+        <div class="admin-title">
+            <h2>👥 Daftar Agent</h2>
+            <p>Lihat status agent dan kelola koneksi</p>
+        </div>
+
+        <div class="agent-list-card">
+            <div id="adminAgentList" class="agent-list">
+                <div class="loading-small">Memuat data agent...</div>
             </div>
         </div>
     </div>
 
+    <!-- Modal Area untuk Agent -->
     <div id="areaModal" class="modal">
         <div class="modal-container">
-            <div class="modal-header">
-                <h3><i class="fas fa-location-dot"></i> Pilih Area Kerja</h3>
-                <p>Pilih kecamatan tempat Anda bertugas</p>
-            </div>
+            <div class="modal-header"><h3><i class="fas fa-location-dot"></i> Pilih Area Kerja</h3><p>Pilih kecamatan tempat Anda bertugas</p></div>
             <div class="area-list" id="areaList"></div>
             <div class="modal-footer">
                 <button class="btn-primary-modal" onclick="confirmAreas()">Konfirmasi</button>
@@ -479,36 +518,71 @@
         // ============================================
         // KONFIGURASI
         // ============================================
-        // ✅ URL Web App Anda sudah diisi
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyEyzeBKEsP_6PuAJDnuFmeqq0LBNNnIs97fnfQ6HZ_dpiUgrX9wdD0LNvbSyMKw0l06g/exec';
-        
-        // Spreadsheet Login (data user)
         const SPREADSHEET_ID_LOGIN = '1FgWiv56J2w7A0WprwqOKJMU7BO4mX3jotW3IC397rWg';
-        
-        // Spreadsheet Order (data order)
         const SPREADSHEET_ID_ORDER = '1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c';
         const ORDER_SHEET_NAME = 'Mirroring';
-        
         const LOGIN_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID_LOGIN}/gviz/tq?tqx=out:json&sheet=Sheet1`;
         const ORDER_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID_ORDER}/gviz/tq?tqx=out:csv&sheet=${ORDER_SHEET_NAME}`;
-
-        // Mapping kolom untuk sheet Mirroring (0-based index)
         const COL = { TANGGAL: 2, CUSTOMER: 3, AGENT: 8, NOMINAL: 10, MINGGU: 15 };
-        
-        // Daftar Kecamatan Boyolali
-        const KECAMATAN = [
-            "Ampel", "Andong", "Banyudono", "Boyolali Kota", "Cepogo",
-            "Juwangi", "Karanggede", "Kemusu", "Klego", "Mojosongo",
-            "Musuk", "Ngemplak", "Nogosari", "Sambi", "Sawit",
-            "Selo", "Simo", "Tamansari", "Teras", "Wonosegoro"
-        ];
+        const KECAMATAN = ["Ampel","Andong","Banyudono","Boyolali Kota","Cepogo","Juwangi","Karanggede","Kemusu","Klego","Mojosongo","Musuk","Ngemplak","Nogosari","Sambi","Sawit","Selo","Simo","Tamansari","Teras","Wonosegoro"];
 
         let users = [], currentUser = null, selectedAreas = [];
         let rawOrders = [], aggregated = {}, weeks = [], weekIndex = 0, orderDetails = {};
         let agentStatus = { status: 'offline', areas: [] };
+        let isAdmin = false;
+        
+        // ============================================
+        // PERSISTENT STATUS - LocalStorage
+        // ============================================
+        // Key: suruhboy_agent_status_{username}
+        function saveAgentStatusToLocal(username, statusData) {
+            localStorage.setItem(`suruhboy_agent_status_${username}`, JSON.stringify(statusData));
+        }
+
+        function loadAgentStatusFromLocal(username) {
+            const saved = localStorage.getItem(`suruhboy_agent_status_${username}`);
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch(e) { return null; }
+            }
+            return null;
+        }
+
+        // Global online agents tracking (untuk admin)
+        let onlineAgents = {};
+
+        function saveOnlineAgentsToLocal() {
+            localStorage.setItem('suruhboy_online_agents', JSON.stringify(onlineAgents));
+        }
+
+        function loadOnlineAgentsFromLocal() {
+            const saved = localStorage.getItem('suruhboy_online_agents');
+            if (saved) {
+                try {
+                    onlineAgents = JSON.parse(saved);
+                } catch(e) { onlineAgents = {}; }
+            }
+        }
+
+        // Update status online agent di global tracking
+        function updateOnlineAgents(username, name, areas, action) {
+            if (action === 'Online') {
+                onlineAgents[username] = {
+                    name: name,
+                    areas: areas,
+                    status: 'online',
+                    lastActive: new Date().toISOString()
+                };
+            } else {
+                delete onlineAgents[username];
+            }
+            saveOnlineAgentsToLocal();
+        }
 
         // ============================================
-        // FUNGSI LOG KE GOOGLE SHEETS VIA APPS SCRIPT
+        // LOG FUNCTIONS
         // ============================================
         async function saveLoginLog(namaAgent, username, status, deviceInfo = '') {
             try {
@@ -519,15 +593,8 @@
                 params.append('username', username);
                 params.append('status', status);
                 params.append('deviceInfo', deviceInfo || navigator.userAgent);
-                
-                await fetch(`${WEB_APP_URL}?${params.toString()}`, { 
-                    method: 'GET', 
-                    mode: 'no-cors' 
-                });
-                console.log('✅ Login log terkirim');
-            } catch(e) {
-                console.warn('Gagal kirim login log:', e);
-            }
+                await fetch(`${WEB_APP_URL}?${params.toString()}`, { method: 'GET', mode: 'no-cors' });
+            } catch(e) { console.warn(e); }
         }
 
         async function saveOnlineLog(namaAgent, username, action, areas) {
@@ -539,19 +606,19 @@
                 params.append('username', username);
                 params.append('action', action);
                 params.append('areas', areas || '-');
+                await fetch(`${WEB_APP_URL}?${params.toString()}`, { method: 'GET', mode: 'no-cors' });
                 
-                await fetch(`${WEB_APP_URL}?${params.toString()}`, { 
-                    method: 'GET', 
-                    mode: 'no-cors' 
-                });
-                console.log(`✅ Online log terkirim: ${action}`);
-            } catch(e) {
-                console.warn('Gagal kirim online log:', e);
-            }
+                // Update status online agent
+                if (action === 'Online') {
+                    updateOnlineAgents(username, namaAgent, areas, 'Online');
+                } else {
+                    updateOnlineAgents(username, namaAgent, areas, 'Offline');
+                }
+            } catch(e) { console.warn(e); }
         }
 
         // ============================================
-        // LOAD USERS DARI SHEET LOGIN
+        // LOAD USERS
         // ============================================
         async function loadUsers() {
             const statusDiv = document.getElementById('loginStatus');
@@ -560,10 +627,7 @@
                 const text = await response.text();
                 const jsonString = text.match(/({.*})/)[1];
                 const data = JSON.parse(jsonString);
-                
-                const rows = data.table.rows;
-                const cols = data.table.cols;
-                
+                const rows = data.table.rows, cols = data.table.cols;
                 let nameIdx = 0, usernameIdx = 1, passwordIdx = 2;
                 for (let i = 0; i < cols.length; i++) {
                     const label = cols[i].label?.toLowerCase() || '';
@@ -571,7 +635,6 @@
                     if (label === 'username') usernameIdx = i;
                     if (label === 'password') passwordIdx = i;
                 }
-                
                 users = [];
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i].c;
@@ -579,26 +642,13 @@
                     const name = row[nameIdx]?.v || '';
                     const username = row[usernameIdx]?.v || '';
                     const password = row[passwordIdx]?.v || '';
-                    
                     if (username && password && username !== 'Username' && username !== 'username') {
-                        users.push({ 
-                            name: String(name), 
-                            username: String(username).toLowerCase(), 
-                            password: String(password) 
-                        });
+                        users.push({ name: String(name), username: String(username).toLowerCase(), password: String(password) });
                     }
                 }
-                
-                if (users.length > 0) {
-                    statusDiv.innerHTML = '✅ Siap login';
-                    statusDiv.className = 'message success';
-                } else {
-                    statusDiv.innerHTML = '⚠️ Tidak ada data user';
-                    statusDiv.className = 'message error';
-                }
-                
+                statusDiv.innerHTML = '✅ Siap login';
+                statusDiv.className = 'message success';
             } catch(error) {
-                console.error(error);
                 statusDiv.innerHTML = '❌ Gagal mengambil data login';
                 statusDiv.className = 'message error';
             }
@@ -608,8 +658,12 @@
             return users.find(u => u.username === username.toLowerCase() && u.password === password);
         }
 
+        function isAdminUser(user) {
+            return user.username === 'admin' || user.name === 'Admin Suruhboy' || user.username === 'adminsuruhboy';
+        }
+
         // ============================================
-        // LOAD ORDERS DARI SHEET MIRRORING
+        // LOAD ORDERS (untuk agent)
         // ============================================
         function parseCSV(csv) {
             const lines = [];
@@ -621,7 +675,6 @@
                 if (c === '\n' && !inQ) { lines.push(line); line = ''; }
             }
             if (line.trim()) lines.push(line);
-            
             const data = [];
             for (let i = 0; i < lines.length; i++) {
                 try {
@@ -634,22 +687,15 @@
                     }
                     cols.push(cur.trim());
                     cols = cols.map(v => v.replace(/^"|"$/g, ''));
-                    
                     if (i > 0 && cols.length > COL.MINGGU) {
                         const agent = cols[COL.AGENT];
                         const nominal = parseInt(cols[COL.NOMINAL]?.replace(/[^0-9-]/g, '')) || 0;
                         const week = cols[COL.MINGGU];
                         if (agent && agent.trim() && week && week.trim()) {
-                            data.push({ 
-                                agent: agent.trim(), 
-                                nominal, 
-                                week: week.trim(), 
-                                customer: cols[COL.CUSTOMER] || '-', 
-                                tanggal: cols[COL.TANGGAL] || '-' 
-                            });
+                            data.push({ agent: agent.trim(), nominal, week: week.trim(), customer: cols[COL.CUSTOMER] || '-', tanggal: cols[COL.TANGGAL] || '-' });
                         }
                     }
-                } catch(e) { console.warn(e); }
+                } catch(e) {}
             }
             return data;
         }
@@ -669,10 +715,9 @@
         async function loadOrders() {
             try {
                 const res = await fetch(ORDER_CSV_URL);
-                if (!res.ok) throw new Error('Network error');
+                if (!res.ok) throw new Error();
                 const csv = await res.text();
                 rawOrders = parseCSV(csv);
-                
                 if (rawOrders.length > 0) {
                     const { agg, details } = aggregate(rawOrders);
                     aggregated = agg;
@@ -682,29 +727,9 @@
                         weekIndex = weeks.length - 1;
                         populateWeekSelect();
                         renderCurrentWeek();
-                    } else {
-                        showEmpty();
                     }
-                } else {
-                    showEmpty();
                 }
-            } catch(e) {
-                console.error(e);
-                showError();
-            }
-        }
-
-        function showEmpty() {
-            const weekSelect = document.getElementById('weekSelect');
-            if (weekSelect) weekSelect.innerHTML = '<option>Tidak ada data</option>';
-            document.getElementById('totalOrders').innerText = '0';
-            document.getElementById('totalAdminFee').innerText = 'Rp0';
-            document.getElementById('totalEarnings').innerText = 'Rp0';
-            document.getElementById('historyList').innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><div>Belum ada data order</div></div>';
-        }
-
-        function showError() {
-            document.getElementById('historyList').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><div>Gagal memuat data order</div></div>';
+            } catch(e) { console.error(e); }
         }
 
         function renderWeek(idx) {
@@ -712,58 +737,37 @@
             const week = weeks[idx];
             if (!week) return;
             const fee = aggregated[week]?.[currentUser.name] || 0;
-            
             document.getElementById('totalOrders').innerText = fee.toLocaleString();
             document.getElementById('totalAdminFee').innerText = `Rp${fee.toLocaleString()}`;
             document.getElementById('totalEarnings').innerText = `Rp${fee.toLocaleString()}`;
-            
             const orders = (orderDetails[week] || []).filter(o => o.agent === currentUser.name);
             const container = document.getElementById('historyList');
-            
             if (!orders.length) {
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><div>Tidak ada order minggu ini</div></div>';
             } else {
-                container.innerHTML = orders.map(o => `
-                    <div class="order-card">
-                        <div class="order-top">
-                            <div class="customer-name"><i class="fas fa-user"></i> ${o.customer}</div>
-                            <div class="order-amount">Rp${o.nominal.toLocaleString()}</div>
-                        </div>
-                        <div class="order-date"><i class="fas fa-calendar-alt"></i> ${o.tanggal || o.week}</div>
-                    </div>
-                `).join('');
+                container.innerHTML = orders.map(o => `<div class="order-card"><div class="order-top"><div class="customer-name"><i class="fas fa-user"></i> ${o.customer}</div><div class="order-amount">Rp${o.nominal.toLocaleString()}</div></div><div class="order-date"><i class="fas fa-calendar-alt"></i> ${o.tanggal || o.week}</div></div>`).join('');
             }
         }
 
         function renderCurrentWeek() { if (weeks.length && currentUser) renderWeek(weekIndex); }
-        
         function populateWeekSelect() {
             const sel = document.getElementById('weekSelect');
-            if (!sel) return;
-            sel.innerHTML = weeks.map((w,i) => `<option value="${i}" ${i===weekIndex?'selected':''}>${w}</option>`).join('');
+            if (sel) sel.innerHTML = weeks.map((w,i) => `<option value="${i}" ${i===weekIndex?'selected':''}>${w}</option>`).join('');
         }
-        
         function onWeekChange() {
             const sel = document.getElementById('weekSelect');
-            if (!sel) return;
-            const val = parseInt(sel.value);
+            const val = parseInt(sel?.value);
             if (!isNaN(val)) { weekIndex = val; renderWeek(weekIndex); }
         }
 
         // ============================================
-        // STATUS & AREA (MULTI SELECT)
+        // AGENT STATUS (DENGAN PERSISTENT STORAGE)
         // ============================================
         function showAreaModal() {
             const modal = document.getElementById('areaModal');
             const list = document.getElementById('areaList');
-            if (!list) return;
-            list.innerHTML = KECAMATAN.map(k => `
-                <div class="area-option" onclick="toggleArea('${k}')">
-                    <input type="checkbox" id="chk_${k.replace(/\s/g,'_')}" ${selectedAreas.includes(k) ? 'checked' : ''}>
-                    <label for="chk_${k.replace(/\s/g,'_')}">${k}</label>
-                </div>
-            `).join('');
-            if (modal) modal.style.display = 'flex';
+            list.innerHTML = KECAMATAN.map(k => `<div class="area-option" onclick="toggleArea('${k}')"><input type="checkbox" id="chk_${k.replace(/\s/g,'_')}" ${selectedAreas.includes(k) ? 'checked' : ''}><label>${k}</label></div>`).join('');
+            modal.style.display = 'flex';
         }
 
         window.toggleArea = function(area) {
@@ -772,41 +776,37 @@
         };
 
         function closeAreaModal() {
-            const modal = document.getElementById('areaModal');
-            if (modal) modal.style.display = 'none';
+            document.getElementById('areaModal').style.display = 'none';
             if (selectedAreas.length === 0 && agentStatus.status === 'offline') {
-                const toggle = document.getElementById('statusToggle');
-                if (toggle) toggle.checked = false;
+                document.getElementById('agentStatusToggle').checked = false;
             }
         }
 
         window.confirmAreas = async function() {
-            const selected = KECAMATAN.filter(k => {
-                const chk = document.getElementById(`chk_${k.replace(/\s/g,'_')}`);
-                return chk && chk.checked;
-            });
+            const selected = KECAMATAN.filter(k => document.getElementById(`chk_${k.replace(/\s/g,'_')}`)?.checked);
             if (!selected.length) { alert('Pilih minimal 1 area'); return; }
-            
             selectedAreas = selected;
             agentStatus.areas = selected;
             agentStatus.status = 'available';
-            closeAreaModal();
-            updateStatusUI();
             
+            // Simpan ke localStorage
+            saveAgentStatusToLocal(currentUser.username, { status: 'available', areas: selected, timestamp: new Date().toISOString() });
+            
+            closeAreaModal();
+            updateAgentStatusUI();
             await saveOnlineLog(currentUser.name, currentUser.username, 'Online', selected.join(', '));
             alert(`✅ ONLINE di ${selected.length} area: ${selected.join(', ')}`);
         };
 
-        window.onStatusToggle = async function() {
-            const toggle = document.getElementById('statusToggle');
-            if (!toggle) return;
-            
+        window.onAgentStatusToggle = async function() {
+            const toggle = document.getElementById('agentStatusToggle');
             if (toggle.checked) {
                 if (agentStatus.status === 'offline' || !selectedAreas.length) {
                     showAreaModal();
                 } else {
                     agentStatus.status = 'available';
-                    updateStatusUI();
+                    saveAgentStatusToLocal(currentUser.username, { status: 'available', areas: selectedAreas, timestamp: new Date().toISOString() });
+                    updateAgentStatusUI();
                     await saveOnlineLog(currentUser.name, currentUser.username, 'Online', selectedAreas.join(', '));
                     alert('✅ Anda ONLINE');
                 }
@@ -815,66 +815,147 @@
                     await saveOnlineLog(currentUser.name, currentUser.username, 'Offline', selectedAreas.join(', '));
                 }
                 agentStatus.status = 'offline';
-                updateStatusUI();
+                saveAgentStatusToLocal(currentUser.username, { status: 'offline', areas: [], timestamp: new Date().toISOString() });
+                updateAgentStatusUI();
                 alert('⚫ Anda OFFLINE');
             }
         };
 
-        function updateStatusUI() {
-            const statusSpan = document.getElementById('statusText');
-            const toggle = document.getElementById('statusToggle');
-            const areaDiv = document.getElementById('areaDisplay');
-            const tags = document.getElementById('areaTags');
-            
+        function updateAgentStatusUI() {
+            const statusSpan = document.getElementById('agentStatusText');
+            const toggle = document.getElementById('agentStatusToggle');
+            const areaDiv = document.getElementById('agentAreaDisplay');
+            const tags = document.getElementById('agentAreaTags');
             if (agentStatus.status === 'available' && selectedAreas.length) {
-                if (statusSpan) {
-                    statusSpan.innerHTML = '<i class="fas fa-circle"></i> Available';
-                    statusSpan.className = 'status-badge status-on';
-                }
-                if (toggle) toggle.checked = true;
-                if (areaDiv) areaDiv.style.display = 'block';
-                if (tags) tags.innerHTML = selectedAreas.map(a => `<span class="area-tag">${a}</span>`).join('');
+                statusSpan.innerHTML = '<i class="fas fa-circle"></i> Available';
+                statusSpan.className = 'status-badge status-on';
+                toggle.checked = true;
+                areaDiv.style.display = 'block';
+                tags.innerHTML = selectedAreas.map(a => `<span class="area-tag">${a}</span>`).join('');
             } else {
-                if (statusSpan) {
-                    statusSpan.innerHTML = '<i class="fas fa-power-off"></i> Offline';
-                    statusSpan.className = 'status-badge status-off';
-                }
-                if (toggle) toggle.checked = false;
-                if (areaDiv) areaDiv.style.display = 'none';
+                statusSpan.innerHTML = '<i class="fas fa-power-off"></i> Offline';
+                statusSpan.className = 'status-badge status-off';
+                toggle.checked = false;
+                areaDiv.style.display = 'none';
             }
         }
+
+        // Restore status dari localStorage saat login
+        function restoreAgentStatus() {
+            const saved = loadAgentStatusFromLocal(currentUser.username);
+            if (saved && saved.status === 'available' && saved.areas && saved.areas.length > 0) {
+                agentStatus.status = saved.status;
+                selectedAreas = saved.areas;
+                agentStatus.areas = saved.areas;
+                updateAgentStatusUI();
+                // Catat ke log bahwa status direstore (tanpa mengirim ulang ke sheet)
+                console.log(`Status restored for ${currentUser.username}: Online di ${selectedAreas.join(', ')}`);
+                return true;
+            }
+            return false;
+        }
+
+        // ============================================
+        // ADMIN FUNCTIONS
+        // ============================================
+        async function loadAgentList() {
+            try {
+                const agents = users.filter(u => !isAdminUser(u));
+                const container = document.getElementById('adminAgentList');
+                if (agents.length === 0) {
+                    container.innerHTML = '<div class="empty-state">Tidak ada agent terdaftar</div>';
+                    return;
+                }
+                container.innerHTML = agents.map(agent => {
+                    const isOnline = onlineAgents[agent.username]?.status === 'online';
+                    const areas = onlineAgents[agent.username]?.areas || '-';
+                    const lastActive = onlineAgents[agent.username]?.lastActive ? new Date(onlineAgents[agent.username].lastActive).toLocaleString() : '-';
+                    return `
+                        <div class="agent-item-admin" data-agent="${agent.name}">
+                            <div class="agent-info">
+                                <h4>${agent.name}</h4>
+                                <div class="agent-areas">Area: ${areas}</div>
+                                <div class="agent-last-active">Terakhir aktif: ${lastActive}</div>
+                            </div>
+                            <div>
+                                <span class="agent-status ${isOnline ? 'status-online' : 'status-offline'}">
+                                    <i class="fas ${isOnline ? 'fa-circle' : 'fa-power-off'}"></i> ${isOnline ? 'Online' : 'Offline'}
+                                </span>
+                                ${isOnline ? `<button class="btn-offline" onclick="adminOfflineAgent('${agent.name}', '${agent.username}')"><i class="fas fa-power-off"></i> Offline</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        window.adminOfflineAgent = async function(agentName, username) {
+            if (confirm(`Offline-kan agent ${agentName}?`)) {
+                await saveOnlineLog(agentName, username, 'Offline (by admin)', '-');
+                alert(`✅ Agent ${agentName} telah di-offline-kan`);
+                loadAgentList();
+            }
+        };
 
         // ============================================
         // DASHBOARD & LOGIN
         // ============================================
-        function updateUI() {
+        function updateAgentUI() {
             if (!currentUser) return;
             document.getElementById('agentName').innerText = currentUser.name;
-            document.getElementById('avatar').innerText = currentUser.name.charAt(0).toUpperCase();
-            updateStatusUI();
+            document.getElementById('agentAvatar').innerText = currentUser.name.charAt(0).toUpperCase();
+            updateAgentStatusUI();
         }
 
-        async function showDashboard() {
+        function updateAdminUI() {
+            if (!currentUser) return;
+            document.getElementById('adminAvatar').innerText = currentUser.name.charAt(0).toUpperCase();
+        }
+
+        async function showAgentDashboard() {
             document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            updateUI();
+            document.getElementById('agentDashboard').classList.remove('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+            updateAgentUI();
+            
+            // Restore status dari localStorage
+            const restored = restoreAgentStatus();
+            if (restored) {
+                // Jika status direstore, tetap catat di log tapi tanpa kirim ulang ke sheet
+                console.log('Status online restored from previous session');
+            }
+            
             await loadOrders();
+            document.getElementById('weekSelect').addEventListener('change', onWeekChange);
+        }
+
+        async function showAdminDashboard() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('agentDashboard').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.remove('hidden');
+            updateAdminUI();
+            await loadAgentList();
         }
 
         async function logout() {
-            if (currentUser && agentStatus.status === 'available') {
+            if (currentUser && !isAdmin && agentStatus.status === 'available') {
                 await saveOnlineLog(currentUser.name, currentUser.username, 'Offline', selectedAreas.join(', '));
             }
+            // Hapus status dari localStorage
+            if (currentUser) {
+                localStorage.removeItem(`suruhboy_agent_status_${currentUser.username}`);
+            }
             currentUser = null;
+            isAdmin = false;
             agentStatus = { status: 'offline', areas: [] };
             selectedAreas = [];
             document.getElementById('loginPage').classList.remove('hidden');
-            document.getElementById('dashboard').classList.add('hidden');
-            
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
-            if (usernameInput) usernameInput.value = '';
-            if (passwordInput) passwordInput.value = '';
+            document.getElementById('agentDashboard').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
         }
 
         // Login Handler
@@ -887,21 +968,20 @@
             if (found) {
                 currentUser = found;
                 await saveLoginLog(found.name, found.username, 'Berhasil');
-                showDashboard();
-            } else {
-                const failedUser = users.find(u => u.username === username.toLowerCase());
-                if (failedUser) {
-                    await saveLoginLog(failedUser.name, username, 'Gagal (password salah)');
+                if (isAdminUser(found)) {
+                    isAdmin = true;
+                    showAdminDashboard();
                 } else {
-                    await saveLoginLog('-', username, 'Gagal (username tidak ditemukan)');
+                    isAdmin = false;
+                    showAgentDashboard();
                 }
+            } else {
                 alert('❌ Login gagal! Username atau password salah.');
             }
         });
 
-        // Event listeners
-        document.getElementById('weekSelect').addEventListener('change', onWeekChange);
-        
+        // Load data awal
+        loadOnlineAgentsFromLocal();
         loadUsers();
     </script>
 </body>

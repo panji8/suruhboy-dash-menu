@@ -48,7 +48,7 @@
     .loading-spinner { display:inline-block; width:14px; height:14px; border:2px solid #f3f3f3; border-top:2px solid #3498db; border-radius:50%; animation:spin 1s linear infinite; margin-right:8px; vertical-align:middle; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .info-badge { background:#e7f3ff; border-left:3px solid #2196f3; padding:10px; margin-bottom:15px; border-radius:8px; font-size:13px; color:#0c5460; }
-    .gm-link-btn { display:inline-block; background:#f1f3f4; padding:4px 8px; border-radius:16px; font-size:11px; margin-left:8px; cursor:pointer; text-decoration:none; color:#1a73e8; }
+    .selected-from-map { background:#e8f5e9; border-left: 3px solid #4caf50; }
   </style>
 </head>
 <body>
@@ -61,7 +61,9 @@
 
   <div class="card">
     <div class="info-badge">
-      📍 <strong>Titik Jemput & Antar:</strong> Bisa diisi teks biasa, paste link Google Maps, atau search pakai Google Maps (otomatis jadi link)
+      📍 <strong>Titik Jemput & Antar:</strong><br>
+      • <strong>Ketik manual</strong> → output teks biasa<br>
+      • <strong>Pilih dari hasil search Google Maps</strong> → output link Maps
     </div>
     
     <form id="orderForm">
@@ -87,14 +89,12 @@
       <textarea name="deskripsi" placeholder="Detail pesanan..."></textarea>
 
       <label>📍 Titik Jemput</label>
-      <input type="text" id="jemputAutocomplete" name="jemput_raw" placeholder="Ketik alamat, paste link, atau pilih dari peta..." autocomplete="off">
-      <input type="hidden" name="jemput" id="jemputLink">
-      <small class="map-hint">🔍 Bisa search Google Maps, atau ketik manual, atau paste link Maps</small>
+      <input type="text" id="jemputInput" name="jemput" placeholder="Ketik alamat (manual) atau search Google Maps..." autocomplete="off">
+      <small class="map-hint">🔍 Ketik lalu pilih dari peta untuk dapatkan link | Ketik biasa = teks biasa</small>
 
       <label>📍 Titik Antar</label>
-      <input type="text" id="antarAutocomplete" name="antar_raw" placeholder="Ketik alamat, paste link, atau pilih dari peta..." autocomplete="off">
-      <input type="hidden" name="antar" id="antarLink">
-      <small class="map-hint">🔍 Bisa search Google Maps, atau ketik manual, atau paste link Maps</small>
+      <input type="text" id="antarInput" name="antar" placeholder="Ketik alamat (manual) atau search Google Maps..." autocomplete="off">
+      <small class="map-hint">🔍 Ketik lalu pilih dari peta untuk dapatkan link | Ketik biasa = teks biasa</small>
 
       <label>Agent (Data mirroring dari Google Sheet)</label>
       <div class="dropdown-wrapper" id="agentDropdown">
@@ -164,78 +164,53 @@ async function mirrorAgentsFromSheet() {
   }
 }
 
-// ======================= FUNGSI KONVERSI KE LINK GOOGLE MAPS =======================
-function convertToGoogleMapsLink(inputValue) {
-  if (!inputValue || inputValue.trim() === "") return "";
+// ======================= FUNGSI UNTUK INPUT LOKASI =======================
+// Setiap input punya flag: apakah user pilih dari autocomplete atau manual
+function setupLocationInput(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
   
-  let value = inputValue.trim();
+  // Flag untuk menandai apakah user pilih dari dropdown Google Maps
+  let isSelectedFromAutocomplete = false;
   
-  // Cek apakah sudah berupa link Google Maps
-  const mapsRegex = /(https?:\/\/)?(www\.)?(maps\.google\.com|goo\.gl\/maps)\/[^\s]+/i;
-  if (mapsRegex.test(value)) {
-    // Ekstrak URL jika ada di dalam teks
-    const urlMatch = value.match(/(https?:\/\/[^\s]+)/);
-    return urlMatch ? urlMatch[0] : value;
-  }
-  
-  // Cek apakah mengandung koordinat (lat,lng)
-  const coordRegex = /(-?\d+\.\d+),\s*(-?\d+\.\d+)/;
-  const coordMatch = value.match(coordRegex);
-  if (coordMatch) {
-    return `https://www.google.com/maps?q=${coordMatch[1]},${coordMatch[2]}`;
-  }
-  
-  // Selain itu, encode sebagai query search
-  const encodedQuery = encodeURIComponent(value);
-  return `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
-}
-
-// Fungsi untuk menangani input tempat (manual atau dari autocomplete)
-function setupLocationInput(inputElement, hiddenElement) {
-  if (!inputElement) return;
-  
-  // Simpan nilai asli (teks yang diketik user)
-  let autocompleteInstance = null;
-  
-  // Inisialisasi autocomplete jika Google Maps sudah siap
   if (typeof google !== 'undefined' && google.maps) {
-    autocompleteInstance = new google.maps.places.Autocomplete(inputElement, {
+    const autocomplete = new google.maps.places.Autocomplete(input, {
       types: ['geocode', 'establishment'],
       componentRestrictions: { country: 'id' }
     });
-    autocompleteInstance.setFields(['formatted_address', 'geometry']);
+    autocomplete.setFields(['formatted_address', 'geometry']);
     
-    autocompleteInstance.addListener('place_changed', () => {
-      const place = autocompleteInstance.getPlace();
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
       if (place && place.formatted_address) {
-        // Saat pilih dari autocomplete, buat link berdasarkan koordinat (lebih akurat)
+        isSelectedFromAutocomplete = true;
+        
         if (place.geometry && place.geometry.location) {
           const lat = place.geometry.location.lat();
           const lng = place.geometry.location.lng();
-          const link = `https://www.google.com/maps?q=${lat},${lng}`;
-          hiddenElement.value = link;
+          // Simpan link di atribut custom, tapi tidak langsung ditampilkan
+          input.dataset.mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
         } else {
-          hiddenElement.value = convertToGoogleMapsLink(place.formatted_address);
+          input.dataset.mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.formatted_address)}`;
         }
-        // Tampilkan alamat di input (bukan link)
-        inputElement.value = place.formatted_address;
+        
+        // Tampilkan alamat di field
+        input.value = place.formatted_address;
       }
     });
   }
   
-  // Event ketika user manual (ketik atau paste)
-  inputElement.addEventListener('blur', () => {
-    const rawValue = inputElement.value;
-    if (rawValue && !inputElement.classList.contains('gm-processed')) {
-      // Jika tidak sedang diproses autocomplete, konversi manual
-      const link = convertToGoogleMapsLink(rawValue);
-      hiddenElement.value = link;
-    }
-  });
-  
-  // Juga process saat submit (double safe)
-  return autocompleteInstance;
+  // Saat submit nanti, kita cek flag ini
+  return {
+    isFromMap: () => isSelectedFromAutocomplete,
+    resetFlag: () => { isSelectedFromAutocomplete = false; },
+    getMapLink: () => input.dataset.mapLink
+  };
 }
+
+// Inisialisasi handler untuk kedua field
+let jemputHandler = setupLocationInput('jemputInput');
+let antarHandler = setupLocationInput('antarInput');
 
 // ======================= FORMAT HP =======================
 const hpInput = document.getElementById("hp");
@@ -314,21 +289,27 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
     return;
   }
   
-  // Proses final lokasi (pastikan link terisi)
-  const jemputRaw = document.getElementById("jemputAutocomplete");
-  const jemputHidden = document.getElementById("jemputLink");
-  const antarRaw = document.getElementById("antarAutocomplete");
-  const antarHidden = document.getElementById("antarLink");
-  
-  // Jika hidden masih kosong tapi raw ada, konversi sekarang
-  if (jemputRaw.value && !jemputHidden.value) {
-    jemputHidden.value = convertToGoogleMapsLink(jemputRaw.value);
-  }
-  if (antarRaw.value && !antarHidden.value) {
-    antarHidden.value = convertToGoogleMapsLink(antarRaw.value);
-  }
-  
   agentHiddenEl.value = agentInputEl.value;
+  
+  // Ambil nilai dari field lokasi
+  const jemputInput = document.getElementById("jemputInput");
+  const antarInput = document.getElementById("antarInput");
+  
+  let jemputValue = jemputInput.value.trim();
+  let antarValue = antarInput.value.trim();
+  
+  // Jika user pilih dari Google Maps, output link. Jika tidak, output teks biasa
+  if (jemputHandler && jemputHandler.isFromMap() && jemputHandler.getMapLink()) {
+    jemputValue = jemputHandler.getMapLink();
+  }
+  
+  if (antarHandler && antarHandler.isFromMap() && antarHandler.getMapLink()) {
+    antarValue = antarHandler.getMapLink();
+  }
+  
+  // Reset flag untuk submit berikutnya
+  if (jemputHandler) jemputHandler.resetFlag();
+  if (antarHandler) antarHandler.resetFlag();
   
   const submitBtn = document.getElementById("submitBtn");
   submitBtn.disabled = true;
@@ -338,19 +319,15 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
   const data = {};
   form.forEach((v, k) => data[k] = v);
   
-  // Tambahkan link lokasi ke data
-  data.jemput = jemputHidden.value || jemputRaw.value || "-";
-  data.antar = antarHidden.value || antarRaw.value || "-";
+  // Override dengan nilai yang sudah diproses
+  data.jemput = jemputValue || "-";
+  data.antar = antarValue || "-";
   
   try {
     await fetch(SCRIPT_URL, { method: "POST", body: form });
   } catch(err) {
     console.warn(err);
   }
-  
-  // Format link untuk ditampilkan di template (bisa diklik via chat)
-  const jemputDisplay = data.jemput.startsWith('http') ? data.jemput : (data.jemput !== "-" ? `🔍 ${data.jemput}` : "-");
-  const antarDisplay = data.antar.startsWith('http') ? data.antar : (data.antar !== "-" ? `🔍 ${data.antar}` : "-");
   
   const template = `
 🟦 ORDER MASUK
@@ -361,8 +338,8 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
 📱 https://wa.me/${data.hp || ""}
 📝 Deskripsi: ${data.deskripsi || "-"}
 
-📍 Jemput: ${jemputDisplay}
-📍 Antar: ${antarDisplay}
+📍 Jemput: ${data.jemput}
+📍 Antar: ${data.antar}
 
 🧑‍💼 Agent: ${data.agent || "-"}
 👔 Admin: ${data.admin || "-"}
@@ -377,10 +354,6 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
   this.reset();
   agentInputEl.value = "";
   agentHiddenEl.value = "";
-  document.getElementById("jemputAutocomplete").value = "";
-  document.getElementById("antarAutocomplete").value = "";
-  document.getElementById("jemputLink").value = "";
-  document.getElementById("antarLink").value = "";
   
   submitBtn.disabled = false;
   submitBtn.textContent = "SUBMIT";
@@ -402,62 +375,14 @@ document.getElementById("copyBtn")?.addEventListener("click", async () => {
   }
 });
 
-// ======================= INIT GOOGLE MAPS =======================
+// ======================= INIT GOOGLE MAPS (Fallback) =======================
 function initMapAutocomplete() {
-  const jemputInput = document.getElementById('jemputAutocomplete');
-  const antarInput = document.getElementById('antarAutocomplete');
-  const jemputHidden = document.getElementById('jemputLink');
-  const antarHidden = document.getElementById('antarLink');
-  
-  if (jemputInput && typeof google !== 'undefined' && google.maps) {
-    const autocompleteJemput = new google.maps.places.Autocomplete(jemputInput, {
-      types: ['geocode', 'establishment'],
-      componentRestrictions: { country: 'id' }
-    });
-    autocompleteJemput.setFields(['formatted_address', 'geometry']);
-    autocompleteJemput.addListener('place_changed', () => {
-      const place = autocompleteJemput.getPlace();
-      if (place && place.geometry) {
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-        jemputHidden.value = `https://www.google.com/maps?q=${lat},${lng}`;
-        jemputInput.value = place.formatted_address;
-      }
-    });
-  }
-  
-  if (antarInput && typeof google !== 'undefined' && google.maps) {
-    const autocompleteAntar = new google.maps.places.Autocomplete(antarInput, {
-      types: ['geocode', 'establishment'],
-      componentRestrictions: { country: 'id' }
-    });
-    autocompleteAntar.setFields(['formatted_address', 'geometry']);
-    autocompleteAntar.addListener('place_changed', () => {
-      const place = autocompleteAntar.getPlace();
-      if (place && place.geometry) {
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-        antarHidden.value = `https://www.google.com/maps?q=${lat},${lng}`;
-        antarInput.value = place.formatted_address;
-      }
-    });
-  }
+  // Re-initialize jika diperlukan
+  jemputHandler = setupLocationInput('jemputInput');
+  antarHandler = setupLocationInput('antarInput');
 }
 
-// Fallback jika API lambat
 window.initMapAutocomplete = initMapAutocomplete;
-
-// Event listener untuk input manual (blur)
-document.getElementById('jemputAutocomplete')?.addEventListener('blur', function() {
-  if (this.value && !document.getElementById('jemputLink').value) {
-    document.getElementById('jemputLink').value = convertToGoogleMapsLink(this.value);
-  }
-});
-document.getElementById('antarAutocomplete')?.addEventListener('blur', function() {
-  if (this.value && !document.getElementById('antarLink').value) {
-    document.getElementById('antarLink').value = convertToGoogleMapsLink(this.value);
-  }
-});
 
 // ======================= JALANKAN MIRRORING =======================
 mirrorAgentsFromSheet();

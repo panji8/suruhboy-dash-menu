@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Form Order - SuruhBoy</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- Google Maps API (ganti YOUR_API_KEY) -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAddVJN10IxegV8dNkN1w4oxFBF88TAMNs&libraries=places&callback=initMapAutocomplete" async defer></script>
+
+  <style>
+    :root{
+      --bg:#f5f7fa;
+      --card:#ffffff;
+      --accent:#25D366;
+      --primary:#2563eb;
+      --muted:#6b7280;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Arial; background:var(--bg); margin:0; color:#0f172a}
+    .container{max-width:980px; margin:36px auto; padding:20px}
+    .header{display:flex; align-items:center; gap:14px; margin-bottom:18px}
+    .logo{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .muted{color:var(--muted); margin:0}
+    .card{background:var(--card); padding:22px; border-radius:14px; box-shadow:0 8px 20px rgba(2,6,23,0.06)}
+    label{display:block; margin-top:10px; font-weight:600; color:#0b1220}
+    input, textarea, select { width:100%; padding:12px; margin-top:6px; border-radius:10px; border:1px solid #e6eef6; background:#fbfdff }
+    textarea{min-height:90px}
+    .primary{display:inline-block; margin-top:14px; background:var(--primary); color:#fff; border:none; padding:12px 16px; border-radius:10px; cursor:pointer; font-weight:700}
+    .result-card{max-width:600px; padding:24px; border-radius:16px; box-shadow:0 8px 20px rgb(0 0 0 / 0.08); background:white; margin:auto}
+    h2{margin-top:0; text-align:center; font-size:22px; font-weight:700}
+    #templateBox{background:#f0f2f4; padding:16px; border-radius:10px; white-space:pre-wrap; font-size:15px; line-height:1.55; border:1px solid #e3e6e8}
+    .btn{display:block; margin-top:16px; padding:14px; color:white; text-align:center; border-radius:10px; text-decoration:none; font-weight:600; cursor:pointer}
+    #chatBtn{background:#007bff}
+    #copyBtn{background:#28a745}
+    .quick-options{display:flex; gap:10px; margin-top:8px; flex-wrap:wrap}
+    .quick-option{background:#e9ecef; padding:8px 12px; border-radius:20px; font-size:14px; cursor:pointer; border:1px solid #ced4da}
+    .quick-option:hover{background:#007bff; color:white}
+    .dropdown-wrapper { position: relative; width: 100%; }
+    .dropdown-input { width:100%; padding:12px; border:1px solid #e6eef6; border-radius:10px; background:#fbfdff; }
+    .dropdown-list { position:absolute; top:100%; left:0; right:0; max-height:250px; overflow-y:auto; background:white; border:1px solid #e6eef6; border-radius:10px; margin-top:4px; box-shadow:0 4px 12px rgba(0,0,0,0.1); display:none; z-index:1000; }
+    .dropdown-list.show { display: block; }
+    .dropdown-item { padding:10px 12px; cursor:pointer; }
+    .dropdown-item:hover { background:#f0f2f4; }
+    .no-results { padding:10px 12px; color:var(--muted); font-style:italic; }
+    .pac-container { z-index: 2000; }
+    .map-hint { font-size:12px; color:#6c757d; margin-top:4px; display:block; }
+    .loading-spinner { display:inline-block; width:14px; height:14px; border:2px solid #f3f3f3; border-top:2px solid #3498db; border-radius:50%; animation:spin 1s linear infinite; margin-right:8px; vertical-align:middle; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">SB</div>
+    <div><h2 style="margin:0">SuruhBoy</h2><p class="muted">Form Order</p></div>
+  </div>
+
+  <div class="card">
+    <form id="orderForm">
+      <label>Biaya</label>
+      <input name="biaya" required id="biaya">
+      <div class="quick-options">
+        <span class="quick-option" data-value="10rb diluar parkir">10rb diluar parkir</span>
+        <span class="quick-option" data-value="12rb diluar parkir">12rb diluar parkir</span>
+        <span class="quick-option" data-value="10.000">10.000</span>
+        <span class="quick-option" data-value="12.000">12.000</span>
+      </div>
+
+      <label>Kapan</label>
+      <input name="kapan" type="date" required>
+
+      <label>Nama</label>
+      <input name="nama" required>
+
+      <label>No HP</label>
+      <input name="hp" required id="hp">
+
+      <label>Deskripsi</label>
+      <textarea name="deskripsi"></textarea>
+
+      <label>Jemput (Cari lokasi)</label>
+      <input type="text" id="jemputAutocomplete" name="jemput" placeholder="Ketik nama tempat atau alamat..." autocomplete="off">
+      <small class="map-hint">📍 Gunakan fitur pencarian Google Maps</small>
+
+      <label>Antar (Cari lokasi)</label>
+      <input type="text" id="antarAutocomplete" name="antar" placeholder="Ketik nama tempat atau alamat..." autocomplete="off">
+      <small class="map-hint">📍 Gunakan fitur pencarian Google Maps</small>
+
+      <label>Agent (Data mirroring dari Google Sheet)</label>
+      <div class="dropdown-wrapper" id="agentDropdown">
+        <input type="text" class="dropdown-input" id="agentInput" placeholder="Ketik atau pilih agent..." autocomplete="off" required>
+        <input type="hidden" name="agent" id="agentHidden">
+        <div class="dropdown-list" id="dropdownList">
+          <div class="no-results"><span class="loading-spinner"></span> Mirroring data dari sheet...</div>
+        </div>
+      </div>
+
+      <label>Admin</label>
+      <input name="admin">
+
+      <button class="primary" type="submit" id="submitBtn" style="width:100%">SUBMIT</button>
+    </form>
+  </div>
+</div>
+
+<div class="container" id="resultContainer" style="display:none">
+  <div class="result-card">
+    <h2>🟦 ORDER MASUK</h2>
+    <pre id="templateBox"></pre>
+    <button id="copyBtn" class="btn">COPY TEMPLATE</button>
+    <a id="chatBtn" class="btn" target="_blank">CHAT KE AGENT</a>
+  </div>
+</div>
+
+<script>
+// ======================= MIRRORING DATA DARI GOOGLE SHEET =======================
+// Menggunakan Google Visualization API (resmi, tanpa publish CSV)
+// Langsung membaca sheet "Database Agent" kolom A
+
+const SHEET_ID = "1AMJmLj2dbkmBmtFq6suRxI8PUlii2gIgywq3yVDnICc";
+const SHEET_NAME = "Database Agent";
+const GID = "1139731848";
+
+// URL mirroring resmi dari Google (tanpa ribet publish)
+const SHEET_API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}&gid=${GID}`;
+
+let agentList = [];
+
+async function mirrorAgentsFromSheet() {
+  try {
+    console.log("🔄 Mirroring data from Google Sheet...");
+    const response = await fetch(SHEET_API_URL, { cache: "no-store" });
+    const text = await response.text();
+    
+    // Google Visualization API return JSONP, perlu parsing
+    const jsonData = JSON.parse(text.substring(47).slice(0, -2));
+    const rows = jsonData.table.rows;
+    
+    const agents = [];
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      if (row.c && row.c[0] && row.c[0].v) {
+        let agentName = row.c[0].v.toString().trim();
+        // Skip header jika ada (case insensitive)
+        if (agentName && !agentName.toLowerCase().includes("nama agent") && !agentName.toLowerCase().includes("agent")) {
+          agents.push(agentName);
+        }
+      }
+    }
+    
+    if (agents.length > 0) {
+      agentList = [...new Set(agents)]; // hapus duplikat
+      console.log(`✅ Mirroring sukses! ${agentList.length} agent dimuat dari sheet`);
+    } else {
+      throw new Error("Tidak ada data agent ditemukan");
+    }
+    
+    // Refresh dropdown
+    if (agentInputEl) showDropdown(agentInputEl.value);
+    
+  } catch (error) {
+    console.error("❌ Gagal mirroring:", error);
+    // Fallback data (agar form tetap bisa jalan)
+    agentList = ["Agung", "Agus", "Aryo", "Awa", "Bagus", "Diar", "Lutfi Majid", "Malek", "Mbak Yuni", "Nia", "Panji", "Restu", "Akhmad Rifki", "Yosi", "Yusuf", "Ilham", "Barkah", "Mukhlis", "Kharisma", "Ardi", "Acil", "Defita", "Fajar", "Ichsan", "Reno Chandra", "Putri Utami", "Arif Ahmadi", "Hana", "Indah Rahayu", "Andang Setyo", "Bomar Kalis", "Aji Riskiyanto", "Lis"];
+    showDropdown(agentInputEl.value);
+  }
+}
+
+// ======================= GOOGLE MAPS PLACES =======================
+let jemputAutocomplete, antarAutocomplete;
+
+function initMapAutocomplete() {
+  const jemputInput = document.getElementById('jemputAutocomplete');
+  const antarInput = document.getElementById('antarAutocomplete');
+  
+  if (jemputInput && google && google.maps) {
+    jemputAutocomplete = new google.maps.places.Autocomplete(jemputInput, {
+      types: ['geocode', 'establishment'],
+      componentRestrictions: { country: 'id' }
+    });
+    jemputAutocomplete.setFields(['formatted_address']);
+  }
+  
+  if (antarInput && google && google.maps) {
+    antarAutocomplete = new google.maps.places.Autocomplete(antarInput, {
+      types: ['geocode', 'establishment'],
+      componentRestrictions: { country: 'id' }
+    });
+    antarAutocomplete.setFields(['formatted_address']);
+  }
+}
+
+// ======================= FORMAT HP =======================
+const hpInput = document.getElementById("hp");
+hpInput?.addEventListener("input", function () {
+  let v = this.value.replace(/\D/g, "");
+  if (!v.startsWith("62")) v = "62" + v.replace(/^0+/, "");
+  this.value = v;
+});
+
+// ======================= QUICK OPTIONS =======================
+document.querySelectorAll('.quick-option').forEach(option => {
+  option.addEventListener('click', function() {
+    document.getElementById('biaya').value = this.dataset.value;
+  });
+});
+
+// ======================= AGENT DROPDOWN =======================
+const agentInputEl = document.getElementById("agentInput");
+const agentHiddenEl = document.getElementById("agentHidden");
+const dropdownListEl = document.getElementById("dropdownList");
+const dropdownWrapperEl = document.getElementById("agentDropdown");
+
+function showDropdown(filter = "") {
+  if (!agentList.length) {
+    dropdownListEl.innerHTML = '<div class="no-results"><span class="loading-spinner"></span> Mirroring data agent...</div>';
+    dropdownListEl.classList.add('show');
+    return;
+  }
+  
+  const filtered = agentList.filter(agent => agent.toLowerCase().includes(filter.toLowerCase()));
+  
+  if (filtered.length === 0) {
+    dropdownListEl.innerHTML = '<div class="no-results">❌ Agent tidak ditemukan</div>';
+  } else {
+    dropdownListEl.innerHTML = filtered.map(agent => 
+      `<div class="dropdown-item" data-value="${escapeHtml(agent)}">${escapeHtml(agent)}</div>`
+    ).join('');
+  }
+  dropdownListEl.classList.add('show');
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m] || m));
+}
+
+agentInputEl?.addEventListener('focus', () => {
+  if (agentList.length) showDropdown(agentInputEl.value);
+});
+
+agentInputEl?.addEventListener('input', (e) => {
+  if (agentList.length) showDropdown(e.target.value);
+});
+
+document.addEventListener('click', (e) => {
+  if (!dropdownWrapperEl?.contains(e.target)) dropdownListEl?.classList.remove('show');
+});
+
+dropdownListEl?.addEventListener('click', (e) => {
+  const item = e.target.closest('.dropdown-item');
+  if (item) {
+    agentInputEl.value = item.dataset.value;
+    agentHiddenEl.value = item.dataset.value;
+    dropdownListEl.classList.remove('show');
+  }
+});
+
+// ======================= SUBMIT =======================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwinE9yP9HTE4WWdnvMpu0PJUGPnpBaWg9ENNdtQGMpaIE4bYcTHEyxRE1atiFWCTRv/exec";
+
+document.getElementById("orderForm")?.addEventListener("submit", async function (e) {
+  e.preventDefault();
+  
+  if (!agentInputEl.value.trim()) {
+    alert("Pilih atau ketik nama agent!");
+    return;
+  }
+  
+  agentHiddenEl.value = agentInputEl.value;
+  
+  const submitBtn = document.getElementById("submitBtn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "⏳ Mengirim...";
+  
+  const form = new FormData(this);
+  const data = {};
+  form.forEach((v, k) => data[k] = v);
+  
+  try {
+    await fetch(SCRIPT_URL, { method: "POST", body: form });
+  } catch(err) {
+    console.warn(err);
+  }
+  
+  const template = `
+🟦 ORDER MASUK
+
+📦 Biaya: ${data.biaya || "-"}
+📅 Kapan: ${data.kapan || "-"}
+👤 Nama: ${data.nama || "-"}
+📱 https://wa.me/${data.hp || ""}
+📝 Deskripsi: ${data.deskripsi || "-"}
+
+📍 Jemput: ${data.jemput || "-"}
+📍 Antar: ${data.antar || "-"}
+
+🧑‍💼 Agent: ${data.agent || "-"}
+  `.trim();
+  
+  document.getElementById("templateBox").textContent = template;
+  document.getElementById("resultContainer").style.display = "block";
+  document.getElementById("chatBtn").href = "https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc";
+  document.getElementById("resultContainer").scrollIntoView({ behavior: "smooth" });
+  
+  this.reset();
+  agentInputEl.value = "";
+  agentHiddenEl.value = "";
+  document.getElementById('jemputAutocomplete').value = "";
+  document.getElementById('antarAutocomplete').value = "";
+  
+  submitBtn.disabled = false;
+  submitBtn.textContent = "SUBMIT";
+});
+
+// COPY
+document.getElementById("copyBtn")?.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(document.getElementById("templateBox").textContent);
+    const btn = document.getElementById("copyBtn");
+    btn.textContent = "✔ TERSALIN!";
+    btn.style.background = "#1e7c33";
+    setTimeout(() => {
+      btn.textContent = "COPY TEMPLATE";
+      btn.style.background = "#28a745";
+    }, 1500);
+  } catch {
+    alert("Gagal menyalin!");
+  }
+});
+
+// ======================= JALANKAN MIRRORING =======================
+mirrorAgentsFromSheet();
+</script>
+
+</body>
+</html>

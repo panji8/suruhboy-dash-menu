@@ -332,7 +332,7 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
 📦 Biaya: ${data.biaya || "-"}
 📅 Kapan: ${data.kapan || "-"}
 👤 Nama: ${data.nama || "-"}
-📱 https://wa.me/${data.hp}?text=${encodeURIComponent("Hai kak, dengan Suruhboy disini")}
+📱 https://wa.me/${data.hp}?text=${encodeURIComponent(`Hai Kak, dengan Agent "${data.agent || "-"}" Suruhboy disini`)}
 📝 Deskripsi: ${data.deskripsi || "-"}
 
 📍 Jemput: ${jemputValue || "-"}

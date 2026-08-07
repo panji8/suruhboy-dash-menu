@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Story Composer · Flat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Story Composer</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * {
@@ -19,76 +19,26 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 16px;
     }
 
     .app {
       width: 100%;
-      max-width: 1100px;
+      max-width: 900px;
       background: #ffffff;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-      padding: 32px 40px 36px;
       border: 1px solid #e2e6ec;
+      padding: 16px 20px 20px;
     }
 
-    /* HEADER */
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid #e8ecf2;
-    }
-
-    .header h1 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #0a0a0f;
-      letter-spacing: -0.3px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .header h1 i {
-      color: #2563eb;
-      font-size: 1.4rem;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .header .badge {
-      background: #eef2f6;
-      color: #4a5568;
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 4px 16px;
-      letter-spacing: 0.3px;
-    }
-
-    .header .hint {
-      color: #6b7f96;
-      font-size: 0.8rem;
-    }
-
-    /* MAIN LAYOUT */
-    .main-layout {
-      display: flex;
-      gap: 32px;
-      align-items: flex-start;
-    }
-
-    /* LEFT — Preview */
+    /* PREVIEW — lebih kecil */
     .preview-section {
-      flex: 0 0 340px;
       background: #f6f8fa;
-      padding: 8px;
+      padding: 4px;
       border: 1px solid #e2e6ec;
+      margin-bottom: 14px;
+      max-width: 280px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .story-frame {
@@ -122,7 +72,7 @@
       width: auto;
       height: auto;
       object-fit: contain;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
       background: #0b111e;
       display: none;
       z-index: 10;
@@ -131,101 +81,90 @@
 
     .placeholder {
       color: rgba(255, 255, 255, 0.3);
-      font-size: 0.85rem;
+      font-size: 0.7rem;
       text-align: center;
-      padding: 20px;
+      padding: 12px;
       z-index: 2;
       pointer-events: none;
-      line-height: 1.7;
+      line-height: 1.6;
     }
 
     .placeholder i {
       display: block;
-      font-size: 2.6rem;
-      margin-bottom: 10px;
+      font-size: 1.8rem;
+      margin-bottom: 6px;
       opacity: 0.35;
       color: #7a8aa3;
     }
 
     .placeholder small {
-      font-size: 0.7rem;
+      font-size: 0.55rem;
       opacity: 0.5;
       display: block;
     }
 
-    /* RIGHT — Controls */
-    .controls {
+    /* IMAGE ROW — tetap 2 kolom */
+    .image-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .image-col {
       flex: 1;
       min-width: 0;
-    }
-
-    .upload-group {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .upload-card {
       background: #f7f9fb;
-      padding: 18px 20px 20px;
+      padding: 12px 14px 14px;
       border: 1px solid #e2e6ec;
-      transition: 0.15s;
     }
 
-    .upload-card:focus-within {
-      border-color: #2563eb;
-      background: #fafcff;
-    }
-
-    .card-head {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .card-head i {
-      font-size: 1rem;
-      width: 24px;
-      color: #2563eb;
-    }
-
-    .card-head .title {
+    .image-col .label {
       font-weight: 600;
       color: #0a0a0f;
-      font-size: 0.95rem;
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .card-head .tag {
+    .image-col .label i {
+      color: #2563eb;
+      font-size: 0.85rem;
+      width: 18px;
+    }
+
+    .image-col .label .tag {
       margin-left: auto;
       background: #eef2f6;
       color: #4a5568;
-      font-size: 0.55rem;
+      font-size: 0.5rem;
       font-weight: 600;
-      padding: 3px 14px;
+      padding: 2px 10px;
       letter-spacing: 0.2px;
+      white-space: nowrap;
     }
 
     .input-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
     .input-row .btn-upload {
       background: #ffffff;
       border: 1px solid #d1d9e6;
-      padding: 7px 20px;
-      font-size: 0.8rem;
+      padding: 5px 14px;
+      font-size: 0.7rem;
       font-weight: 500;
       color: #1a1f2e;
       cursor: pointer;
       transition: 0.1s;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      white-space: nowrap;
     }
 
     .input-row .btn-upload:hover {
@@ -235,7 +174,7 @@
 
     .input-row .btn-upload i {
       color: #2563eb;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
     }
 
     .input-row input[type="file"] {
@@ -243,53 +182,54 @@
     }
 
     .input-row .filename {
-      font-size: 0.75rem;
+      font-size: 0.65rem;
       color: #4a5a74;
       background: #eef2f8;
-      padding: 4px 18px;
+      padding: 3px 12px;
       white-space: nowrap;
       overflow: hidden;
-      max-width: 160px;
+      max-width: 100px;
       text-overflow: ellipsis;
     }
 
     .paste-area {
-      margin-top: 10px;
+      margin-top: 8px;
       background: #ffffff;
       border: 1px dashed #d1d9e6;
-      padding: 5px 20px 5px 22px;
+      padding: 3px 14px 3px 16px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
     .paste-area i {
       color: #6a7f9e;
-      font-size: 0.8rem;
+      font-size: 0.7rem;
     }
 
     .paste-area .hint {
       background: #eef2f8;
-      padding: 2px 14px;
-      font-size: 0.65rem;
+      padding: 1px 10px;
+      font-size: 0.55rem;
       font-weight: 600;
       color: #2d3f5a;
       letter-spacing: 0.2px;
     }
 
     .paste-area .label {
-      font-size: 0.7rem;
+      font-size: 0.6rem;
       color: #5a6f8a;
     }
 
     .paste-status {
       margin-left: auto;
-      font-size: 0.65rem;
+      font-size: 0.55rem;
       color: #2563eb;
       background: #eff6ff;
-      padding: 2px 16px;
+      padding: 2px 12px;
       font-weight: 500;
+      white-space: nowrap;
     }
 
     .paste-status.done {
@@ -297,17 +237,16 @@
       background: #ecfdf5;
     }
 
-    /* ACTIONS — 3 tombol */
-    .actions {
+    /* ACTION ROW */
+    .action-row {
       display: flex;
       gap: 14px;
-      padding: 4px 0;
     }
 
     .btn {
       background: #ffffff;
       border: 1px solid #d1d9e6;
-      padding: 14px 20px;
+      padding: 11px 20px;
       font-weight: 600;
       font-size: 0.85rem;
       color: #1a1f2e;
@@ -324,7 +263,7 @@
       background: #0a0a0f;
       border: 1px solid #0a0a0f;
       color: #ffffff;
-      flex: 1.2;
+      flex: 1.5;
       box-shadow: 0 2px 12px rgba(10, 10, 15, 0.08);
     }
 
@@ -337,23 +276,6 @@
       border-color: #1a1f2e;
     }
 
-    .btn-wa {
-      background: #25d366;
-      border: 1px solid #25d366;
-      color: #ffffff;
-      flex: 1.2;
-      box-shadow: 0 2px 12px rgba(37, 211, 102, 0.15);
-    }
-
-    .btn-wa i {
-      color: #ffffff;
-    }
-
-    .btn-wa:hover {
-      background: #1da851;
-      border-color: #1da851;
-    }
-
     .btn-outline:hover {
       background: #f3f6fa;
       border-color: #b0bccd;
@@ -363,197 +285,274 @@
       transform: scale(0.97);
     }
 
-    .footer {
-      text-align: center;
-      margin-top: 24px;
-      color: #9aa8b8;
-      font-size: 0.7rem;
-      padding-top: 18px;
-      border-top: 2px solid #e8ecf2;
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-    }
-
-    .footer i {
-      color: #6b7f96;
-      margin-right: 4px;
-    }
-
     /* ===== RESPONSIVE ===== */
-    @media (max-width: 900px) {
-      .app {
-        padding: 24px 28px 28px;
-      }
-      .main-layout {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 24px;
-      }
-      .preview-section {
-        flex: none;
-        max-width: 340px;
-        margin: 0 auto;
-        width: 100%;
-      }
-      .header h1 { font-size: 1.4rem; }
-      .header .hint { display: none; }
-    }
-
-    @media (max-width: 600px) {
-      body { padding: 12px; }
-      .app {
-        padding: 16px 14px 20px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
-        border: 1px solid #e2e6ec;
-      }
-      .header {
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 18px;
-        padding-bottom: 12px;
-      }
-      .header h1 {
-        font-size: 1.2rem;
-        gap: 8px;
-      }
-      .header h1 i { font-size: 1.1rem; }
-      .header .badge { font-size: 0.6rem; padding: 3px 12px; }
-      .header-right { width: 100%; justify-content: flex-start; }
-      .header .hint { display: none; }
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      .app { padding: 12px 12px 16px; }
 
       .preview-section {
-        max-width: 100%;
-        padding: 6px;
+        max-width: 220px;
+        padding: 4px;
+        margin-bottom: 12px;
       }
 
-      .upload-card {
-        padding: 14px 14px 16px;
+      .image-row {
+        gap: 12px;
       }
-      .card-head .title { font-size: 0.85rem; }
-      .input-row .btn-upload { font-size: 0.7rem; padding: 6px 16px; }
-      .input-row .filename { max-width: 80px; font-size: 0.65rem; padding: 3px 12px; }
-      .paste-area { padding: 4px 14px 4px 16px; gap: 6px; }
-      .paste-area .hint { font-size: 0.55rem; padding: 2px 10px; }
-      .paste-area .label { font-size: 0.6rem; }
-      .paste-status { font-size: 0.55rem; padding: 2px 12px; }
 
-      .actions {
-        gap: 8px;
-        flex-wrap: wrap;
+      .image-col {
+        padding: 10px 10px 12px;
+      }
+
+      .image-col .label {
+        font-size: 0.7rem;
+      }
+
+      .input-row .btn-upload {
+        font-size: 0.6rem;
+        padding: 4px 10px;
+      }
+
+      .input-row .filename {
+        max-width: 70px;
+        font-size: 0.6rem;
+        padding: 2px 10px;
+      }
+
+      .paste-area {
+        padding: 3px 10px 3px 12px;
+        gap: 4px;
+      }
+      .paste-area .hint { font-size: 0.5rem; padding: 1px 8px; }
+      .paste-area .label { font-size: 0.55rem; }
+      .paste-status { font-size: 0.5rem; padding: 2px 10px; }
+
+      .action-row {
+        gap: 10px;
       }
       .btn {
         font-size: 0.7rem;
-        padding: 11px 10px;
+        padding: 9px 12px;
         gap: 6px;
-        flex: 1 1 auto;
-        min-width: 80px;
-      }
-      .btn-primary { flex: 1.2; }
-      .btn-wa { flex: 1.2; }
-
-      .footer {
-        font-size: 0.55rem;
-        gap: 12px;
-        padding-top: 14px;
-        margin-top: 18px;
-        flex-wrap: wrap;
       }
     }
 
-    @media (max-width: 380px) {
-      .app { padding: 12px 10px 16px; }
-      .upload-card { padding: 10px 10px 14px; }
-      .input-row { gap: 6px; }
-      .input-row .filename { max-width: 60px; }
-      .btn { font-size: 0.6rem; padding: 9px 6px; min-width: 60px; }
+    @media (max-width: 480px) {
+      body { padding: 6px; }
+      .app { padding: 8px 6px 12px; }
+
+      .preview-section {
+        max-width: 160px;
+        padding: 3px;
+        margin-bottom: 10px;
+      }
+
+      .placeholder {
+        font-size: 0.55rem;
+        padding: 8px;
+      }
+      .placeholder i {
+        font-size: 1.4rem;
+        margin-bottom: 4px;
+      }
+      .placeholder small {
+        font-size: 0.45rem;
+      }
+
+      .image-row {
+        gap: 6px;
+        flex-direction: row;
+      }
+
+      .image-col {
+        padding: 6px 6px 8px;
+        min-width: 0;
+      }
+
+      .image-col .label {
+        font-size: 0.55rem;
+        margin-bottom: 4px;
+        gap: 4px;
+      }
+
+      .image-col .label i {
+        font-size: 0.6rem;
+        width: 12px;
+      }
+
+      .image-col .label .tag {
+        font-size: 0.4rem;
+        padding: 1px 6px;
+      }
+
+      .input-row {
+        gap: 4px;
+      }
+
+      .input-row .btn-upload {
+        font-size: 0.5rem;
+        padding: 3px 6px;
+        gap: 3px;
+      }
+
+      .input-row .btn-upload i {
+        font-size: 0.45rem;
+      }
+
+      .input-row .filename {
+        max-width: 40px;
+        font-size: 0.45rem;
+        padding: 2px 6px;
+      }
+
+      .paste-area {
+        padding: 2px 6px 2px 8px;
+        gap: 3px;
+        margin-top: 4px;
+      }
+
+      .paste-area i {
+        font-size: 0.5rem;
+      }
+
+      .paste-area .hint {
+        font-size: 0.4rem;
+        padding: 1px 6px;
+      }
+
+      .paste-area .label {
+        font-size: 0.4rem;
+      }
+
+      .paste-status {
+        font-size: 0.4rem;
+        padding: 1px 6px;
+      }
+
+      .action-row {
+        gap: 6px;
+      }
+
+      .btn {
+        font-size: 0.55rem;
+        padding: 7px 6px;
+        gap: 4px;
+        flex: 1 1 auto;
+        min-width: 50px;
+      }
+
+      .btn-primary {
+        flex: 1.2;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .app { padding: 4px 4px 8px; }
+
+      .preview-section {
+        max-width: 120px;
+        padding: 2px;
+        margin-bottom: 8px;
+      }
+
+      .image-row {
+        gap: 4px;
+      }
+
+      .image-col {
+        padding: 4px 4px 6px;
+      }
+
+      .image-col .label {
+        font-size: 0.45rem;
+      }
+
+      .input-row .btn-upload {
+        font-size: 0.4rem;
+        padding: 2px 4px;
+      }
+
+      .input-row .filename {
+        max-width: 30px;
+        font-size: 0.35rem;
+        padding: 1px 4px;
+      }
+
+      .paste-area {
+        padding: 1px 4px 1px 6px;
+      }
+      .paste-area .hint { font-size: 0.35rem; padding: 1px 4px; }
+      .paste-area .label { font-size: 0.35rem; }
+      .paste-status { font-size: 0.35rem; padding: 1px 4px; }
+
+      .btn {
+        font-size: 0.45rem;
+        padding: 5px 4px;
+        min-width: 35px;
+      }
     }
   </style>
 </head>
 <body>
 <div class="app">
-  <!-- Header -->
-  <div class="header">
-    <h1><i class="fas fa-cubes"></i> Story Composer</h1>
-    <div class="header-right">
-      <span class="badge">v2.0</span>
-      <span class="hint"><i class="fas fa-arrow-right" style="color: #2563eb;"></i> Upload atau Paste</span>
-    </div>
-  </div>
-
-  <!-- Main -->
-  <div class="main-layout">
-    <!-- Preview -->
-    <div class="preview-section">
-      <div class="story-frame" id="storyPreview">
-        <img id="primaryImg" src="" alt="primary">
-        <img id="secondaryImg" src="" alt="secondary">
-        <div id="placeholderText" class="placeholder">
-          <i class="fas fa-image"></i>
-          Upload atau paste 2 gambar
-          <small>Utama 9:16 · Sekunder overlay</small>
-        </div>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls">
-      <div class="upload-group">
-        <!-- Primary -->
-        <div class="upload-card" id="primaryItem">
-          <div class="card-head">
-            <i class="fas fa-camera"></i>
-            <span class="title">Gambar Utama</span>
-            <span class="tag">9:16</span>
-          </div>
-          <div class="input-row">
-            <label class="btn-upload" for="primaryInput"><i class="fas fa-upload"></i> Pilih</label>
-            <input type="file" id="primaryInput" accept="image/*">
-            <span class="filename" id="primaryFileName">kosong</span>
-          </div>
-          <div class="paste-area" id="pasteZonePrimary">
-            <i class="fas fa-paste"></i>
-            <span class="hint">Paste</span>
-            <span class="label">Ctrl+V</span>
-            <span class="paste-status" id="pasteStatusPrimary">siap</span>
-          </div>
-        </div>
-
-        <!-- Secondary -->
-        <div class="upload-card" id="secondaryItem">
-          <div class="card-head">
-            <i class="fas fa-sticky-note"></i>
-            <span class="title">Gambar Sekunder</span>
-            <span class="tag">overlay</span>
-          </div>
-          <div class="input-row">
-            <label class="btn-upload" for="secondaryInput"><i class="fas fa-upload"></i> Pilih</label>
-            <input type="file" id="secondaryInput" accept="image/*">
-            <span class="filename" id="secondaryFileName">kosong</span>
-          </div>
-          <div class="paste-area" id="pasteZoneSecondary">
-            <i class="fas fa-paste"></i>
-            <span class="hint">Paste</span>
-            <span class="label">Ctrl+V</span>
-            <span class="paste-status" id="pasteStatusSecondary">siap</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Actions — 3 tombol: Reset, Download, Share WA -->
-      <div class="actions">
-        <button class="btn btn-outline" id="resetBtn"><i class="fas fa-undo-alt"></i> Reset</button>
-        <button class="btn btn-primary" id="downloadBtn"><i class="fas fa-download"></i> Download</button>
-        <button class="btn btn-wa" id="shareWaBtn"><i class="fab fa-whatsapp"></i> Share WA</button>
+  <!-- PREVIEW — lebih kecil -->
+  <div class="preview-section">
+    <div class="story-frame" id="storyPreview">
+      <img id="primaryImg" src="" alt="primary">
+      <img id="secondaryImg" src="" alt="secondary">
+      <div id="placeholderText" class="placeholder">
+        <i class="fas fa-image"></i>
+        Upload 2 gambar
+        <small>Utama · Sekunder</small>
       </div>
     </div>
   </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <span><i class="fas fa-arrows-alt"></i> Sekunder di tengah atas</span>
-    <span><i class="fas fa-mobile-alt"></i> 9:16</span>
-    <span><i class="fas fa-image"></i> PNG 540×960</span>
+  <!-- IMAGE ROW: Primary | Secondary — tetap 2 kolom -->
+  <div class="image-row">
+    <!-- Primary -->
+    <div class="image-col" id="primaryItem">
+      <div class="label">
+        <i class="fas fa-camera"></i> Utama
+        <span class="tag">9:16</span>
+      </div>
+      <div class="input-row">
+        <label class="btn-upload" for="primaryInput"><i class="fas fa-upload"></i> Pilih</label>
+        <input type="file" id="primaryInput" accept="image/*">
+        <span class="filename" id="primaryFileName">kosong</span>
+      </div>
+      <div class="paste-area" id="pasteZonePrimary">
+        <i class="fas fa-paste"></i>
+        <span class="hint">Paste</span>
+        <span class="label">Ctrl+V</span>
+        <span class="paste-status" id="pasteStatusPrimary">siap</span>
+      </div>
+    </div>
+
+    <!-- Secondary -->
+    <div class="image-col" id="secondaryItem">
+      <div class="label">
+        <i class="fas fa-sticky-note"></i> Sekunder
+        <span class="tag">overlay</span>
+      </div>
+      <div class="input-row">
+        <label class="btn-upload" for="secondaryInput"><i class="fas fa-upload"></i> Pilih</label>
+        <input type="file" id="secondaryInput" accept="image/*">
+        <span class="filename" id="secondaryFileName">kosong</span>
+      </div>
+      <div class="paste-area" id="pasteZoneSecondary">
+        <i class="fas fa-paste"></i>
+        <span class="hint">Paste</span>
+        <span class="label">Ctrl+V</span>
+        <span class="paste-status" id="pasteStatusSecondary">siap</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION ROW: Reset | Download -->
+  <div class="action-row">
+    <button class="btn btn-outline" id="resetBtn"><i class="fas fa-undo-alt"></i> Reset</button>
+    <button class="btn btn-primary" id="downloadBtn"><i class="fas fa-download"></i> Download</button>
   </div>
 </div>
 
@@ -568,11 +567,8 @@
     const secondaryFileName = document.getElementById('secondaryFileName');
     const resetBtn = document.getElementById('resetBtn');
     const downloadBtn = document.getElementById('downloadBtn');
-    const shareWaBtn = document.getElementById('shareWaBtn');
     const pasteStatusPrimary = document.getElementById('pasteStatusPrimary');
     const pasteStatusSecondary = document.getElementById('pasteStatusSecondary');
-
-    const WA_NUMBER = '62882007670299';
 
     let primaryDataURL = null;
     let secondaryDataURL = null;
@@ -597,7 +593,7 @@
 
     function setPrimaryImage(dataURL, fileName = '') {
       primaryDataURL = dataURL;
-      primaryFileName.textContent = fileName ? (fileName.length > 16 ? fileName.slice(0, 14) + '…' : fileName) : '📋 paste';
+      primaryFileName.textContent = fileName ? (fileName.length > 12 ? fileName.slice(0, 10) + '…' : fileName) : '📋 paste';
       pasteStatusPrimary.textContent = '✓';
       pasteStatusPrimary.className = 'paste-status done';
       updatePreview();
@@ -605,7 +601,7 @@
 
     function setSecondaryImage(dataURL, fileName = '') {
       secondaryDataURL = dataURL;
-      secondaryFileName.textContent = fileName ? (fileName.length > 16 ? fileName.slice(0, 14) + '…' : fileName) : '📋 paste';
+      secondaryFileName.textContent = fileName ? (fileName.length > 12 ? fileName.slice(0, 10) + '…' : fileName) : '📋 paste';
       pasteStatusSecondary.textContent = '✓';
       pasteStatusSecondary.className = 'paste-status done';
       updatePreview();
@@ -743,98 +739,7 @@
       if (secondaryDataURL && secondary.complete && secondary.naturalWidth !== 0) { secondaryLoaded = true; checkAndDraw(); }
     }
 
-    // SHARE WA
-    function shareWA() {
-      if (!primaryDataURL) {
-        alert('Upload atau paste gambar utama (9:16) dulu ya!');
-        return;
-      }
-
-      // Buat canvas untuk preview
-      const canvasWidth = 540, canvasHeight = 960;
-      const canvas = document.createElement('canvas');
-      canvas.width = canvasWidth; canvas.height = canvasHeight;
-      const ctx = canvas.getContext('2d');
-
-      const primary = new Image();
-      primary.crossOrigin = 'anonymous';
-      primary.src = primaryDataURL;
-
-      const secondary = new Image();
-      secondary.crossOrigin = 'anonymous';
-      if (secondaryDataURL) secondary.src = secondaryDataURL;
-
-      let primaryLoaded = false;
-      let secondaryLoaded = !secondaryDataURL;
-
-      function processShare() {
-        if (!primaryLoaded) return;
-        if (secondaryDataURL && !secondaryLoaded) return;
-
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-        const pAspect = primary.width / primary.height;
-        const canvasAspect = canvasWidth / canvasHeight;
-        let sx = 0, sy = 0, sw = primary.width, sh = primary.height;
-        if (pAspect > canvasAspect) {
-          const scale = canvasHeight / primary.height;
-          const cropWidth = canvasWidth / scale;
-          sx = (primary.width - cropWidth) / 2;
-          sw = cropWidth;
-        } else {
-          const scale = canvasWidth / primary.width;
-          const cropHeight = canvasHeight / scale;
-          sy = (primary.height - cropHeight) / 2;
-          sh = cropHeight;
-        }
-        ctx.drawImage(primary, sx, sy, sw, sh, 0, 0, canvasWidth, canvasHeight);
-
-        if (secondaryDataURL && secondaryLoaded) {
-          const maxWidth = canvasWidth * 0.66, maxHeight = canvasHeight * 0.42;
-          let sWidth = secondary.width, sHeight = secondary.height;
-          let scale = 1;
-          if (sWidth > maxWidth) scale = maxWidth / sWidth;
-          if (sHeight * scale > maxHeight) scale = Math.min(scale, maxHeight / sHeight);
-          const finalWidth = sWidth * scale, finalHeight = sHeight * scale;
-          const x = (canvasWidth - finalWidth) / 2, y = canvasHeight * 0.14;
-          ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
-          ctx.drawImage(secondary, x, y, finalWidth, finalHeight);
-          ctx.shadowBlur = 0;
-          ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1.5;
-          ctx.strokeRect(x, y, finalWidth, finalHeight);
-        }
-
-        // Convert ke data URL
-        const imageDataURL = canvas.toDataURL('image/png');
-
-        // Buat link WhatsApp dengan gambar
-        const waUrl = `https://wa.me/${WA_NUMBER}?text=Halo%20kak%2C%20saya%20mau%20share%20story%20nih!%20%F0%9F%98%8A%0A%0A*Link%20Story%3A*%20${encodeURIComponent(imageDataURL)}`;
-
-        window.open(waUrl, '_blank');
-      }
-
-      primary.onload = function() { primaryLoaded = true; processShare(); };
-      primary.onerror = function() { alert('Gagal memuat gambar utama.'); };
-
-      if (secondaryDataURL) {
-        secondary.onload = function() { secondaryLoaded = true; processShare(); };
-        secondary.onerror = function() { secondaryLoaded = true; processShare(); };
-      } else {
-        secondaryLoaded = true;
-      }
-
-      if (primary.complete && primary.naturalWidth !== 0) {
-        primaryLoaded = true;
-        processShare();
-      }
-      if (secondaryDataURL && secondary.complete && secondary.naturalWidth !== 0) {
-        secondaryLoaded = true;
-        processShare();
-      }
-    }
-
     downloadBtn.addEventListener('click', downloadStory);
-    shareWaBtn.addEventListener('click', shareWA);
     updatePreview();
   })();
 </script>

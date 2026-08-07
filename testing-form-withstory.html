@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <!-- Google Maps API (ganti YOUR_API_KEY) -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAddVJN10IxegV8dNkN1w4oxFBF88TAMNs=places&callback=initMapAutocomplete" async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=APIIIIII=places&callback=initMapAutocomplete" async defer></script>
 
   <style>
     :root{
@@ -79,6 +79,19 @@
       height:20px;
       fill:currentColor;
     }
+
+    /* auto-fill badge */
+    .auto-fill-badge {
+      display:inline-block;
+      background:#d4edda;
+      color:#155724;
+      font-size:11px;
+      padding:2px 10px;
+      border-radius:20px;
+      margin-left:8px;
+      font-weight:500;
+    }
+
     @media (max-width:480px){
       .header{flex-direction:column; align-items:stretch; gap:12px;}
       .header-right{justify-content:flex-end;}
@@ -95,7 +108,6 @@
       <div><h2 style="margin:0">SuruhBoy</h2><p class="muted">Form Order</p></div>
     </div>
     <div class="header-right">
-      <!-- TOMBOL STORY SURUHBOY dengan URL yang benar -->
       <a href="https://panji8.github.io/suruhboy-dash-menu/StoryComposer" target="_blank" class="story-btn">
         <svg viewBox="0 0 24 24">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6l5.25 3.15L17 12.23l-4-2.37V7z"/>
@@ -110,7 +122,8 @@
       📍 <strong>Titik Jemput & Antar:</strong><br>
       • <strong>Ketik manual</strong> → output teks biasa<br>
       • <strong>Pilih dari hasil search Google Maps</strong> → output link Maps<br>
-      • <strong>Field Admin</strong> hanya untuk internal, tidak muncul di template
+      • <strong>Field Admin</strong> hanya untuk internal, tidak muncul di template<br>
+      • <strong>Auto-fill Nama:</strong> Ketik No HP, nama akan terisi otomatis dari database
     </div>
     
     <form id="orderForm">
@@ -126,11 +139,11 @@
       <label>Kapan</label>
       <input name="kapan" type="date" required>
 
-      <label>Nama</label>
-      <input name="nama" required>
+      <label>Nama <span id="namaAutoBadge"></span></label>
+      <input name="nama" required id="namaInput" placeholder="Isi manual atau otomatis dari No HP">
 
-      <label>No HP</label>
-      <input name="hp" required id="hp">
+      <label>No HP <span id="hpAutoBadge"></span></label>
+      <input name="hp" required id="hpInput" placeholder="Contoh: 6285643166247">
 
       <label>Deskripsi</label>
       <textarea name="deskripsi" placeholder="Detail pesanan..."></textarea>
@@ -177,6 +190,7 @@ const GID = "1139731848";
 const SHEET_API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}&gid=${GID}`;
 
 let agentList = [];
+let customerData = {}; // key: nomor HP, value: { nama, ... }
 
 async function mirrorAgentsFromSheet() {
   try {
@@ -187,12 +201,34 @@ async function mirrorAgentsFromSheet() {
     const rows = jsonData.table.rows;
     
     const agents = [];
+    // Reset customer data
+    customerData = {};
+    
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
-      if (row.c && row.c[0] && row.c[0].v) {
-        let agentName = row.c[0].v.toString().trim();
-        if (agentName && !agentName.toLowerCase().includes("nama agent") && !agentName.toLowerCase().includes("agent")) {
+      if (!row.c) continue;
+      
+      // Kolom: A=tanggal input, B=nominal, C=tanggal order, D=nama, E=nomor HP
+      const colA = row.c[0]?.v || '';
+      const colB = row.c[1]?.v || '';
+      const colC = row.c[2]?.v || '';
+      const colD = row.c[3]?.v || '';
+      const colE = row.c[4]?.v || '';
+      
+      // Kumpulkan agent dari kolom D (nama)
+      if (colD && colD.toString().trim()) {
+        let agentName = colD.toString().trim();
+        if (!agentName.toLowerCase().includes("nama") && !agentName.toLowerCase().includes("agent")) {
           agents.push(agentName);
+        }
+      }
+      
+      // Simpan data customer berdasarkan nomor HP (kolom E)
+      if (colE && colE.toString().trim()) {
+        const phone = colE.toString().trim();
+        const name = colD ? colD.toString().trim() : '';
+        if (name && !customerData[phone]) {
+          customerData[phone] = { nama: name };
         }
       }
     }
@@ -200,6 +236,7 @@ async function mirrorAgentsFromSheet() {
     if (agents.length > 0) {
       agentList = [...new Set(agents)];
       console.log(`✅ Mirroring sukses! ${agentList.length} agent dimuat`);
+      console.log(`📊 ${Object.keys(customerData).length} data customer dimuat`);
     } else {
       throw new Error("Tidak ada data");
     }
@@ -210,6 +247,89 @@ async function mirrorAgentsFromSheet() {
     showDropdown(agentInputEl.value);
   }
 }
+
+// ======================= AUTO-FILL NAMA DARI NOMOR HP =======================
+const hpInput = document.getElementById("hpInput");
+const namaInput = document.getElementById("namaInput");
+const hpAutoBadge = document.getElementById("hpAutoBadge");
+const namaAutoBadge = document.getElementById("namaAutoBadge");
+
+// Format HP: bersihkan, tambahkan 62 jika perlu
+function cleanPhoneNumber(input) {
+  let v = input.replace(/\D/g, "");
+  if (!v.startsWith("62")) v = "62" + v.replace(/^0+/, "");
+  return v;
+}
+
+// Cari nama berdasarkan nomor HP
+function findNameByPhone(phone) {
+  // Bersihkan nomor untuk dicocokkan
+  const cleanPhone = cleanPhoneNumber(phone);
+  
+  // Coba cari di customerData
+  for (const [key, value] of Object.entries(customerData)) {
+    const cleanKey = cleanPhoneNumber(key);
+    // Cocokkan dengan berbagai kemungkinan
+    if (cleanKey === cleanPhone || key === phone || key === cleanPhone) {
+      return value.nama;
+    }
+    // Coba cocokkan dengan nomor yang mengandung
+    if (cleanPhone.includes(cleanKey) || cleanKey.includes(cleanPhone)) {
+      return value.nama;
+    }
+  }
+  return null;
+}
+
+// Event listener untuk auto-fill
+hpInput.addEventListener('input', function() {
+  const phone = this.value.trim();
+  if (phone.length >= 10) { // Minimal 10 digit baru coba cari
+    const foundName = findNameByPhone(phone);
+    if (foundName) {
+      namaInput.value = foundName;
+      hpAutoBadge.innerHTML = '✅ <span style="color:#155724;font-weight:500;">Auto-fill aktif</span>';
+      hpAutoBadge.style.color = '#155724';
+      namaAutoBadge.innerHTML = '✅ <span style="color:#155724;font-weight:500;">Terisi otomatis</span>';
+      namaAutoBadge.style.color = '#155724';
+      // Beri highlight subtle
+      namaInput.style.borderColor = '#28a745';
+      setTimeout(() => { namaInput.style.borderColor = ''; }, 2000);
+    } else {
+      // Jika nomor tidak ditemukan, hapus nama (biarkan user isi manual)
+      // Tapi jangan hapus jika user sudah mengisi manual
+      const currentNama = namaInput.value.trim();
+      if (currentNama === '' || currentNama === 'Belum terdaftar' || currentNama === namaInput.placeholder) {
+        namaInput.value = '';
+      }
+      hpAutoBadge.innerHTML = '🔍 <span style="color:#6c757d;">Cari...</span>';
+      namaAutoBadge.innerHTML = '✏️ <span style="color:#6c757d;">Isi manual</span>';
+    }
+  } else {
+    hpAutoBadge.innerHTML = '';
+    // Jangan reset nama jika user sudah mengisi manual
+  }
+});
+
+// Jika user mengubah nama secara manual, badge berubah
+namaInput.addEventListener('input', function() {
+  if (this.value.trim() !== '') {
+    const phone = hpInput.value.trim();
+    const foundName = findNameByPhone(phone);
+    if (foundName && this.value === foundName) {
+      namaAutoBadge.innerHTML = '✅ <span style="color:#155724;font-weight:500;">Terisi otomatis</span>';
+    } else {
+      namaAutoBadge.innerHTML = '✏️ <span style="color:#6c757d;">Manual</span>';
+    }
+  }
+});
+
+// Format HP (tanpa mengganggu auto-fill)
+hpInput.addEventListener('blur', function() {
+  let v = this.value.replace(/\D/g, "");
+  if (v && !v.startsWith("62")) v = "62" + v.replace(/^0+/, "");
+  if (v !== this.value) this.value = v;
+});
 
 // ======================= FUNGSI UNTUK INPUT LOKASI =======================
 function setupLocationInput(inputId) {
@@ -252,14 +372,6 @@ function setupLocationInput(inputId) {
 
 let jemputHandler = setupLocationInput('jemputInput');
 let antarHandler = setupLocationInput('antarInput');
-
-// ======================= FORMAT HP =======================
-const hpInput = document.getElementById("hp");
-hpInput?.addEventListener("input", function () {
-  let v = this.value.replace(/\D/g, "");
-  if (!v.startsWith("62")) v = "62" + v.replace(/^0+/, "");
-  this.value = v;
-});
 
 // ======================= QUICK OPTIONS =======================
 document.querySelectorAll('.quick-option').forEach(option => {
@@ -372,14 +484,13 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
   }
   
   // ========== TEMPLATE TANPA ADMIN ==========
-  // Admin sengaja tidak disertakan di template
   const template = `
 🟦 ORDER MASUK
 
 📦 Biaya: ${data.biaya || "-"}
 📅 Kapan: ${data.kapan || "-"}
 👤 Nama: ${data.nama || "-"}
-📱 https://wa.me/${data.hp}?text=${encodeURIComponent(`Hai Kak, dengan ${data.agent || "-"} Agent Suruhboy disini`)}
+📱 https://wa.me/${data.hp || ""}?text=${encodeURIComponent(`Hai Kak, dengan ${data.agent || "-"} Agent Suruhboy disini`)}
 📝 Deskripsi: ${data.deskripsi || "-"}
 
 📍 Jemput: ${jemputValue || "-"}
@@ -397,6 +508,8 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
   this.reset();
   agentInputEl.value = "";
   agentHiddenEl.value = "";
+  hpAutoBadge.innerHTML = '';
+  namaAutoBadge.innerHTML = '';
   
   submitBtn.disabled = false;
   submitBtn.textContent = "SUBMIT";

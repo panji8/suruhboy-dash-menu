@@ -30,13 +30,13 @@
       padding: 16px 20px 20px;
     }
 
-    /* PREVIEW — lebih kecil */
+    /* PREVIEW — menyesuaikan rasio gambar */
     .preview-section {
       background: #f6f8fa;
       padding: 4px;
       border: 1px solid #e2e6ec;
       margin-bottom: 14px;
-      max-width: 280px;
+      max-width: 400px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -44,12 +44,13 @@
     .story-frame {
       position: relative;
       width: 100%;
-      aspect-ratio: 9 / 16;
+      aspect-ratio: 9 / 16; /* default, akan diubah via JS */
       background: #0e121c;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: aspect-ratio 0.2s ease;
     }
 
     #primaryImg {
@@ -103,6 +104,19 @@
       display: block;
     }
 
+    /* RASIO BADGE */
+    .ratio-badge {
+      display: inline-block;
+      background: #2563eb;
+      color: white;
+      font-size: 0.5rem;
+      font-weight: 600;
+      padding: 1px 10px;
+      border-radius: 4px;
+      margin-left: 6px;
+      letter-spacing: 0.3px;
+    }
+
     /* IMAGE ROW — tetap 2 kolom */
     .image-row {
       display: flex;
@@ -126,6 +140,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-wrap: wrap;
     }
 
     .image-col .label i {
@@ -291,7 +306,7 @@
       .app { padding: 12px 12px 16px; }
 
       .preview-section {
-        max-width: 220px;
+        max-width: 320px;
         padding: 4px;
         margin-bottom: 12px;
       }
@@ -342,7 +357,7 @@
       .app { padding: 8px 6px 12px; }
 
       .preview-section {
-        max-width: 160px;
+        max-width: 240px;
         padding: 3px;
         margin-bottom: 10px;
       }
@@ -450,7 +465,7 @@
       .app { padding: 4px 4px 8px; }
 
       .preview-section {
-        max-width: 120px;
+        max-width: 180px;
         padding: 2px;
         margin-bottom: 8px;
       }
@@ -495,7 +510,7 @@
 </head>
 <body>
 <div class="app">
-  <!-- PREVIEW — lebih kecil -->
+  <!-- PREVIEW — rasio otomatis -->
   <div class="preview-section">
     <div class="story-frame" id="storyPreview">
       <img id="primaryImg" src="" alt="primary">
@@ -503,8 +518,11 @@
       <div id="placeholderText" class="placeholder">
         <i class="fas fa-image"></i>
         Upload 2 gambar
-        <small>Utama · Sekunder</small>
+        <small>Rasio otomatis mengikuti gambar utama</small>
       </div>
+    </div>
+    <div style="text-align:center; margin-top:4px; font-size:0.6rem; color:#6b7f96;">
+      <span id="ratioDisplay">Rasio: 9:16</span>
     </div>
   </div>
 
@@ -514,7 +532,7 @@
     <div class="image-col" id="primaryItem">
       <div class="label">
         <i class="fas fa-camera"></i> Utama
-        <span class="tag">9:16</span>
+        <span class="tag" id="primaryRatioTag">9:16</span>
       </div>
       <div class="input-row">
         <label class="btn-upload" for="primaryInput"><i class="fas fa-upload"></i> Pilih</label>
@@ -569,18 +587,63 @@
     const downloadBtn = document.getElementById('downloadBtn');
     const pasteStatusPrimary = document.getElementById('pasteStatusPrimary');
     const pasteStatusSecondary = document.getElementById('pasteStatusSecondary');
+    const storyFrame = document.getElementById('storyPreview');
+    const ratioDisplay = document.getElementById('ratioDisplay');
+    const primaryRatioTag = document.getElementById('primaryRatioTag');
 
     let primaryDataURL = null;
     let secondaryDataURL = null;
+    let currentRatio = '9/16'; // default
 
+    // ========== FUNGSI UPDATE RATIO ==========
+    function updateAspectRatio(imgWidth, imgHeight) {
+      if (!imgWidth || !imgHeight) return;
+      
+      // Hitung rasio
+      const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+      const divisor = gcd(imgWidth, imgHeight);
+      const ratioW = imgWidth / divisor;
+      const ratioH = imgHeight / divisor;
+      
+      // Simpan rasio untuk download
+      currentRatio = `${ratioW}/${ratioH}`;
+      
+      // Update CSS aspect-ratio
+      storyFrame.style.aspectRatio = currentRatio;
+      
+      // Update display
+      ratioDisplay.textContent = `Rasio: ${ratioW}:${ratioH}`;
+      primaryRatioTag.textContent = `${ratioW}:${ratioH}`;
+      
+      console.log(`📐 Rasio diupdate: ${ratioW}:${ratioH}`);
+    }
+
+    // ========== FUNGSI UPDATE PREVIEW ==========
     function updatePreview() {
       if (primaryDataURL) {
         primaryImg.src = primaryDataURL;
         primaryImg.style.display = 'block';
+        
+        // Update rasio berdasarkan gambar utama
+        const img = new Image();
+        img.onload = function() {
+          updateAspectRatio(this.width, this.height);
+        };
+        img.src = primaryDataURL;
+        // Jika gambar sudah loaded
+        if (img.complete && img.naturalWidth) {
+          updateAspectRatio(img.naturalWidth, img.naturalHeight);
+        }
       } else {
         primaryImg.style.display = 'none';
         primaryImg.src = '';
+        // Reset ke default 9:16
+        storyFrame.style.aspectRatio = '9/16';
+        ratioDisplay.textContent = 'Rasio: 9:16 (default)';
+        primaryRatioTag.textContent = '9:16';
+        currentRatio = '9/16';
       }
+      
       if (secondaryDataURL) {
         secondaryImg.src = secondaryDataURL;
         secondaryImg.style.display = 'block';
@@ -588,14 +651,33 @@
         secondaryImg.style.display = 'none';
         secondaryImg.src = '';
       }
+      
       placeholderText.style.display = (!primaryDataURL && !secondaryDataURL) ? 'block' : 'none';
     }
 
+    // ========== SET GAMBAR ==========
     function setPrimaryImage(dataURL, fileName = '') {
       primaryDataURL = dataURL;
       primaryFileName.textContent = fileName ? (fileName.length > 12 ? fileName.slice(0, 10) + '…' : fileName) : '📋 paste';
       pasteStatusPrimary.textContent = '✓';
       pasteStatusPrimary.className = 'paste-status done';
+      
+      // Update rasio dari gambar
+      const img = new Image();
+      img.onload = function() {
+        updateAspectRatio(this.width, this.height);
+        updatePreview();
+      };
+      img.onerror = function() {
+        updatePreview();
+      };
+      img.src = dataURL;
+      
+      // Jika gambar sudah cached
+      if (img.complete && img.naturalWidth) {
+        updateAspectRatio(img.naturalWidth, img.naturalHeight);
+      }
+      
       updatePreview();
     }
 
@@ -607,31 +689,53 @@
       updatePreview();
     }
 
+    // ========== HANDLE FILE ==========
     function handleFile(file, isPrimary) {
       if (!file) return;
       if (!file.type.startsWith('image/')) { alert('Pilih file gambar.'); return; }
       const reader = new FileReader();
       reader.onload = function(e) {
         const dataURL = e.target.result;
-        if (isPrimary) setPrimaryImage(dataURL, file.name);
-        else setSecondaryImage(dataURL, file.name);
+        if (isPrimary) {
+          setPrimaryImage(dataURL, file.name);
+        } else {
+          setSecondaryImage(dataURL, file.name);
+        }
       };
       reader.onerror = function() { alert('Gagal baca file.'); };
       reader.readAsDataURL(file);
     }
 
+    // ========== EVENT LISTENERS ==========
     primaryInput.addEventListener('change', function(e) {
-      if (this.files && this.files[0]) handleFile(this.files[0], true);
-      else if (!primaryDataURL) { primaryFileName.textContent = 'kosong'; pasteStatusPrimary.textContent = 'siap'; pasteStatusPrimary.className = 'paste-status'; }
+      if (this.files && this.files[0]) {
+        handleFile(this.files[0], true);
+      } else if (!primaryDataURL) {
+        primaryFileName.textContent = 'kosong';
+        pasteStatusPrimary.textContent = 'siap';
+        pasteStatusPrimary.className = 'paste-status';
+        storyFrame.style.aspectRatio = '9/16';
+        ratioDisplay.textContent = 'Rasio: 9:16 (default)';
+        primaryRatioTag.textContent = '9:16';
+        currentRatio = '9/16';
+        updatePreview();
+      }
       this.value = '';
     });
 
     secondaryInput.addEventListener('change', function(e) {
-      if (this.files && this.files[0]) handleFile(this.files[0], false);
-      else if (!secondaryDataURL) { secondaryFileName.textContent = 'kosong'; pasteStatusSecondary.textContent = 'siap'; pasteStatusSecondary.className = 'paste-status'; }
+      if (this.files && this.files[0]) {
+        handleFile(this.files[0], false);
+      } else if (!secondaryDataURL) {
+        secondaryFileName.textContent = 'kosong';
+        pasteStatusSecondary.textContent = 'siap';
+        pasteStatusSecondary.className = 'paste-status';
+        updatePreview();
+      }
       this.value = '';
     });
 
+    // ========== PASTE ==========
     function setupPaste(itemElement, isPrimary) {
       itemElement.addEventListener('paste', function(e) {
         const items = (e.clipboardData || e.originalEvent?.clipboardData || window.clipboardData)?.items;
@@ -651,8 +755,11 @@
         const reader = new FileReader();
         reader.onload = function(ev) {
           const dataURL = ev.target.result;
-          if (isPrimary) setPrimaryImage(dataURL, '📋 paste');
-          else setSecondaryImage(dataURL, '📋 paste');
+          if (isPrimary) {
+            setPrimaryImage(dataURL, '📋 paste');
+          } else {
+            setSecondaryImage(dataURL, '📋 paste');
+          }
         };
         reader.onerror = function() { alert('Gagal proses paste.'); };
         reader.readAsDataURL(file);
@@ -664,79 +771,126 @@
     setupPaste(document.getElementById('primaryItem'), true);
     setupPaste(document.getElementById('secondaryItem'), false);
 
+    // ========== RESET ==========
     resetBtn.addEventListener('click', function() {
-      primaryDataURL = null; secondaryDataURL = null;
-      primaryImg.style.display = 'none'; secondaryImg.style.display = 'none';
-      primaryImg.src = ''; secondaryImg.src = '';
-      primaryFileName.textContent = 'kosong'; secondaryFileName.textContent = 'kosong';
+      primaryDataURL = null;
+      secondaryDataURL = null;
+      primaryImg.style.display = 'none';
+      secondaryImg.style.display = 'none';
+      primaryImg.src = '';
+      secondaryImg.src = '';
+      primaryFileName.textContent = 'kosong';
+      secondaryFileName.textContent = 'kosong';
       placeholderText.style.display = 'block';
-      primaryInput.value = ''; secondaryInput.value = '';
-      pasteStatusPrimary.textContent = 'siap'; pasteStatusPrimary.className = 'paste-status';
-      pasteStatusSecondary.textContent = 'siap'; pasteStatusSecondary.className = 'paste-status';
+      primaryInput.value = '';
+      secondaryInput.value = '';
+      pasteStatusPrimary.textContent = 'siap';
+      pasteStatusPrimary.className = 'paste-status';
+      pasteStatusSecondary.textContent = 'siap';
+      pasteStatusSecondary.className = 'paste-status';
+      
+      // Reset rasio ke default
+      storyFrame.style.aspectRatio = '9/16';
+      ratioDisplay.textContent = 'Rasio: 9:16 (default)';
+      primaryRatioTag.textContent = '9:16';
+      currentRatio = '9/16';
     });
 
+    // ========== DOWNLOAD ==========
     function downloadStory() {
-      if (!primaryDataURL) { alert('Upload atau paste gambar utama (9:16)'); return; }
-      const canvasWidth = 540, canvasHeight = 960;
+      if (!primaryDataURL) { alert('Upload atau paste gambar utama dulu!'); return; }
+      
+      // Parse rasio
+      const [ratioW, ratioH] = currentRatio.split('/').map(Number);
+      const canvasWidth = 800;
+      const canvasHeight = Math.round(canvasWidth * (ratioH / ratioW));
+      
       const canvas = document.createElement('canvas');
-      canvas.width = canvasWidth; canvas.height = canvasHeight;
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
       const ctx = canvas.getContext('2d');
 
-      const primary = new Image(); primary.crossOrigin = 'anonymous'; primary.src = primaryDataURL;
-      const secondary = new Image(); secondary.crossOrigin = 'anonymous'; 
+      const primary = new Image();
+      primary.crossOrigin = 'anonymous';
+      primary.src = primaryDataURL;
+
+      const secondary = new Image();
+      secondary.crossOrigin = 'anonymous';
       if (secondaryDataURL) secondary.src = secondaryDataURL;
 
-      let primaryLoaded = false, secondaryLoaded = !secondaryDataURL;
+      let primaryLoaded = false;
+      let secondaryLoaded = !secondaryDataURL;
 
       function checkAndDraw() {
         if (!primaryLoaded) return;
         if (secondaryDataURL && !secondaryLoaded) return;
+        
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
+        // Gambar primary — full cover
         const pAspect = primary.width / primary.height;
         const canvasAspect = canvasWidth / canvasHeight;
         let sx = 0, sy = 0, sw = primary.width, sh = primary.height;
         if (pAspect > canvasAspect) {
           const scale = canvasHeight / primary.height;
           const cropWidth = canvasWidth / scale;
-          sx = (primary.width - cropWidth) / 2; sw = cropWidth;
+          sx = (primary.width - cropWidth) / 2;
+          sw = cropWidth;
         } else {
           const scale = canvasWidth / primary.width;
           const cropHeight = canvasHeight / scale;
-          sy = (primary.height - cropHeight) / 2; sh = cropHeight;
+          sy = (primary.height - cropHeight) / 2;
+          sh = cropHeight;
         }
         ctx.drawImage(primary, sx, sy, sw, sh, 0, 0, canvasWidth, canvasHeight);
 
+        // Gambar secondary — overlay di tengah atas
         if (secondaryDataURL && secondaryLoaded) {
-          const maxWidth = canvasWidth * 0.66, maxHeight = canvasHeight * 0.42;
+          const maxWidth = canvasWidth * 0.66;
+          const maxHeight = canvasHeight * 0.42;
           let sWidth = secondary.width, sHeight = secondary.height;
           let scale = 1;
           if (sWidth > maxWidth) scale = maxWidth / sWidth;
           if (sHeight * scale > maxHeight) scale = Math.min(scale, maxHeight / sHeight);
-          const finalWidth = sWidth * scale, finalHeight = sHeight * scale;
-          const x = (canvasWidth - finalWidth) / 2, y = canvasHeight * 0.14;
-          ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
+          const finalWidth = sWidth * scale;
+          const finalHeight = sHeight * scale;
+          const x = (canvasWidth - finalWidth) / 2;
+          const y = canvasHeight * 0.14;
+          
+          ctx.shadowColor = 'rgba(0,0,0,0.5)';
+          ctx.shadowBlur = 24;
+          ctx.shadowOffsetY = 8;
           ctx.drawImage(secondary, x, y, finalWidth, finalHeight);
           ctx.shadowBlur = 0;
-          ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1.5;
+          ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+          ctx.lineWidth = 1.5;
           ctx.strokeRect(x, y, finalWidth, finalHeight);
         }
 
         const link = document.createElement('a');
-        link.download = 'story-compose.png';
+        link.download = `story-${ratioW}x${ratioH}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
       }
 
       primary.onload = function() { primaryLoaded = true; checkAndDraw(); };
       primary.onerror = function() { alert('Gagal memuat gambar utama.'); };
+      
       if (secondaryDataURL) {
         secondary.onload = function() { secondaryLoaded = true; checkAndDraw(); };
         secondary.onerror = function() { secondaryLoaded = true; checkAndDraw(); };
-      } else secondaryLoaded = true;
+      } else {
+        secondaryLoaded = true;
+      }
 
-      if (primary.complete && primary.naturalWidth !== 0) { primaryLoaded = true; checkAndDraw(); }
-      if (secondaryDataURL && secondary.complete && secondary.naturalWidth !== 0) { secondaryLoaded = true; checkAndDraw(); }
+      if (primary.complete && primary.naturalWidth !== 0) {
+        primaryLoaded = true;
+        checkAndDraw();
+      }
+      if (secondaryDataURL && secondary.complete && secondary.naturalWidth !== 0) {
+        secondaryLoaded = true;
+        checkAndDraw();
+      }
     }
 
     downloadBtn.addEventListener('click', downloadStory);

@@ -51,7 +51,6 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .info-badge { background:#e7f3ff; border-left:3px solid #2196f3; padding:10px; margin-bottom:15px; border-radius:8px; font-size:13px; color:#0c5460; }
 
-    /* tombol story */
     .story-btn {
       display:inline-flex;
       align-items:center;
@@ -80,7 +79,6 @@
       fill:currentColor;
     }
 
-    /* auto-fill badge */
     .auto-fill-badge {
       display:inline-block;
       background:#d4edda;
@@ -91,6 +89,23 @@
       margin-left:8px;
       font-weight:500;
     }
+
+    /* Debug log */
+    .debug-log {
+      background:#1a1a2e;
+      color:#00ff88;
+      font-family:monospace;
+      font-size:11px;
+      padding:10px 14px;
+      border-radius:8px;
+      margin-top:12px;
+      max-height:120px;
+      overflow-y:auto;
+      display:none;
+      white-space:pre-wrap;
+      word-break:break-all;
+    }
+    .debug-log.show { display:block; }
 
     @media (max-width:480px){
       .header{flex-direction:column; align-items:stretch; gap:12px;}
@@ -170,6 +185,9 @@
 
       <button class="primary" type="submit" id="submitBtn" style="width:100%">SUBMIT</button>
     </form>
+
+    <!-- Debug log -->
+    <div class="debug-log" id="debugLog"></div>
   </div>
 </div>
 
@@ -183,37 +201,58 @@
 </div>
 
 <script>
+// ======================= DEBUG LOG =======================
+const debugLog = document.getElementById('debugLog');
+
+function logDebug(msg) {
+  const timestamp = new Date().toLocaleTimeString();
+  debugLog.textContent += `[${timestamp}] ${msg}\n`;
+  debugLog.classList.add('show');
+  debugLog.scrollTop = debugLog.scrollHeight;
+  console.log(msg);
+}
+
 // ======================= SHEET BARU =======================
 const SHEET_ID = "1RnWNJvpeQtG6Sdx9EiUdE2E4D0n5mvZM-Q90P3pmf8Q";
-const SHEET_NAME = "Form Responses 1"; // Sheet ini biasanya berisi data response
-const GID = "0"; // GID 0 = sheet pertama
+const SHEET_NAME = "Form Responses 1";
+const GID = "0";
 
 const SHEET_API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}&gid=${GID}`;
 
 let agentList = [];
-let customerData = {}; // key: nomor HP, value: { nama, ... }
+let customerData = {}; // key: nomor HP, value: nama
 
 async function mirrorAgentsFromSheet() {
   try {
-    console.log("🔄 Mirroring data from Google Sheet...");
+    logDebug("🔄 Mulai mirroring data dari Google Sheet...");
+    logDebug(`📊 URL: ${SHEET_API_URL}`);
+    
     const response = await fetch(SHEET_API_URL, { cache: "no-store" });
     const text = await response.text();
-    const jsonData = JSON.parse(text.substring(47).slice(0, -2));
+    
+    // Parse JSON dari response Google Visualization API
+    const jsonStr = text.substring(47).slice(0, -2);
+    const jsonData = JSON.parse(jsonStr);
     const rows = jsonData.table.rows;
+    
+    logDebug(`📋 Total baris: ${rows.length}`);
     
     const agents = [];
     customerData = {};
+    let dataCount = 0;
     
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       if (!row.c) continue;
       
       // Kolom: A=tanggal input, B=nominal, C=tanggal order, D=nama, E=nomor HP
-      const colA = row.c[0]?.v || '';
-      const colB = row.c[1]?.v || '';
-      const colC = row.c[2]?.v || '';
-      const colD = row.c[3]?.v || '';
-      const colE = row.c[4]?.v || '';
+      const colD = row.c[3]?.v || ''; // Nama
+      const colE = row.c[4]?.v || ''; // Nomor HP
+      
+      // Debug untuk beberapa baris pertama
+      if (i < 5) {
+        logDebug(`🔍 Baris ${i+1}: Nama="${colD}", HP="${colE}"`);
+      }
       
       // Kumpulkan agent dari kolom D (nama)
       if (colD && colD.toString().trim()) {
@@ -223,26 +262,51 @@ async function mirrorAgentsFromSheet() {
         }
       }
       
-      // Simpan data customer berdasarkan nomor HP (kolom E)
+      // Simpan data customer berdasarkan nomor HP (kolom E) → Nama (kolom D)
       if (colE && colE.toString().trim()) {
         const phone = colE.toString().trim();
         const name = colD ? colD.toString().trim() : '';
-        if (name && !customerData[phone]) {
-          customerData[phone] = { nama: name };
+        
+        // Bersihkan nomor: hilangkan spasi, tanda baca
+        const cleanPhone = phone.replace(/\s/g, '').replace(/[^0-9]/g, '');
+        
+        if (name && cleanPhone) {
+          // Simpan dengan berbagai format
+          customerData[cleanPhone] = name;
+          customerData[phone] = name;
+          
+          // Jika ada 0 di depan, tambahkan 62
+          if (cleanPhone.startsWith('0')) {
+            const with62 = '62' + cleanPhone.substring(1);
+            customerData[with62] = name;
+          }
+          // Jika ada 62 di depan, tambahkan 0
+          if (cleanPhone.startsWith('62')) {
+            const with0 = '0' + cleanPhone.substring(2);
+            customerData[with0] = name;
+          }
+          
+          dataCount++;
         }
       }
     }
     
+    logDebug(`✅ Data customer tersimpan: ${dataCount} entri`);
+    logDebug(`📊 Contoh data: ${JSON.stringify(Object.entries(customerData).slice(0, 5))}`);
+    
     if (agents.length > 0) {
       agentList = [...new Set(agents)];
-      console.log(`✅ Mirroring sukses! ${agentList.length} agent dimuat`);
-      console.log(`📊 ${Object.keys(customerData).length} data customer dimuat`);
+      logDebug(`✅ Agent dimuat: ${agentList.length} agent`);
     } else {
-      throw new Error("Tidak ada data");
+      logDebug("⚠️ Tidak ada agent ditemukan, menggunakan fallback");
+      agentList = ["Agung", "Agus", "Aryo", "Awa", "Bagus", "Diar", "Lutfi Majid", "Malek", "Mbak Yuni", "Nia", "Panji", "Restu", "Akhmad Rifki", "Yosi", "Yusuf", "Ilham", "Barkah", "Mukhlis", "Kharisma", "Ardi", "Acil", "Defita", "Fajar", "Ichsan", "Reno Chandra", "Putri Utami", "Arif Ahmadi", "Hana", "Indah Rahayu", "Andang Setyo", "Bomar Kalis", "Aji Riskiyanto", "Lis"];
     }
+    
     if (agentInputEl) showDropdown(agentInputEl.value);
+    
   } catch (error) {
-    console.error("❌ Gagal mirroring:", error);
+    logDebug(`❌ ERROR mirroring: ${error.message}`);
+    console.error(error);
     agentList = ["Agung", "Agus", "Aryo", "Awa", "Bagus", "Diar", "Lutfi Majid", "Malek", "Mbak Yuni", "Nia", "Panji", "Restu", "Akhmad Rifki", "Yosi", "Yusuf", "Ilham", "Barkah", "Mukhlis", "Kharisma", "Ardi", "Acil", "Defita", "Fajar", "Ichsan", "Reno Chandra", "Putri Utami", "Arif Ahmadi", "Hana", "Indah Rahayu", "Andang Setyo", "Bomar Kalis", "Aji Riskiyanto", "Lis"];
     showDropdown(agentInputEl.value);
   }
@@ -255,48 +319,69 @@ const hpAutoBadge = document.getElementById("hpAutoBadge");
 const namaAutoBadge = document.getElementById("namaAutoBadge");
 
 function cleanPhoneNumber(input) {
-  let v = input.replace(/\D/g, "");
-  if (!v.startsWith("62")) v = "62" + v.replace(/^0+/, "");
+  if (!input) return '';
+  let v = input.replace(/\s/g, '').replace(/[^0-9]/g, '');
   return v;
 }
 
 function findNameByPhone(phone) {
-  const cleanPhone = cleanPhoneNumber(phone);
+  if (!phone) return null;
   
-  for (const [key, value] of Object.entries(customerData)) {
-    const cleanKey = cleanPhoneNumber(key);
-    if (cleanKey === cleanPhone || key === phone || key === cleanPhone) {
-      return value.nama;
-    }
-    if (cleanPhone.includes(cleanKey) || cleanKey.includes(cleanPhone)) {
-      return value.nama;
+  const cleanPhone = cleanPhoneNumber(phone);
+  logDebug(`🔍 Mencari nomor: "${cleanPhone}"`);
+  
+  // Coba berbagai format
+  const formats = [
+    cleanPhone,
+    cleanPhone.replace(/^0/, '62'),
+    cleanPhone.replace(/^62/, '0'),
+    '62' + cleanPhone,
+    '0' + cleanPhone
+  ];
+  
+  for (const fmt of formats) {
+    if (customerData[fmt]) {
+      logDebug(`✅ Ditemukan! "${fmt}" → "${customerData[fmt]}"`);
+      return customerData[fmt];
     }
   }
+  
+  // Coba partial match (untuk kasus nomor dengan kode negara beda)
+  for (const [key, value] of Object.entries(customerData)) {
+    const cleanKey = cleanPhoneNumber(key);
+    if (cleanKey.includes(cleanPhone) || cleanPhone.includes(cleanKey)) {
+      if (cleanKey.length >= 10 && cleanPhone.length >= 10) {
+        logDebug(`✅ Partial match: "${cleanKey}" → "${value}"`);
+        return value;
+      }
+    }
+  }
+  
+  logDebug(`❌ Tidak ditemukan: "${cleanPhone}"`);
   return null;
 }
 
 hpInput.addEventListener('input', function() {
   const phone = this.value.trim();
-  if (phone.length >= 10) {
+  logDebug(`📞 Input HP: "${phone}"`);
+  
+  if (phone.length >= 8) {
     const foundName = findNameByPhone(phone);
     if (foundName) {
       namaInput.value = foundName;
       hpAutoBadge.innerHTML = '✅ <span style="color:#155724;font-weight:500;">Auto-fill aktif</span>';
-      hpAutoBadge.style.color = '#155724';
       namaAutoBadge.innerHTML = '✅ <span style="color:#155724;font-weight:500;">Terisi otomatis</span>';
-      namaAutoBadge.style.color = '#155724';
       namaInput.style.borderColor = '#28a745';
       setTimeout(() => { namaInput.style.borderColor = ''; }, 2000);
+      logDebug(`✅ Nama terisi: "${foundName}"`);
     } else {
-      const currentNama = namaInput.value.trim();
-      if (currentNama === '' || currentNama === 'Belum terdaftar' || currentNama === namaInput.placeholder) {
-        namaInput.value = '';
-      }
-      hpAutoBadge.innerHTML = '🔍 <span style="color:#6c757d;">Cari...</span>';
+      // Jika tidak ditemukan, biarkan user mengisi manual
+      hpAutoBadge.innerHTML = '🔍 <span style="color:#6c757d;">Tidak ditemukan</span>';
       namaAutoBadge.innerHTML = '✏️ <span style="color:#6c757d;">Isi manual</span>';
     }
   } else {
     hpAutoBadge.innerHTML = '';
+    namaAutoBadge.innerHTML = '';
   }
 });
 
@@ -313,8 +398,10 @@ namaInput.addEventListener('input', function() {
 });
 
 hpInput.addEventListener('blur', function() {
-  let v = this.value.replace(/\D/g, "");
-  if (v && !v.startsWith("62")) v = "62" + v.replace(/^0+/, "");
+  let v = this.value.replace(/\s/g, '').replace(/[^0-9]/g, '');
+  if (v && !v.startsWith("62") && !v.startsWith("0")) {
+    v = "62" + v;
+  }
   if (v !== this.value) this.value = v;
 });
 
@@ -516,6 +603,8 @@ function initMapAutocomplete() {
 }
 
 window.initMapAutocomplete = initMapAutocomplete;
+
+// ======================= JALANKAN MIRRORING =======================
 mirrorAgentsFromSheet();
 </script>
 

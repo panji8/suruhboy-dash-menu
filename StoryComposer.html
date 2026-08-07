@@ -2,75 +2,101 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Story Designer · Paste & Upload</title>
-  <!-- Font Awesome 6 (gratis) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Story Composer · Flat</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
 
     body {
-      background: #f2f4f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: #eef1f5;
       min-height: 100vh;
-      padding: 20px;
-    }
-
-    .card {
-      max-width: 540px;
-      width: 100%;
-      background: white;
-      border-radius: 36px 36px 28px 28px;
-      box-shadow: 0 20px 40px -12px rgba(0,0,0,0.25);
-      padding: 28px 24px 36px;
-      transition: 0.2s;
-    }
-
-    h2 {
-      font-weight: 600;
-      font-size: 1.5rem;
-      color: #1e293b;
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 6px;
+      justify-content: center;
+      padding: 24px;
     }
 
-    .subhead {
-      color: #64748b;
-      font-size: 0.9rem;
-      margin-bottom: 24px;
-      border-left: 4px solid #818cf8;
-      padding-left: 14px;
-      background: #f8fafc;
-      border-radius: 0 12px 12px 0;
-      line-height: 1.4;
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      background: #ffffff;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+      padding: 32px 40px 36px;
+      border: 1px solid #e2e6ec;
     }
 
-    /* preview */
-    .preview-wrapper {
-      background: #e9edf3;
-      border-radius: 32px;
-      padding: 20px 16px;
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 28px;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e8ecf2;
     }
 
-    .story-preview {
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0a0a0f;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header h1 i {
+      color: #2563eb;
+      font-size: 1.4rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header .badge {
+      background: #eef2f6;
+      color: #4a5568;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 16px;
+      letter-spacing: 0.3px;
+    }
+
+    .header .hint {
+      color: #6b7f96;
+      font-size: 0.8rem;
+    }
+
+    /* MAIN LAYOUT */
+    .main-layout {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    /* LEFT — Preview */
+    .preview-section {
+      flex: 0 0 340px;
+      background: #f6f8fa;
+      padding: 8px;
+      border: 1px solid #e2e6ec;
+    }
+
+    .story-frame {
       position: relative;
       width: 100%;
       aspect-ratio: 9 / 16;
-      background: #0f172a;
-      border-radius: 28px;
+      background: #0e121c;
       overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -83,342 +109,456 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
-      background: #1e293b;
+      display: none;
     }
 
     #secondaryImg {
       position: absolute;
-      top: 18%;
+      top: 14%;
       left: 50%;
       transform: translateX(-50%);
-      max-width: 70%;
-      max-height: 45%;
+      max-width: 66%;
+      max-height: 42%;
       width: auto;
       height: auto;
       object-fit: contain;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-      border: 2px solid rgba(255,255,255,0.3);
-      background: #0b1120;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      background: #0b111e;
       display: none;
       z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .placeholder-text {
-      color: rgba(255,255,255,0.4);
-      font-size: 0.9rem;
+    .placeholder {
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 0.85rem;
       text-align: center;
-      padding: 12px;
+      padding: 20px;
       z-index: 2;
       pointer-events: none;
-      font-weight: 400;
-      letter-spacing: 0.3px;
+      line-height: 1.7;
     }
 
-    /* upload items */
-    .upload-grid {
+    .placeholder i {
+      display: block;
+      font-size: 2.6rem;
+      margin-bottom: 10px;
+      opacity: 0.35;
+      color: #7a8aa3;
+    }
+
+    .placeholder small {
+      font-size: 0.7rem;
+      opacity: 0.5;
+      display: block;
+    }
+
+    /* RIGHT — Controls */
+    .controls {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .upload-group {
       display: flex;
       flex-direction: column;
-      gap: 18px;
-      margin-top: 10px;
+      gap: 16px;
+      margin-bottom: 24px;
     }
 
-    .upload-item {
-      background: #f8fafc;
-      border-radius: 22px;
-      padding: 16px 20px;
-      border: 1px solid #e2e8f0;
+    .upload-card {
+      background: #f7f9fb;
+      padding: 18px 20px 20px;
+      border: 1px solid #e2e6ec;
       transition: 0.15s;
-      position: relative;
     }
 
-    .upload-item:hover {
-      border-color: #b9c7e0;
-      background: #f1f5f9;
+    .upload-card:focus-within {
+      border-color: #2563eb;
+      background: #fafcff;
     }
 
-    .upload-header {
+    .card-head {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
-    .upload-header i {
-      font-size: 1.2rem;
-      width: 28px;
-      color: #475569;
-    }
-
-    .upload-header span {
-      font-weight: 600;
-      color: #0f172a;
+    .card-head i {
       font-size: 1rem;
+      width: 24px;
+      color: #2563eb;
     }
 
-    .badge {
-      background: #dbeafe;
-      color: #1e4b8a;
-      font-size: 0.65rem;
+    .card-head .title {
       font-weight: 600;
-      padding: 2px 12px;
-      border-radius: 30px;
-      margin-left: 6px;
-      letter-spacing: 0.3px;
+      color: #0a0a0f;
+      font-size: 0.95rem;
     }
 
-    .file-input-wrap {
+    .card-head .tag {
+      margin-left: auto;
+      background: #eef2f6;
+      color: #4a5568;
+      font-size: 0.55rem;
+      font-weight: 600;
+      padding: 3px 14px;
+      letter-spacing: 0.2px;
+    }
+
+    .input-row {
       display: flex;
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
     }
 
-    .file-input-wrap label {
-      background: white;
-      border: 1px solid #cbd5e1;
-      border-radius: 40px;
-      padding: 8px 18px;
-      font-size: 0.85rem;
+    .input-row .btn-upload {
+      background: #ffffff;
+      border: 1px solid #d1d9e6;
+      padding: 7px 20px;
+      font-size: 0.8rem;
       font-weight: 500;
-      color: #1e293b;
+      color: #1a1f2e;
       cursor: pointer;
       transition: 0.1s;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      gap: 6px;
     }
 
-    .file-input-wrap label:hover {
-      background: #f1f5f9;
-      border-color: #818cf8;
+    .input-row .btn-upload:hover {
+      background: #f0f4ff;
+      border-color: #2563eb;
     }
 
-    .file-input-wrap input[type="file"] {
+    .input-row .btn-upload i {
+      color: #2563eb;
+      font-size: 0.7rem;
+    }
+
+    .input-row input[type="file"] {
       display: none;
     }
 
-    .file-name {
-      font-size: 0.8rem;
-      color: #475569;
-      background: #eef2f6;
-      padding: 4px 14px;
-      border-radius: 40px;
+    .input-row .filename {
+      font-size: 0.75rem;
+      color: #4a5a74;
+      background: #eef2f8;
+      padding: 4px 18px;
       white-space: nowrap;
       overflow: hidden;
-      max-width: 150px;
+      max-width: 160px;
       text-overflow: ellipsis;
     }
 
-    /* paste zone kecil */
-    .paste-zone {
+    .paste-area {
       margin-top: 10px;
-      background: #ffffffcc;
-      border: 1px dashed #94a3b8;
-      border-radius: 30px;
-      padding: 6px 16px 6px 20px;
+      background: #ffffff;
+      border: 1px dashed #d1d9e6;
+      padding: 5px 20px 5px 22px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
-      backdrop-filter: blur(2px);
-      transition: 0.2s;
     }
 
-    .paste-zone i {
-      color: #64748b;
-      font-size: 0.95rem;
+    .paste-area i {
+      color: #6a7f9e;
+      font-size: 0.8rem;
     }
 
-    .paste-zone span {
-      font-size: 0.78rem;
-      color: #475569;
-      font-weight: 450;
-    }
-
-    .paste-zone .paste-hint {
-      background: #e9edf3;
+    .paste-area .hint {
+      background: #eef2f8;
       padding: 2px 14px;
-      border-radius: 30px;
-      font-size: 0.7rem;
-      color: #1e293b;
-      font-weight: 500;
-      letter-spacing: 0.3px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #2d3f5a;
+      letter-spacing: 0.2px;
     }
 
-    .paste-zone .paste-status {
+    .paste-area .label {
+      font-size: 0.7rem;
+      color: #5a6f8a;
+    }
+
+    .paste-status {
       margin-left: auto;
-      font-size: 0.7rem;
-      color: #818cf8;
-      background: #eef2ff;
-      padding: 2px 12px;
-      border-radius: 30px;
+      font-size: 0.65rem;
+      color: #2563eb;
+      background: #eff6ff;
+      padding: 2px 16px;
+      font-weight: 500;
     }
 
-    .paste-zone .paste-status.success {
-      color: #0b6e4f;
-      background: #d1fae5;
+    .paste-status.done {
+      color: #059669;
+      background: #ecfdf5;
     }
 
-    /* action */
-    .action-bar {
+    /* ACTIONS — 3 tombol */
+    .actions {
       display: flex;
-      gap: 12px;
-      margin-top: 28px;
-      justify-content: flex-end;
+      gap: 14px;
+      padding: 4px 0;
     }
 
     .btn {
-      background: white;
+      background: #ffffff;
       border: 1px solid #d1d9e6;
-      padding: 12px 20px;
-      border-radius: 60px;
+      padding: 14px 20px;
       font-weight: 600;
-      font-size: 0.9rem;
-      color: #1e293b;
+      font-size: 0.85rem;
+      color: #1a1f2e;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      gap: 8px;
       cursor: pointer;
-      transition: 0.15s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      transition: 0.1s;
+      flex: 1;
     }
 
     .btn-primary {
-      background: #1e293b;
-      border: 1px solid #1e293b;
-      color: white;
-      box-shadow: 0 4px 10px rgba(30, 41, 59, 0.25);
-    }
-
-    .btn-primary:hover {
-      background: #0f172a;
-      border-color: #0f172a;
-      transform: scale(0.97);
+      background: #0a0a0f;
+      border: 1px solid #0a0a0f;
+      color: #ffffff;
+      flex: 1.2;
+      box-shadow: 0 2px 12px rgba(10, 10, 15, 0.08);
     }
 
     .btn-primary i {
-      color: #94a3b8;
+      color: #9aa8c4;
     }
 
-    .btn-outline {
-      background: transparent;
-      border: 1px solid #cbd5e1;
+    .btn-primary:hover {
+      background: #1a1f2e;
+      border-color: #1a1f2e;
+    }
+
+    .btn-wa {
+      background: #25d366;
+      border: 1px solid #25d366;
+      color: #ffffff;
+      flex: 1.2;
+      box-shadow: 0 2px 12px rgba(37, 211, 102, 0.15);
+    }
+
+    .btn-wa i {
+      color: #ffffff;
+    }
+
+    .btn-wa:hover {
+      background: #1da851;
+      border-color: #1da851;
     }
 
     .btn-outline:hover {
-      background: #f1f5f9;
+      background: #f3f6fa;
+      border-color: #b0bccd;
     }
 
     .btn:active {
-      transform: scale(0.96);
+      transform: scale(0.97);
     }
 
-    .footnote {
+    .footer {
       text-align: center;
       margin-top: 24px;
-      color: #94a3b8;
+      color: #9aa8b8;
       font-size: 0.7rem;
-      letter-spacing: 0.3px;
-      border-top: 1px solid #e9edf3;
-      padding-top: 20px;
+      padding-top: 18px;
+      border-top: 2px solid #e8ecf2;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
     }
 
-    .footnote i {
-      margin: 0 4px;
+    .footer i {
+      color: #6b7f96;
+      margin-right: 4px;
     }
 
-    @media (max-width: 480px) {
-      .card { padding: 20px 16px; }
-      .story-preview { border-radius: 20px; }
-      .paste-zone { padding: 6px 12px; }
-      .file-name { max-width: 100px; }
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .app {
+        padding: 24px 28px 28px;
+      }
+      .main-layout {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 24px;
+      }
+      .preview-section {
+        flex: none;
+        max-width: 340px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .header h1 { font-size: 1.4rem; }
+      .header .hint { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 12px; }
+      .app {
+        padding: 16px 14px 20px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+        border: 1px solid #e2e6ec;
+      }
+      .header {
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+      }
+      .header h1 {
+        font-size: 1.2rem;
+        gap: 8px;
+      }
+      .header h1 i { font-size: 1.1rem; }
+      .header .badge { font-size: 0.6rem; padding: 3px 12px; }
+      .header-right { width: 100%; justify-content: flex-start; }
+      .header .hint { display: none; }
+
+      .preview-section {
+        max-width: 100%;
+        padding: 6px;
+      }
+
+      .upload-card {
+        padding: 14px 14px 16px;
+      }
+      .card-head .title { font-size: 0.85rem; }
+      .input-row .btn-upload { font-size: 0.7rem; padding: 6px 16px; }
+      .input-row .filename { max-width: 80px; font-size: 0.65rem; padding: 3px 12px; }
+      .paste-area { padding: 4px 14px 4px 16px; gap: 6px; }
+      .paste-area .hint { font-size: 0.55rem; padding: 2px 10px; }
+      .paste-area .label { font-size: 0.6rem; }
+      .paste-status { font-size: 0.55rem; padding: 2px 12px; }
+
+      .actions {
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        font-size: 0.7rem;
+        padding: 11px 10px;
+        gap: 6px;
+        flex: 1 1 auto;
+        min-width: 80px;
+      }
+      .btn-primary { flex: 1.2; }
+      .btn-wa { flex: 1.2; }
+
+      .footer {
+        font-size: 0.55rem;
+        gap: 12px;
+        padding-top: 14px;
+        margin-top: 18px;
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .app { padding: 12px 10px 16px; }
+      .upload-card { padding: 10px 10px 14px; }
+      .input-row { gap: 6px; }
+      .input-row .filename { max-width: 60px; }
+      .btn { font-size: 0.6rem; padding: 9px 6px; min-width: 60px; }
     }
   </style>
 </head>
 <body>
-<div class="card">
-  <h2>
-    <i class="fas fa-layer-group" style="color: #818cf8;"></i> 
-    Story Composer
-  </h2>
-  <div class="subhead">
-    <i class="fas fa-arrow-right" style="margin-right: 6px; color: #818cf8;"></i> 
-    Upload <i class="fas fa-arrow-right" style="margin: 0 4px; color: #94a3b8; font-size: 0.7rem;"></i> atau <strong>Paste</strong> gambar
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <h1><i class="fas fa-cubes"></i> Story Composer</h1>
+    <div class="header-right">
+      <span class="badge">v2.0</span>
+      <span class="hint"><i class="fas fa-arrow-right" style="color: #2563eb;"></i> Upload atau Paste</span>
+    </div>
   </div>
 
-  <!-- Preview -->
-  <div class="preview-wrapper">
-    <div class="story-preview" id="storyPreview">
-      <img id="primaryImg" src="" alt="primary" style="display: none;">
-      <img id="secondaryImg" src="" alt="secondary">
-      <div id="placeholderText" class="placeholder-text">
-        <i class="fas fa-image" style="display: block; font-size: 2.2rem; margin-bottom: 10px; opacity: 0.5;"></i>
-        Upload atau Paste 2 gambar<br><span style="font-size: 0.75rem;">primary 9:16 · secondary kecil</span>
+  <!-- Main -->
+  <div class="main-layout">
+    <!-- Preview -->
+    <div class="preview-section">
+      <div class="story-frame" id="storyPreview">
+        <img id="primaryImg" src="" alt="primary">
+        <img id="secondaryImg" src="" alt="secondary">
+        <div id="placeholderText" class="placeholder">
+          <i class="fas fa-image"></i>
+          Upload atau paste 2 gambar
+          <small>Utama 9:16 · Sekunder overlay</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="upload-group">
+        <!-- Primary -->
+        <div class="upload-card" id="primaryItem">
+          <div class="card-head">
+            <i class="fas fa-camera"></i>
+            <span class="title">Gambar Utama</span>
+            <span class="tag">9:16</span>
+          </div>
+          <div class="input-row">
+            <label class="btn-upload" for="primaryInput"><i class="fas fa-upload"></i> Pilih</label>
+            <input type="file" id="primaryInput" accept="image/*">
+            <span class="filename" id="primaryFileName">kosong</span>
+          </div>
+          <div class="paste-area" id="pasteZonePrimary">
+            <i class="fas fa-paste"></i>
+            <span class="hint">Paste</span>
+            <span class="label">Ctrl+V</span>
+            <span class="paste-status" id="pasteStatusPrimary">siap</span>
+          </div>
+        </div>
+
+        <!-- Secondary -->
+        <div class="upload-card" id="secondaryItem">
+          <div class="card-head">
+            <i class="fas fa-sticky-note"></i>
+            <span class="title">Gambar Sekunder</span>
+            <span class="tag">overlay</span>
+          </div>
+          <div class="input-row">
+            <label class="btn-upload" for="secondaryInput"><i class="fas fa-upload"></i> Pilih</label>
+            <input type="file" id="secondaryInput" accept="image/*">
+            <span class="filename" id="secondaryFileName">kosong</span>
+          </div>
+          <div class="paste-area" id="pasteZoneSecondary">
+            <i class="fas fa-paste"></i>
+            <span class="hint">Paste</span>
+            <span class="label">Ctrl+V</span>
+            <span class="paste-status" id="pasteStatusSecondary">siap</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions — 3 tombol: Reset, Download, Share WA -->
+      <div class="actions">
+        <button class="btn btn-outline" id="resetBtn"><i class="fas fa-undo-alt"></i> Reset</button>
+        <button class="btn btn-primary" id="downloadBtn"><i class="fas fa-download"></i> Download</button>
+        <button class="btn btn-wa" id="shareWaBtn"><i class="fab fa-whatsapp"></i> Share WA</button>
       </div>
     </div>
   </div>
 
-  <!-- Upload area -->
-  <div class="upload-grid">
-    <!-- Primary -->
-    <div class="upload-item" id="primaryItem">
-      <div class="upload-header">
-        <i class="fas fa-camera"></i>
-        <span>Gambar Utama</span>
-        <span class="badge">9:16</span>
-      </div>
-      <div class="file-input-wrap">
-        <label for="primaryInput"><i class="fas fa-upload"></i> Pilih</label>
-        <input type="file" id="primaryInput" accept="image/*">
-        <span class="file-name" id="primaryFileName">Belum ada</span>
-      </div>
-      <!-- Paste zone primary -->
-      <div class="paste-zone" id="pasteZonePrimary">
-        <i class="fas fa-paste"></i>
-        <span class="paste-hint">Paste</span>
-        <span>Ctrl+V / kanan → paste</span>
-        <span class="paste-status" id="pasteStatusPrimary">siap</span>
-      </div>
-    </div>
-
-    <!-- Secondary -->
-    <div class="upload-item" id="secondaryItem">
-      <div class="upload-header">
-        <i class="fas fa-comment-dots"></i>
-        <span>Gambar Sekunder</span>
-        <span class="badge">kecil · screenshot</span>
-      </div>
-      <div class="file-input-wrap">
-        <label for="secondaryInput"><i class="fas fa-upload"></i> Pilih</label>
-        <input type="file" id="secondaryInput" accept="image/*">
-        <span class="file-name" id="secondaryFileName">Belum ada</span>
-      </div>
-      <!-- Paste zone secondary -->
-      <div class="paste-zone" id="pasteZoneSecondary">
-        <i class="fas fa-paste"></i>
-        <span class="paste-hint">Paste</span>
-        <span>Ctrl+V / kanan → paste</span>
-        <span class="paste-status" id="pasteStatusSecondary">siap</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Actions -->
-  <div class="action-bar">
-    <button class="btn btn-outline" id="resetBtn"><i class="fas fa-undo-alt"></i> Reset</button>
-    <button class="btn btn-primary" id="downloadBtn"><i class="fas fa-download"></i> Download Story</button>
-  </div>
-  <div class="footnote">
-    <i class="fas fa-arrows-alt"></i>  Sekunder di atas primary · posisi tengah atas (jeda)
+  <!-- Footer -->
+  <div class="footer">
+    <span><i class="fas fa-arrows-alt"></i> Sekunder di tengah atas</span>
+    <span><i class="fas fa-mobile-alt"></i> 9:16</span>
+    <span><i class="fas fa-image"></i> PNG 540×960</span>
   </div>
 </div>
 
 <script>
   (function() {
-    // ---- DOM refs ----
     const primaryInput = document.getElementById('primaryInput');
     const secondaryInput = document.getElementById('secondaryInput');
     const primaryImg = document.getElementById('primaryImg');
@@ -426,19 +566,17 @@
     const placeholderText = document.getElementById('placeholderText');
     const primaryFileName = document.getElementById('primaryFileName');
     const secondaryFileName = document.getElementById('secondaryFileName');
-
     const resetBtn = document.getElementById('resetBtn');
     const downloadBtn = document.getElementById('downloadBtn');
-
-    // paste status
+    const shareWaBtn = document.getElementById('shareWaBtn');
     const pasteStatusPrimary = document.getElementById('pasteStatusPrimary');
     const pasteStatusSecondary = document.getElementById('pasteStatusSecondary');
 
-    // data URL
+    const WA_NUMBER = '62882007670299';
+
     let primaryDataURL = null;
     let secondaryDataURL = null;
 
-    // ---- update preview ----
     function updatePreview() {
       if (primaryDataURL) {
         primaryImg.src = primaryDataURL;
@@ -447,7 +585,6 @@
         primaryImg.style.display = 'none';
         primaryImg.src = '';
       }
-
       if (secondaryDataURL) {
         secondaryImg.src = secondaryDataURL;
         secondaryImg.style.display = 'block';
@@ -455,184 +592,168 @@
         secondaryImg.style.display = 'none';
         secondaryImg.src = '';
       }
-
       placeholderText.style.display = (!primaryDataURL && !secondaryDataURL) ? 'block' : 'none';
     }
 
-    // ---- set gambar (dari file atau paste) ----
     function setPrimaryImage(dataURL, fileName = '') {
       primaryDataURL = dataURL;
-      if (fileName) {
-        primaryFileName.textContent = fileName.length > 18 ? fileName.slice(0, 16) + '…' : fileName;
-      } else {
-        primaryFileName.textContent = 'Dari paste';
-      }
+      primaryFileName.textContent = fileName ? (fileName.length > 16 ? fileName.slice(0, 14) + '…' : fileName) : '📋 paste';
       pasteStatusPrimary.textContent = '✓';
-      pasteStatusPrimary.className = 'paste-status success';
+      pasteStatusPrimary.className = 'paste-status done';
       updatePreview();
     }
 
     function setSecondaryImage(dataURL, fileName = '') {
       secondaryDataURL = dataURL;
-      if (fileName) {
-        secondaryFileName.textContent = fileName.length > 18 ? fileName.slice(0, 16) + '…' : fileName;
-      } else {
-        secondaryFileName.textContent = 'Dari paste';
-      }
+      secondaryFileName.textContent = fileName ? (fileName.length > 16 ? fileName.slice(0, 14) + '…' : fileName) : '📋 paste';
       pasteStatusSecondary.textContent = '✓';
-      pasteStatusSecondary.className = 'paste-status success';
+      pasteStatusSecondary.className = 'paste-status done';
       updatePreview();
     }
 
-    // ---- baca file dari input ----
     function handleFile(file, isPrimary) {
       if (!file) return;
-      if (!file.type.startsWith('image/')) {
-        alert('Mohon pilih file gambar.');
-        return;
-      }
+      if (!file.type.startsWith('image/')) { alert('Pilih file gambar.'); return; }
       const reader = new FileReader();
       reader.onload = function(e) {
         const dataURL = e.target.result;
-        if (isPrimary) {
-          setPrimaryImage(dataURL, file.name);
-        } else {
-          setSecondaryImage(dataURL, file.name);
-        }
+        if (isPrimary) setPrimaryImage(dataURL, file.name);
+        else setSecondaryImage(dataURL, file.name);
       };
-      reader.onerror = function() { alert('Gagal membaca file.'); };
+      reader.onerror = function() { alert('Gagal baca file.'); };
       reader.readAsDataURL(file);
     }
 
-    // ---- event: input file ----
     primaryInput.addEventListener('change', function(e) {
-      if (this.files && this.files[0]) {
-        handleFile(this.files[0], true);
-      } else {
-        // reset (hanya jika belum ada data dari paste)
-        if (!primaryDataURL) {
-          primaryFileName.textContent = 'Belum ada';
-          pasteStatusPrimary.textContent = 'siap';
-          pasteStatusPrimary.className = 'paste-status';
-        }
-      }
+      if (this.files && this.files[0]) handleFile(this.files[0], true);
+      else if (!primaryDataURL) { primaryFileName.textContent = 'kosong'; pasteStatusPrimary.textContent = 'siap'; pasteStatusPrimary.className = 'paste-status'; }
       this.value = '';
     });
 
     secondaryInput.addEventListener('change', function(e) {
-      if (this.files && this.files[0]) {
-        handleFile(this.files[0], false);
-      } else {
-        if (!secondaryDataURL) {
-          secondaryFileName.textContent = 'Belum ada';
-          pasteStatusSecondary.textContent = 'siap';
-          pasteStatusSecondary.className = 'paste-status';
-        }
-      }
+      if (this.files && this.files[0]) handleFile(this.files[0], false);
+      else if (!secondaryDataURL) { secondaryFileName.textContent = 'kosong'; pasteStatusSecondary.textContent = 'siap'; pasteStatusSecondary.className = 'paste-status'; }
       this.value = '';
     });
 
-    // ---- PASTE : menangkap paste di area upload-item ----
     function setupPaste(itemElement, isPrimary) {
       itemElement.addEventListener('paste', function(e) {
         const items = (e.clipboardData || e.originalEvent?.clipboardData || window.clipboardData)?.items;
         if (!items) return;
-
         let imageItem = null;
         for (let i = 0; i < items.length; i++) {
-          if (items[i].type.startsWith('image/')) {
-            imageItem = items[i];
-            break;
-          }
+          if (items[i].type.startsWith('image/')) { imageItem = items[i]; break; }
         }
-
         if (!imageItem) {
-          // cek juga apakah ada file gambar di items
           for (let i = 0; i < items.length; i++) {
-            if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
-              imageItem = items[i];
-              break;
-            }
+            if (items[i].kind === 'file' && items[i].type.startsWith('image/')) { imageItem = items[i]; break; }
           }
         }
-
-        if (!imageItem) {
-          alert('Tidak ada gambar di clipboard. Paste gambar (screenshot/photo).');
-          return;
-        }
-
+        if (!imageItem) { alert('Tidak ada gambar di clipboard.'); return; }
         const file = imageItem.getAsFile ? imageItem.getAsFile() : null;
-        if (!file) {
-          alert('Gagal membaca gambar dari clipboard.');
-          return;
-        }
-
-        // baca sebagai dataURL
+        if (!file) { alert('Gagal ambil gambar.'); return; }
         const reader = new FileReader();
         reader.onload = function(ev) {
           const dataURL = ev.target.result;
-          if (isPrimary) {
-            setPrimaryImage(dataURL, '📋 paste');
-          } else {
-            setSecondaryImage(dataURL, '📋 paste');
-          }
+          if (isPrimary) setPrimaryImage(dataURL, '📋 paste');
+          else setSecondaryImage(dataURL, '📋 paste');
         };
-        reader.onerror = function() { alert('Gagal memproses gambar paste.'); };
+        reader.onerror = function() { alert('Gagal proses paste.'); };
         reader.readAsDataURL(file);
-
-        // prevent default agar tidak menempel teks
         e.preventDefault();
         return false;
       });
-
-      // biar lebih responsif, tambahkan event listener ke document untuk paste di area
-      // TAPI kita batasi hanya jika target berada di dalam itemElement
-      document.addEventListener('paste', function(e) {
-        const target = e.target;
-        if (!itemElement.contains(target)) return;
-
-        // sudah ditangani oleh event di atas, tapi supaya ganda kita handle sekali
-        // tapi event di atas sudah preventDefault, jadi aman.
-        // Namun untuk memastikan, kita biarkan event di atas yang handle.
-        // Karena event di atas sudah preventDefault, tidak akan memicu dua kali.
-      });
     }
 
-    // pasang paste di kedua item
     setupPaste(document.getElementById('primaryItem'), true);
     setupPaste(document.getElementById('secondaryItem'), false);
 
-    // ---- reset ----
     resetBtn.addEventListener('click', function() {
-      primaryDataURL = null;
-      secondaryDataURL = null;
-      primaryImg.style.display = 'none';
-      secondaryImg.style.display = 'none';
-      primaryImg.src = '';
-      secondaryImg.src = '';
-      primaryFileName.textContent = 'Belum ada';
-      secondaryFileName.textContent = 'Belum ada';
+      primaryDataURL = null; secondaryDataURL = null;
+      primaryImg.style.display = 'none'; secondaryImg.style.display = 'none';
+      primaryImg.src = ''; secondaryImg.src = '';
+      primaryFileName.textContent = 'kosong'; secondaryFileName.textContent = 'kosong';
       placeholderText.style.display = 'block';
-      primaryInput.value = '';
-      secondaryInput.value = '';
-      pasteStatusPrimary.textContent = 'siap';
-      pasteStatusPrimary.className = 'paste-status';
-      pasteStatusSecondary.textContent = 'siap';
-      pasteStatusSecondary.className = 'paste-status';
+      primaryInput.value = ''; secondaryInput.value = '';
+      pasteStatusPrimary.textContent = 'siap'; pasteStatusPrimary.className = 'paste-status';
+      pasteStatusSecondary.textContent = 'siap'; pasteStatusSecondary.className = 'paste-status';
     });
 
-    // ---- download ----
     function downloadStory() {
+      if (!primaryDataURL) { alert('Upload atau paste gambar utama (9:16)'); return; }
+      const canvasWidth = 540, canvasHeight = 960;
+      const canvas = document.createElement('canvas');
+      canvas.width = canvasWidth; canvas.height = canvasHeight;
+      const ctx = canvas.getContext('2d');
+
+      const primary = new Image(); primary.crossOrigin = 'anonymous'; primary.src = primaryDataURL;
+      const secondary = new Image(); secondary.crossOrigin = 'anonymous'; 
+      if (secondaryDataURL) secondary.src = secondaryDataURL;
+
+      let primaryLoaded = false, secondaryLoaded = !secondaryDataURL;
+
+      function checkAndDraw() {
+        if (!primaryLoaded) return;
+        if (secondaryDataURL && !secondaryLoaded) return;
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+        const pAspect = primary.width / primary.height;
+        const canvasAspect = canvasWidth / canvasHeight;
+        let sx = 0, sy = 0, sw = primary.width, sh = primary.height;
+        if (pAspect > canvasAspect) {
+          const scale = canvasHeight / primary.height;
+          const cropWidth = canvasWidth / scale;
+          sx = (primary.width - cropWidth) / 2; sw = cropWidth;
+        } else {
+          const scale = canvasWidth / primary.width;
+          const cropHeight = canvasHeight / scale;
+          sy = (primary.height - cropHeight) / 2; sh = cropHeight;
+        }
+        ctx.drawImage(primary, sx, sy, sw, sh, 0, 0, canvasWidth, canvasHeight);
+
+        if (secondaryDataURL && secondaryLoaded) {
+          const maxWidth = canvasWidth * 0.66, maxHeight = canvasHeight * 0.42;
+          let sWidth = secondary.width, sHeight = secondary.height;
+          let scale = 1;
+          if (sWidth > maxWidth) scale = maxWidth / sWidth;
+          if (sHeight * scale > maxHeight) scale = Math.min(scale, maxHeight / sHeight);
+          const finalWidth = sWidth * scale, finalHeight = sHeight * scale;
+          const x = (canvasWidth - finalWidth) / 2, y = canvasHeight * 0.14;
+          ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
+          ctx.drawImage(secondary, x, y, finalWidth, finalHeight);
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1.5;
+          ctx.strokeRect(x, y, finalWidth, finalHeight);
+        }
+
+        const link = document.createElement('a');
+        link.download = 'story-compose.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }
+
+      primary.onload = function() { primaryLoaded = true; checkAndDraw(); };
+      primary.onerror = function() { alert('Gagal memuat gambar utama.'); };
+      if (secondaryDataURL) {
+        secondary.onload = function() { secondaryLoaded = true; checkAndDraw(); };
+        secondary.onerror = function() { secondaryLoaded = true; checkAndDraw(); };
+      } else secondaryLoaded = true;
+
+      if (primary.complete && primary.naturalWidth !== 0) { primaryLoaded = true; checkAndDraw(); }
+      if (secondaryDataURL && secondary.complete && secondary.naturalWidth !== 0) { secondaryLoaded = true; checkAndDraw(); }
+    }
+
+    // SHARE WA
+    function shareWA() {
       if (!primaryDataURL) {
-        alert('Unggah atau paste gambar utama (9:16)');
+        alert('Upload atau paste gambar utama (9:16) dulu ya!');
         return;
       }
 
-      const canvasWidth = 540;
-      const canvasHeight = 960;
+      // Buat canvas untuk preview
+      const canvasWidth = 540, canvasHeight = 960;
       const canvas = document.createElement('canvas');
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
+      canvas.width = canvasWidth; canvas.height = canvasHeight;
       const ctx = canvas.getContext('2d');
 
       const primary = new Image();
@@ -646,86 +767,74 @@
       let primaryLoaded = false;
       let secondaryLoaded = !secondaryDataURL;
 
-      function checkAndDraw() {
+      function processShare() {
         if (!primaryLoaded) return;
         if (secondaryDataURL && !secondaryLoaded) return;
 
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-        // primary cover
-        const pImg = primary;
-        const pAspect = pImg.width / pImg.height;
+        const pAspect = primary.width / primary.height;
         const canvasAspect = canvasWidth / canvasHeight;
-        let sx = 0, sy = 0, sw = pImg.width, sh = pImg.height;
+        let sx = 0, sy = 0, sw = primary.width, sh = primary.height;
         if (pAspect > canvasAspect) {
-          const scale = canvasHeight / pImg.height;
+          const scale = canvasHeight / primary.height;
           const cropWidth = canvasWidth / scale;
-          sx = (pImg.width - cropWidth) / 2;
+          sx = (primary.width - cropWidth) / 2;
           sw = cropWidth;
         } else {
-          const scale = canvasWidth / pImg.width;
+          const scale = canvasWidth / primary.width;
           const cropHeight = canvasHeight / scale;
-          sy = (pImg.height - cropHeight) / 2;
+          sy = (primary.height - cropHeight) / 2;
           sh = cropHeight;
         }
-        ctx.drawImage(pImg, sx, sy, sw, sh, 0, 0, canvasWidth, canvasHeight);
+        ctx.drawImage(primary, sx, sy, sw, sh, 0, 0, canvasWidth, canvasHeight);
 
-        // secondary
         if (secondaryDataURL && secondaryLoaded) {
-          const sImg = secondary;
-          const maxWidth = canvasWidth * 0.7;
-          const maxHeight = canvasHeight * 0.45;
-          let sWidth = sImg.width, sHeight = sImg.height;
+          const maxWidth = canvasWidth * 0.66, maxHeight = canvasHeight * 0.42;
+          let sWidth = secondary.width, sHeight = secondary.height;
           let scale = 1;
           if (sWidth > maxWidth) scale = maxWidth / sWidth;
           if (sHeight * scale > maxHeight) scale = Math.min(scale, maxHeight / sHeight);
-          const finalWidth = sWidth * scale;
-          const finalHeight = sHeight * scale;
-          const x = (canvasWidth - finalWidth) / 2;
-          const y = canvasHeight * 0.18;
-
-          ctx.shadowColor = 'rgba(0,0,0,0.5)';
-          ctx.shadowBlur = 16;
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 6;
-          ctx.drawImage(sImg, x, y, finalWidth, finalHeight);
+          const finalWidth = sWidth * scale, finalHeight = sHeight * scale;
+          const x = (canvasWidth - finalWidth) / 2, y = canvasHeight * 0.14;
+          ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
+          ctx.drawImage(secondary, x, y, finalWidth, finalHeight);
           ctx.shadowBlur = 0;
-          ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1.5;
           ctx.strokeRect(x, y, finalWidth, finalHeight);
         }
 
-        const link = document.createElement('a');
-        link.download = 'story-compose.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        // Convert ke data URL
+        const imageDataURL = canvas.toDataURL('image/png');
+
+        // Buat link WhatsApp dengan gambar
+        const waUrl = `https://wa.me/${WA_NUMBER}?text=Halo%20kak%2C%20saya%20mau%20share%20story%20nih!%20%F0%9F%98%8A%0A%0A*Link%20Story%3A*%20${encodeURIComponent(imageDataURL)}`;
+
+        window.open(waUrl, '_blank');
       }
 
-      primary.onload = function() { primaryLoaded = true; checkAndDraw(); };
+      primary.onload = function() { primaryLoaded = true; processShare(); };
       primary.onerror = function() { alert('Gagal memuat gambar utama.'); };
 
       if (secondaryDataURL) {
-        secondary.onload = function() { secondaryLoaded = true; checkAndDraw(); };
-        secondary.onerror = function() { 
-          alert('Gagal memuat gambar sekunder. Tetap lanjut tanpa secondary.');
-          secondaryLoaded = true;
-          checkAndDraw();
-        };
+        secondary.onload = function() { secondaryLoaded = true; processShare(); };
+        secondary.onerror = function() { secondaryLoaded = true; processShare(); };
       } else {
         secondaryLoaded = true;
       }
 
       if (primary.complete && primary.naturalWidth !== 0) {
         primaryLoaded = true;
-        checkAndDraw();
+        processShare();
       }
       if (secondaryDataURL && secondary.complete && secondary.naturalWidth !== 0) {
         secondaryLoaded = true;
-        checkAndDraw();
+        processShare();
       }
     }
 
     downloadBtn.addEventListener('click', downloadStory);
+    shareWaBtn.addEventListener('click', shareWA);
     updatePreview();
   })();
 </script>

@@ -183,10 +183,11 @@
 </div>
 
 <script>
-// ======================= MIRRORING DATA DARI GOOGLE SHEET =======================
-const SHEET_ID = "1AMJmLj2dbkmBmtFq6suRxI8PUlii2gIgywq3yVDnICc";
-const SHEET_NAME = "Database Agent";
-const GID = "1139731848";
+// ======================= SHEET BARU =======================
+const SHEET_ID = "1RnWNJvpeQtG6Sdx9EiUdE2E4D0n5mvZM-Q90P3pmf8Q";
+const SHEET_NAME = "Form Responses 1"; // Sheet ini biasanya berisi data response
+const GID = "0"; // GID 0 = sheet pertama
+
 const SHEET_API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}&gid=${GID}`;
 
 let agentList = [];
@@ -201,7 +202,6 @@ async function mirrorAgentsFromSheet() {
     const rows = jsonData.table.rows;
     
     const agents = [];
-    // Reset customer data
     customerData = {};
     
     for (let i = 0; i < rows.length; i++) {
@@ -254,26 +254,20 @@ const namaInput = document.getElementById("namaInput");
 const hpAutoBadge = document.getElementById("hpAutoBadge");
 const namaAutoBadge = document.getElementById("namaAutoBadge");
 
-// Format HP: bersihkan, tambahkan 62 jika perlu
 function cleanPhoneNumber(input) {
   let v = input.replace(/\D/g, "");
   if (!v.startsWith("62")) v = "62" + v.replace(/^0+/, "");
   return v;
 }
 
-// Cari nama berdasarkan nomor HP
 function findNameByPhone(phone) {
-  // Bersihkan nomor untuk dicocokkan
   const cleanPhone = cleanPhoneNumber(phone);
   
-  // Coba cari di customerData
   for (const [key, value] of Object.entries(customerData)) {
     const cleanKey = cleanPhoneNumber(key);
-    // Cocokkan dengan berbagai kemungkinan
     if (cleanKey === cleanPhone || key === phone || key === cleanPhone) {
       return value.nama;
     }
-    // Coba cocokkan dengan nomor yang mengandung
     if (cleanPhone.includes(cleanKey) || cleanKey.includes(cleanPhone)) {
       return value.nama;
     }
@@ -281,10 +275,9 @@ function findNameByPhone(phone) {
   return null;
 }
 
-// Event listener untuk auto-fill
 hpInput.addEventListener('input', function() {
   const phone = this.value.trim();
-  if (phone.length >= 10) { // Minimal 10 digit baru coba cari
+  if (phone.length >= 10) {
     const foundName = findNameByPhone(phone);
     if (foundName) {
       namaInput.value = foundName;
@@ -292,12 +285,9 @@ hpInput.addEventListener('input', function() {
       hpAutoBadge.style.color = '#155724';
       namaAutoBadge.innerHTML = '✅ <span style="color:#155724;font-weight:500;">Terisi otomatis</span>';
       namaAutoBadge.style.color = '#155724';
-      // Beri highlight subtle
       namaInput.style.borderColor = '#28a745';
       setTimeout(() => { namaInput.style.borderColor = ''; }, 2000);
     } else {
-      // Jika nomor tidak ditemukan, hapus nama (biarkan user isi manual)
-      // Tapi jangan hapus jika user sudah mengisi manual
       const currentNama = namaInput.value.trim();
       if (currentNama === '' || currentNama === 'Belum terdaftar' || currentNama === namaInput.placeholder) {
         namaInput.value = '';
@@ -307,11 +297,9 @@ hpInput.addEventListener('input', function() {
     }
   } else {
     hpAutoBadge.innerHTML = '';
-    // Jangan reset nama jika user sudah mengisi manual
   }
 });
 
-// Jika user mengubah nama secara manual, badge berubah
 namaInput.addEventListener('input', function() {
   if (this.value.trim() !== '') {
     const phone = hpInput.value.trim();
@@ -324,7 +312,6 @@ namaInput.addEventListener('input', function() {
   }
 });
 
-// Format HP (tanpa mengganggu auto-fill)
 hpInput.addEventListener('blur', function() {
   let v = this.value.replace(/\D/g, "");
   if (v && !v.startsWith("62")) v = "62" + v.replace(/^0+/, "");
@@ -444,14 +431,12 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
   
   agentHiddenEl.value = agentInputEl.value;
   
-  // Ambil nilai dari field lokasi
   const jemputInput = document.getElementById("jemputInput");
   const antarInput = document.getElementById("antarInput");
   
   let jemputValue = jemputInput.value.trim();
   let antarValue = antarInput.value.trim();
   
-  // Jika user pilih dari Google Maps, output link. Jika tidak, output teks biasa
   if (jemputHandler && jemputHandler.isFromMap() && jemputHandler.getMapLink()) {
     jemputValue = jemputHandler.getMapLink();
   }
@@ -460,7 +445,6 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
     antarValue = antarHandler.getMapLink();
   }
   
-  // Reset flag untuk submit berikutnya
   if (jemputHandler) jemputHandler.resetFlag();
   if (antarHandler) antarHandler.resetFlag();
   
@@ -472,18 +456,15 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
   const data = {};
   form.forEach((v, k) => data[k] = v);
   
-  // Override dengan nilai yang sudah diproses
   data.jemput = jemputValue || "-";
   data.antar = antarValue || "-";
   
-  // Kirim ke Apps Script (admin tetap ikut terkirim, tapi tidak ditampilkan di template)
   try {
     await fetch(SCRIPT_URL, { method: "POST", body: form });
   } catch(err) {
     console.warn(err);
   }
   
-  // ========== TEMPLATE TANPA ADMIN ==========
   const template = `
 🟦 ORDER MASUK
 
@@ -504,7 +485,6 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
   document.getElementById("chatBtn").href = "https://chat.whatsapp.com/DlIfRxaICuRCXc1ZndEDTc";
   document.getElementById("resultContainer").scrollIntoView({ behavior: "smooth" });
   
-  // Reset form (admin ikut tereset)
   this.reset();
   agentInputEl.value = "";
   agentHiddenEl.value = "";
@@ -515,7 +495,6 @@ document.getElementById("orderForm")?.addEventListener("submit", async function 
   submitBtn.textContent = "SUBMIT";
 });
 
-// COPY
 document.getElementById("copyBtn")?.addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(document.getElementById("templateBox").textContent);
@@ -531,15 +510,12 @@ document.getElementById("copyBtn")?.addEventListener("click", async () => {
   }
 });
 
-// ======================= INIT GOOGLE MAPS =======================
 function initMapAutocomplete() {
   jemputHandler = setupLocationInput('jemputInput');
   antarHandler = setupLocationInput('antarInput');
 }
 
 window.initMapAutocomplete = initMapAutocomplete;
-
-// ======================= JALANKAN MIRRORING =======================
 mirrorAgentsFromSheet();
 </script>
 
